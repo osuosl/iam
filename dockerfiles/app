@@ -1,0 +1,25 @@
+FROM elijahcaine/centos-ruby:2.3.0
+
+RUN yum -y update
+RUN yum -y install vim\
+                   screen\
+                   sudo\
+                   sqlite-devel\
+                   postgresql\
+                   postgresql-devel
+
+RUN gem install bundle
+COPY Gemfile /tmp/Gemfile
+WORKDIR /tmp/
+RUN bundle install
+WORKDIR /
+
+ENV USER     voigte
+ENV PASSWORD containerpass
+ENV UID      6439
+
+RUN echo [$PASSWORD:USER:$UID]
+RUN useradd -G wheel -p $PASSWORD -d /home/$USER -u $UID -ms /bin/bash $USER
+RUN chown $USER:$USER /home/$USER
+
+USER $USER
