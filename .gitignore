@@ -6,3 +6,4 @@ build/
 Gemfile.lock
 v/
 venv/
+dockerfiles/app
