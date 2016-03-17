@@ -26,16 +26,37 @@ This is the general procedure for collecting data:
 #. A job scheduler provokes IAM to collect data from all nodes every 30
    minutes.
 
-    This can be provoked by Chef, Cron, whichever.
+    This can be provoked by Chef, Cron, Resque, whichever.
+
+Pre-processing
+~~~~~~~~~~~~~~
+
+Pre-processing may be scheduled separately from the metrics gathering, likely
+at least 15 minutes prior.
+
+#. Query our Resources table to find all unique `cluster` fqdns. If the
+   `cluster` field is `null`, the node is not a ganeti VM.
+
+#. Run a GET request against each
+   `<cluster-fqdn>/<ganeti-version>/instances?bulk=1`
+
+#. Store the returned JSON in a cache such as redis
+   (http://redis.io/documentation) with the cluster name and a datetime.
+
+Metrics Gathering
+~~~~~~~~~~~~~~~~~
 
 #. A list of all resources is collected with their corresponding measurements
    (CPU, Memory, Bandwidth, etc).
 
-#. For each measurement corresponding to each resource, that measurement's
-   plugin is called.
+#. **if** the node's `cluster` field is **not** `null`, query our cache at
+   `cluster-fqdn` for the relevant measurements.
 
-    The plugin is given a resource id and automatically polls the resource for
-    relevant data and stores that data in the correct table.
+   **else** for each measurement corresponding to each resource, that
+   measurement's plugin is called.
+
+   The plugin is given a resource id and automatically polls the resource for
+   relevant data and stores that data in the correct table.
 
 Data Reporting
 --------------
