@@ -3,20 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Invoicing and Metrics's documentation!
-=================================================
+OSL Invoicing and Metrics (iam) Documentation
+=============================================
+
+IAM is a project created by the `OSU Open Source Lab`_ to monitor resource
+usage of clients to accurately and easily bill them.
+
+.. _OSU Open Source Lab: https://osuosl.org
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   draft/index
