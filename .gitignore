@@ -1,2 +1,5 @@
-build
-venv
+build/
+venv/
+.v/
+.venv/
+v/
