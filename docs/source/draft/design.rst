@@ -49,14 +49,15 @@ Metrics Gathering
 #. A list of all resources is collected with their corresponding measurements
    (CPU, Memory, Bandwidth, etc).
 
-#. **if** the node's `cluster` field is **not** `null`, query our cache at
-   `cluster-fqdn` for the relevant measurements.
+#. For each measurement corresponding to each resource, that measurement's
+   plugin is called.
+   
+   **if** the resource's `cluster` field is **not** `null`, query our cache at
+   `cluster-fqdn` for the relevant measurement.
 
-   **else** for each measurement corresponding to each resource, that
-   measurement's plugin is called.
+   **else** poll the resource for the relevant data.
 
-   The plugin is given a resource id and automatically polls the resource for
-   relevant data and stores that data in the correct table.
+   Store the data in the correct table.
 
 Data Reporting
 --------------
