@@ -1,5 +1,7 @@
 build/
 venv/
-.v/
 .venv/
 v/
+.v/
+.bash_history
+.viminfo
