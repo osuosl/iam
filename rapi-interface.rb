@@ -20,9 +20,13 @@ fqdn.each do |name|
         # perform get request on full path.
         request = Net::HTTP::Get.new uri
         response = http.request request # Net::HTTPResponse object 
-    
+
         # Store returned information in redis with datetime and cluster name
         redis.set(name, response.body)
         redis.set(name + ':datetime', Time.new.inspect)
     end
 end
+
+# To retrieve the the cluster information, use redis.get and JSON.parse. This
+# will give you a ruby hash of the cluster information.
+# cluster_info = JSON.parse(redis.get("ganeti-psf.osuosl.bak"))
