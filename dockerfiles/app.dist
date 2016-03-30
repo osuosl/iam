@@ -1,0 +1,21 @@
+from centos:latest
+
+RUN yum -y update
+
+RUN yum -y install ruby\
+                   rubygems\
+                   vim\
+                   screen\
+                   sudo
+
+RUN gem install sinatra\
+                sequel
+
+ENV USER     you_user_name
+ENV PASSWORD you_container_password
+ENV UID      your_local_uid
+
+RUN useradd -d /home -u $UID -ms /bin/bash $USER
+RUN chown $USER:$USER /home
+
+USER $USER

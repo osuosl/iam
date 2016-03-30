@@ -1,0 +1,33 @@
+version: '2'
+services:
+
+  ###
+  # Base app container. Inherited by dev and eventually prod containers.
+  ###
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile:  app
+    entrypoint: ruby /data/code/app.rb
+    working_dir: /data
+
+  ###
+  # Dev container extends the base application.
+  ###
+  dev:
+    extends:
+      file: docker-compose.yml
+      service: app
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+    volumes:
+      - .:/data/code
+    links:
+      - redis:redis
+
+  ###
+  # Redis used for redis things we do.
+  ###
+  redis:
+    image: redis
