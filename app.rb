@@ -37,12 +37,12 @@ class Iam < Sinatra::Base
 
   name = (0...10).map { o[rand(o.length)] }.join
 
-  new_node = NodeResource.create(project_id: new_project.id,
-                                 name: name,
-                                 type: 'ganeti',
-                                 cluster: 'cluster1.osuosl.org',
-                                 created: DateTime.now,
-                                 modified: DateTime.now)
+  NodeResource.create(project_id: new_project.id,
+                      name: name,
+                      type: 'ganeti',
+                      cluster: 'cluster1.osuosl.org',
+                      created: DateTime.now,
+                      modified: DateTime.now)
 
   # do we have some registered plugins?
   puts 'Plugins:'
@@ -60,18 +60,17 @@ class Iam < Sinatra::Base
     # get all the plugins that measure for each resource
     resources.each do |resource|
       puts resource
-      if DB.table_exists?(resource + '_resources')
-        # get the objects of this reource type belonging to this project
-        model = Object.const_get(resource.capitalize + 'Resource')
-        resource_objects = model.where(project_id: project.id)
-        plugins = Plugin.where(resource_type: resource)
-        resource_objects.each do |resource_object|
-          # so much nesting!
-          plugins.each do |plugin|
-            puts plugin.name
-            plugin = Object.const_get(plugin.name)
-            plugin.collect(resource_object)
-          end
+      next unless DB.table_exists?(resource + '_resources')
+      # get the objects of this reource type belonging to this project
+      model = Object.const_get(resource.capitalize + 'Resource')
+      resource_objects = model.where(project_id: project.id)
+      plugins = Plugin.where(resource_type: resource)
+      resource_objects.each do |resource_object|
+        # so much nesting!
+        plugins.each do |plugin|
+          puts plugin.name
+          plugin = Object.const_get(plugin.name)
+          plugin.collect(resource_object)
         end
       end
     end
@@ -85,18 +84,17 @@ class Iam < Sinatra::Base
     # get all the plugins that measure for each resource
     resources.each do |resource|
       puts resource
-      if DB.table_exists?(resource + '_resources')
-        # get the objects of this reource type belonging to this project
-        model = Object.const_get(resource.capitalize + 'Resource')
-        resource_objects = model.where(project_id: project.id)
-        plugins = Plugin.where(resource_type: resource)
-        resource_objects.each do |resource_object|
-          # so much nesting!
-          plugins.each do |plugin|
-            puts plugin.name
-            plugin = Object.const_get(plugin.name)
-            plugin.report(resource_object)
-          end
+      next unless DB.table_exists?(resource + '_resources')
+      # get the objects of this reource type belonging to this project
+      model = Object.const_get(resource.capitalize + 'Resource')
+      resource_objects = model.where(project_id: project.id)
+      plugins = Plugin.where(resource_type: resource)
+      resource_objects.each do |resource_object|
+        # so much nesting!
+        plugins.each do |plugin|
+          puts plugin.name
+          plugin = Object.const_get(plugin.name)
+          plugin.report(resource_object)
         end
       end
     end
