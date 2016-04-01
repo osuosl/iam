@@ -5,3 +5,5 @@ v/
 .v/
 .bash_history
 .viminfo
+Gemfile.lock
+dev.db

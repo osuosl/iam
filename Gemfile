@@ -9,5 +9,5 @@ gem 'rubocop'
 # DB
 gem 'sequel'
 gem 'sinatra-sequel'
-gem 'pg'
+# gem 'pg'
 gem 'sqlite3'

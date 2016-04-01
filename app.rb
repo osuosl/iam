@@ -94,7 +94,7 @@ class Iam < Sinatra::Base
         plugins.each do |plugin|
           puts plugin.name
           plugin = Object.const_get(plugin.name)
-          plugin.report(resource_object)
+          plugin.report()
         end
       end
     end
