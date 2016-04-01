@@ -30,19 +30,30 @@ $ pip install --user docker-compose
 variables:
 
 ```
-ENV USER     you_user_name
-ENV PASSWORD you_container_password
+ENV USER     your_user_name
+ENV PASSWORD your_container_password
 ENV UID      your_local_uid
 ```
 
 Finally, run the `docker-compose` commands you need to actually start
 developing.
 
+If you would like to develop *in a development environment*, run the following
+command:
+
+```
+$ docker-compose run --service-ports --rm dev bash   # puts you in a dev shell
+```
+
+If you would just like to run a development instance, run the following
+command:
+
 ```
 $ docker-compose up dev   # starts running the app on port 8000
-# ~~~~or~~~~
-$ docker-compose run --service-ports dev bash   # puts you in a dev shell
 ```
+
+You may need to run the above commands if you have not given your user
+permission to run `docker` commands.
 
 IaM is developed using the most recent versions of `docker` and
 `docker-compose` (as of mid 2016).

@@ -6,9 +6,9 @@ services:
   ###
   app:
     build:
-      context: ./dockerfiles
-      dockerfile:  app
-    entrypoint: ruby /data/code/app.rb
+      context: .
+      dockerfile:  ./dockerfiles/app
+    command: ruby /data/code/app.rb
     working_dir: /data
 
   ###
@@ -16,7 +16,6 @@ services:
   ###
   dev:
     extends:
-      file: docker-compose.yml
       service: app
     ports:
       - "5000:5000"
