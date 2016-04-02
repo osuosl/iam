@@ -86,16 +86,12 @@ class Iam < Sinatra::Base
       puts resource
       next unless DB.table_exists?(resource + '_resources')
       # get the objects of this reource type belonging to this project
-      model = Object.const_get(resource.capitalize + 'Resource')
-      resource_objects = model.where(project_id: project.id)
       plugins = Plugin.where(resource_type: resource)
-      resource_objects.each do |resource_object|
-        # so much nesting!
-        plugins.each do |plugin|
-          puts plugin.name
-          plugin = Object.const_get(plugin.name)
-          plugin.report()
-        end
+      # so much nesting!
+      plugins.each do |plugin|
+        puts plugin.name
+        plugin = Object.const_get(plugin.name)
+        plugin.report
       end
     end
   end
