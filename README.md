@@ -52,6 +52,14 @@ command:
 $ docker-compose up dev   # starts running the app on port 8000
 ```
 
+If changes have been made to the dockerfiles (`dockerfiles/app` or the remote
+`elijahcaine/centos-ruby`) run the following command to re-build your
+containers:
+
+```
+$ docker-compose build  # builds all containers listed in docker-compose.yml
+```
+
 You may need to run the above commands if you have not given your user
 permission to run `docker` commands.
 
