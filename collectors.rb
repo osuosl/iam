@@ -37,8 +37,8 @@ class Collectors
                                node['custom_beparams']['vcpus'] || 'unknown'
           total_ram_meas     = node['beparams']['memory']       || 'unknown'
 
-          @redis.set(node_name, @template.result(binding))
-          @redis.set(node_name + ':datetime', Time.new.inspect)
+          @redis.mset(node_name, @template.result(binding),
+                      node_name + ':datetime', Time.new.inspect)
         end
         # To retrieve the the node information, use redis.get and JSON.parse.
         # This will give you a ruby hash of the node information.
