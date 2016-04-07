@@ -35,6 +35,23 @@ ENV PASSWORD your_container_password
 ENV UID      your_local_uid
 ```
 
+Also copy `docker-compose.yml.dist` to `docker-compose.yml` and edit the
+service names to include your username (this is so multiple people can work on
+one workstation without image conflicts):
+
+```
+app_USERNAME:   ->  app_myusername:
+
+
+dev_USERNAME:   ->  dev_myusername:
+  extends:
+    service: app_USERNAME   ->  service: app_myusername
+  links:
+    - redis_USERNAME:redis  ->  - redis_myusername:redis
+
+redis_USERNAME: ->  redis_myusername:
+```
+
 Finally, run the `docker-compose` commands you need to actually start
 developing.
 
@@ -42,14 +59,14 @@ If you would like to develop *in a development environment*, run the following
 command:
 
 ```
-$ docker-compose run --service-ports --rm dev bash   # puts you in a dev shell
+$ docker-compose run --service-ports --rm dev_myusername bash   # puts you in a dev shell
 ```
 
 If you would just like to run a development instance, run the following
 command:
 
 ```
-$ docker-compose up dev   # starts running the app on port 8000
+$ docker-compose up dev_myusername   # starts running the app on port 8000
 ```
 
 If changes have been made to the dockerfiles (`dockerfiles/app` or the remote
