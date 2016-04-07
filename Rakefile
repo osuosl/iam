@@ -1,17 +1,21 @@
 #!/usr/bin/env rake
 
+# vars
+NAME = 'centos-ruby'.freeze
+
 # default rake cmd
-task default: %w(lint app)
+task default: %w(rubocop build run)
 
 # rake app task
-task :app do
+task :run do
+  desc 'Runs app'
   puts 'Running app...'
+  # TODO: execute run command on docker container
   require './app'
 end
 
 # rake lint
-task :lint do
-  puts 'Running RuboCop...'
+task :rubocop do
   require 'rubocop/rake_task'
 
   desc 'Run RuboCop on the current directory'
@@ -20,11 +24,39 @@ task :lint do
     task.patterns = ['**/*.rb']
     # only show the files with failures
     task.formatters = ['files']
-    # don't abort rake on failure
-    task.fail_on_error = false
+    # abort rake on failure
+    task.fail_on_error = true
   end
 end
 
-task :docker do
-  puts 'Running docker...'
+task :build do
+  desc 'Build Docker Containers'
+  puts 'Building Docker containers...'
+  # %x(docker-compose up)
+end
+
+task :shell do
+  desc 'Run shell'
+  puts 'Running shell...'
+  # %x( run_command(bash) ) unless !image_exists(NAME)
+end
+
+task :clean do
+  desc 'Destroy Docker containers'
+  puts 'Destroying Docker containers...'
+  # %x(docker-compose down)
+end
+
+# helper function to check if docker image exists
+# returns true if image exists
+def image_exists(name)
+  `docker images -q #{name}` != ''
+end
+
+# helper function to pass commands to the docker container
+# it should NOT detach the container after execution because of the -i in -it
+# params
+def run_command(command)
+  # TODO: test this
+  `docker exec -it #{NAME} #{command}` if image_exists(NAME)
 end
