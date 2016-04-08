@@ -32,20 +32,26 @@ end
 task :build do
   desc 'Build Docker Containers'
   puts 'Building Docker containers...'
-  # %x(docker-compose up)
+  `docker-compose build`
+  puts 'Starting Docker containers...'
+  `docker-compose up -d`
 end
 
 task :shell do
   desc 'Run shell'
   puts 'Running shell...'
-  # %x( run_command(bash) ) unless !image_exists(NAME)
+  `run_command(bash)` if image_exists(NAME)
 end
 
 task :clean do
   desc 'Destroy Docker containers'
   puts 'Destroying Docker containers...'
-  # %x(docker-compose down)
+  `docker-compose down`
 end
+
+###################################
+# HELPER FUNCTIONS
+###################################
 
 # helper function to check if docker image exists
 # returns true if image exists
