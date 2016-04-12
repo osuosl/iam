@@ -1,8 +1,10 @@
 build/
-venv/
-.venv/
-v/
-.v/
 .bash_history
+.v/
+.venv/
 .viminfo
 Gemfile.lock
+v/
+venv/
+dockerfiles/app
+docker-compose.yml
