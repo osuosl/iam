@@ -6,21 +6,10 @@ Bundler.require
 $LOAD_PATH << File.expand_path('../', __FILE__)
 
 # Require base (this gives us access to Sintra)
-require 'sinatra'
+require 'sinatra/base'
 
 # require our core models
 require 'models'
-
-# test API for the time being
-set :port, 8000
-set :bind, '0.0.0.0'
-
-get '/' do
-  'Hello world! <a href=/foo>other page</a> sdfasdfasdfa'
-end
-get '/foo' do
-  'This is another page!'
-end
 
 # require all the plugins dynamically - each must be a self-contained ruby file
 Dir[File.dirname(__FILE__) + '/plugins/*.rb'].each { |file| require file }
@@ -106,4 +95,16 @@ class Iam < Sinatra::Base
       end
     end
   end
+
+  # test API for the time being
+  set :port, 8000
+  set :bind, '0.0.0.0'
+
+  get '/' do
+    'Hello world! <a href=/foo>other page</a> sdfasdfasdfa'
+  end
+  get '/foo' do
+    'This is another page!'
+  end
+  run! if app_file == $PROGRAM_NAME
 end
