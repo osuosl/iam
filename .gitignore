@@ -1,10 +1,9 @@
 build/
 .bash_history
-.v/
-.venv/
-.viminfo
-Gemfile.lock
 v/
 venv/
+.viminfo
+Gemfile.lock
+dev.db
 dockerfiles/app
 docker-compose.yml
