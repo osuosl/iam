@@ -4,14 +4,13 @@
 NAME = 'centos-ruby'.freeze
 
 # default rake cmd
-task default: %w(rubocop build run)
+task default: %w(rubocop run)
 
 # rake app task
 task :run do
   desc 'Runs app'
   puts 'Running app...'
-  # TODO: execute run command on docker container
-  require './app'
+  exec 'docker-compose run --service-ports --rm dev_$USER bash'
 end
 
 # rake lint
@@ -24,29 +23,23 @@ task :rubocop do
     task.patterns = ['**/*.rb']
     # only show the files with failures
     task.formatters = ['files']
-    # abort rake on failure
-    task.fail_on_error = true
+    # don't abort rake on failure
+    task.fail_on_error = false
   end
 end
 
 task :build do
   desc 'Build Docker Containers'
   puts 'Building Docker containers...'
-  `docker-compose build`
-  puts 'Starting Docker containers...'
-  `docker-compose up -d`
-end
-
-task :shell do
-  desc 'Run shell'
-  puts 'Running shell...'
-  `run_command(bash)` if image_exists(NAME)
+  exec 'docker-compose build'
 end
 
 task :clean do
   desc 'Destroy Docker containers'
   puts 'Destroying Docker containers...'
-  `docker-compose down`
+  exec 'docker-compose down'
+  puts 'Building Docker contianers'
+  exec 'docker-compose build'
 end
 
 ###################################
@@ -64,5 +57,5 @@ end
 # params
 def run_command(command)
   # TODO: test this
-  `docker exec -it #{NAME} #{command}` if image_exists(NAME)
+  exec 'docker exec -it #{NAME} ' + command if image_exists(NAME)
 end

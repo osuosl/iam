@@ -6,16 +6,17 @@ Bundler.require
 $LOAD_PATH << File.expand_path('../', __FILE__)
 
 # Require base (this gives us access to Sintra)
-require 'sinatra/base'
+require 'sinatra'
 
 # require our core models
 require 'models'
 
 # test API for the time being
-set port: 8000
-set bind: '0.0.0.0'
+set :port, 8000
+set :bind, '0.0.0.0'
+
 get '/' do
-  'Hello world! <a href=/foo>other page</a>'
+  'Hello world! <a href=/foo>other page</a> sdfasdfasdfa'
 end
 get '/foo' do
   'This is another page!'
