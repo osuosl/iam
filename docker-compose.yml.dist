@@ -8,8 +8,10 @@ services:
     build:
       context: .
       dockerfile:  ./dockerfiles/app
-    command: ruby /data/code/app.rb
-    working_dir: /data
+    command: rake
+    working_dir: /data/code
+    env_file:
+      - ./dockerfiles/app.env
 
   ###
   # Dev container extends the base application.
@@ -24,6 +26,7 @@ services:
       - .:/data/code
     links:
       - redis_USERNAME:redis
+    command: rake test
 
   ###
   # Redis used for redis things we do.
