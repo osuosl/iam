@@ -7,4 +7,6 @@ Gemfile.lock
 v/
 venv/
 dockerfiles/app
+dockerfiles/app.env
 docker-compose.yml
+*.db
