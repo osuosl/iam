@@ -1,22 +1,23 @@
 require File.expand_path '../../spec_helper.rb', __FILE__
 
-describe 'The Client list endpoint' do
-  include Rack::Test::Methods
-
-  let(:db) { Sequel.sqlite }
-  before { Sequel::Migrator.run(db, "migrations") }
-  after { db.disconnect }
-
+describe 'The Client list endpoint' do	
   def app
     Iam
   end
 
-  before { FactoryGirl.create_list(:client, 3) }
+  include Rack::Test::Methods
 
-  it "provides a list of existing clients" do
+  before { 
+	FactoryGirl.create(:client, client_name: "Client X")
+  }
+
+  it "responds OK" do
   	get '/clients'
   	expect(last_response).to be_ok
-
   end
 
+  it "contains the name of a client we added" do
+  	get '/clients'
+  	expect(last_response).to match(/Client X/)
+  end
 end

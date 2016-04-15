@@ -29,3 +29,4 @@ require 'factory_girl'
 # Bundler.require(...) requires all gems necessary regardless of
 #   environment (:default) in addition to all environment-specific gems.
 Bundler.require(:default, Sinatra::Application.environment)
+
