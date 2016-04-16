@@ -52,7 +52,27 @@ class Collectors
       end
     end
   end
+  def report
+    node_hash = {}
+    nodes = @redis.keys('*')
+    # for each node in the redis db, get key and value and store into a
+    # nodeHash hash
+    nodes.each do |key|
+      unless key.end_with?(':datetime')
+        value = @redis.get(key)
+        node_hash[key] = value
+      end
+    end
+    # nest the nodeHash so we have a single payload
+    data = {
+      'ganettiDemo' => nodeHash
+    }
+    # 'return  data', might be redundant but better safe than sorry
+    data
+  end
 end
 
 # To test the collect_ganeti method, uncomment the following line.
 # Collectors.new.collect_ganeti
+# test the report method
+# puts Collectors.new.report
