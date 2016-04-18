@@ -35,25 +35,22 @@ class DiskSizePlugin
     redis = Redis.new
     nodes = redis.keys(fqdn)
     data = {}
-    temp = {}
 
     # for each node in the redis db, get key and value, then sum
     nodes.each do |key|
       unless key.end_with?(':datetime')
         node_info = JSON.parse(redis.get(key))
-        disk_sizes = node_info['disk_sizes']  # This is a list of integers
-        sum = 0
-        eval(disk_sizes).each do |disk_size|
-          sum += Integer(disk_size)
-        end
-        printf("%-40s %-7d bytes of %s\n", key, sum, node_info['disk_template'])
-        temp['disk_template'] = node_info['disk_template'] || 'unknown'
-        temp['disk_size'] = sum
-        data[key] = temp
+        disk_sizes = node_info['disk_sizes']
+        data[key] = {disk_template: node_info['disk_template'],
+                     disk_size:     eval(disk_sizes).inject(0, :+)}
       end
     end
 
     # 'return  data', might be redundant but better safe than sorry
+    data.each do |name, node_data|
+      printf("%-40s %-7d bytes of %s\n",
+             name, node_data[:disk_size], node_data[:disk_template])
+    end
     return data
   end
 
