@@ -10,3 +10,4 @@ dockerfiles/app
 dockerfiles/app.env
 docker-compose.yml
 *.db
+dump.rdb
