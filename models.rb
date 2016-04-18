@@ -1,6 +1,4 @@
-require 'sequel'
 
-db = Sequel.connect(ENV.fetch('DATABASE_URL'))
 
 class Client < Sequel::Model
   one_to_many :projects
