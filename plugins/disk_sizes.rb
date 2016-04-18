@@ -48,7 +48,7 @@ class DiskSizePlugin
 
     # optional printf of values
     data.each do |name, node_data|
-      printf("%-40s %-7d bytes %s\n",
+      printf("%-40s %-7d MB %s\n",
              name, node_data[:disk_size], node_data[:disk_template])
     end
     return data
