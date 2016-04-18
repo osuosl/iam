@@ -4,7 +4,7 @@ services:
   ###
   # Base app container. Inherited by dev and eventually prod containers.
   ###
-  app_USERNAME:
+  app:
     build:
       context: .
       dockerfile:  ./dockerfiles/app
@@ -16,20 +16,19 @@ services:
   ###
   # Dev container extends the base application.
   ###
-  dev_USERNAME:
+  dev:
     extends:
-      service: app_USERNAME
+      service: app
     ports:
-      - "5000:5000"
-      - "8000:8000"
+      - "4567:4567"
     volumes:
       - .:/data/code
     links:
-      - redis_USERNAME:redis
+      - redis
     command: rake test
 
   ###
   # Redis used for redis things we do.
   ###
-  redis_USERNAME:
+  redis:
     image: redis

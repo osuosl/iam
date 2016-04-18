@@ -12,14 +12,9 @@ RUN gem install bundle
 COPY Gemfile /tmp/Gemfile
 WORKDIR /tmp/
 RUN bundle install
+
+RUN echo 'chown --reference=/data/code -R .' > /root/cleanup.sh
+RUN chmod +x /root/cleanup.sh
+RUN echo 'trap /root/cleanup.sh EXIT' >> /root/.bashrc
+
 WORKDIR /
-
-ENV USER     YOUR_USERNAME
-ENV PASSWORD YOUR_PASSWORD
-ENV UID      YOUR_UID
-
-RUN echo [$PASSWORD:USER:$UID]
-RUN useradd -G wheel -p $PASSWORD -d /home/$USER -u $UID -ms /bin/bash $USER
-RUN chown $USER:$USER /home/$USER
-
-USER $USER
