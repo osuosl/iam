@@ -38,6 +38,7 @@ class Collectors
                                  node['beparams']['vcpus']        ||
                                  node['custom_beparams']['vcpus'] || 'unknown'
             total_ram_meas     = node['beparams']['memory']       || 'unknown'
+            active_meas        = node['oper_state']
 
             @redis.mset(node_name, @template.result(binding),
                         node_name + ':datetime', Time.new.inspect)
