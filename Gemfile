@@ -5,9 +5,10 @@ gem 'sinatra', require: 'sinatra/base'
 gem 'thin'
 gem 'json'
 gem 'redis', '~>3.2'
+gem 'rubocop'
 
 # DB
 gem 'sequel'
 gem 'sinatra-sequel'
-gem 'pg'
+# gem 'pg'
 gem 'sqlite3'
