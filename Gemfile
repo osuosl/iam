@@ -5,6 +5,7 @@ gem 'sinatra', require: 'sinatra/base'
 gem 'thin'
 gem 'json'
 gem 'redis', '~>3.2'
+gem 'rufus-scheduler'
 
 # DB
 gem 'sequel'
