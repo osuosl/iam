@@ -24,6 +24,8 @@ fqdn.each do |name|
         # Store returned information in redis with datetime and cluster name
         redis.set(name, response.body)
         redis.set(name + ':datetime', Time.new.inspect)
+        puts redis.get(name)
+        puts redis.get(name + ':datetime')
     end
 end
 

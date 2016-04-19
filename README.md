@@ -1,84 +1,82 @@
-#Invoicing and Metrics
+# Invoicing and Metrics
 
 
-##Goal
+## Goal
 
 Collect billable metrics from projects hosted at the OSL.
 
 
-##Status
+## Status
 
 Design and research phase - 1-27-16
 
-##Development (with Docker)
+## Development (with Docker)
 
-We use docker and docker-compose to develop becuase docker-compose will
-automatically expose ports, mount volumes, and link containers; all of which is
-super convenient.
+Invoicing and Metric (iam) is developed in `docker` using `docker-compose`:
 
-First, set everything up.
+- `docker` version 1.10.3
+- `docker-compose` version 1.6.2.
 
-1. Clone and cd into this repository.
-2. Install and setup `docker` however best fits you.
-3. Install `docker-compose`:
+### Setting up the Development Environment
 
-```
-$ pip install --user docker-compose
-```
+After you have cloned the repository and installed the packages listed above
+run the following:
 
-**IMPORTANT**: Next copy dockerfiles/app.dist to dockerfiles/app and edit the
-variables:
+First set the `COMPOSE_PROJECT_NAME` variable. This name-spaces your containers
+so multiple users can develop independently on the same machine.
 
-```
-ENV USER     your_user_name
-ENV PASSWORD your_container_password
-ENV UID      your_local_uid
-```
+Set `.bashrc` with your shell's config file (`~/.zshrc` for instance).
 
-Also copy `docker-compose.yml.dist` to `docker-compose.yml` and edit the
-service names to include your username (this is so multiple people can work on
-one workstation without image conflicts):
+**Note**: If you have not set the `docker` group settings correctly you will
+need to add the above line to the `root` user's `.bashrc` or configure your
+host machine appropriately (or do things in a Virtual Machine).
 
 ```
-app_USERNAME:   ->  app_myusername:
-
-
-dev_USERNAME:   ->  dev_myusername:
-  extends:
-    service: app_USERNAME   ->  service: app_myusername
-  links:
-    - redis_USERNAME:redis  ->  - redis_myusername:redis
-
-redis_USERNAME: ->  redis_myusername:
+$ echo "export COMPOSE_PROJECT_NAME=$USER" >> ~/.bashrc
+$ source ~/.bashrc
 ```
 
-Finally, run the `docker-compose` commands you need to actually start
-developing.
+Also copy `dockerfiles/app.env.dist` to `dockerfiles/app.env`. There aren't any
+secrets in `app.env.dist` but you can put secret environment variables in
+`app.env` as it is not tracked by git.
 
-If you would like to develop *in a development environment*, run the following
-command:
-
-```
-$ docker-compose run --service-ports --rm dev_myusername bash   # puts you in a dev shell
-```
-
-If you would just like to run a development instance, run the following
-command:
+Next build the containers necessary for development.
 
 ```
-$ docker-compose up dev_myusername   # starts running the app on port 8000
+$ docker-compose build
+[... docker building output ...]
 ```
 
-If changes have been made to the dockerfiles (`dockerfiles/app` or the remote
-`elijahcaine/centos-ruby`) run the following command to re-build your
-containers:
+If you just want to run the application do the following:
 
 ```
-$ docker-compose build  # builds all containers listed in docker-compose.yml
+$ docker-compose up
+[... docker-compose output seperated by color ...]
 ```
 
-You may need to run the above commands if you have not given your user
-permission to run `docker` commands.
+If you want to write code and run commands in a dev shell run
 
-IaM is developed using the most recent versions of `docker` and
-`docker-compose` (as of mid 2016).
+```
+$ docker-compose --service-ports run dev bash
+```
+
+### Docker Files and Env Variables
+
+```
+docker-compose.yml    # Specifies services to be run.
+dockerfiles/          # Houses all docker related files (except docker-compose.yml).
+├── app               # Specifies the app/dev docker containers.
+├── app.env           # Specifies static environment variables for the app container.
+├── app.env.dist
+├── centos-ruby       # Specifies the base container for the app image.
+│                     # Pulled from dockerhub as a static container.
+├── cleanup.sh        # Changes file permissions from root to $USER on shell exit
+└── startup.sh        # general statup needs (dynamic env vars, etc).
+```
+
+Some Environment variables are set:
+
+```
+$REDIS_HOST    # The host on which the linked redis container can be reached
+$POSTGRES_PORT # The host on which the linked postgres container can be reached
+```

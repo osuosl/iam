@@ -8,27 +8,34 @@ services:
     build:
       context: .
       dockerfile:  ./dockerfiles/app
-    command: rake
-    working_dir: /data/code
+    command: /data/code/scripts/rake-app.sh
     env_file:
       - ./dockerfiles/app.env
+    working_dir: /data/code
 
   ###
   # Dev container extends the base application.
   ###
   dev:
+    command: /data/code/scripts/rake-dev.sh
     extends:
       service: app
+    links:
+      - redis
+      - postgres
     ports:
       - "4567:4567"
     volumes:
       - .:/data/code
-    links:
-      - redis
-    command: rake test
 
   ###
   # Redis used for redis things we do.
   ###
   redis:
     image: redis
+
+  ###
+  # Postgres used for redis things we do.
+  ###
+  postgres:
+    image: postgres

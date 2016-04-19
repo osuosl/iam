@@ -13,8 +13,6 @@ COPY Gemfile /tmp/Gemfile
 WORKDIR /tmp/
 RUN bundle install
 
-RUN echo 'chown --reference=/data/code -R .' > /root/cleanup.sh
-RUN chmod +x /root/cleanup.sh
-RUN echo 'trap /root/cleanup.sh EXIT' >> /root/.bashrc
+RUN echo 'source /data/code/dockerfiles/startup.sh' >> /root/.bashrc
 
 WORKDIR /
