@@ -1,53 +1,35 @@
-# myapp.rb
-require 'sinatra'
+require 'net/http'
+require 'uri'
+require 'openssl'
+require 'json'
+require 'redis'
 
-# Include database models.
-# Run `rake migrations` to create the database.
-require_relative 'models'
+redis = Redis.new(:host => ENV["REDIS_HOST"])
 
-class Iam < Sinatra::Base
-  DB = Sequel.connect(ENV.fetch('DATABASE_URL'))
+# TODO: Query database for each unique cluster fqdn
+# for each cluster fqdn, append port number, endpoint, and query
+fqdn = ['ganeti-psf.osuosl.bak', 'ganeti-civicrm.osuosl.bak']
+fqdn.each do |name|
+    endpoint = ':5080/2/instances'
+    query = '?bulk=1'
+    url = 'https://' + name + endpoint + query
+    uri = URI(url)
 
-  o = [('a'..'z'), ('A'..'Z')].map { |i| i.to_a }.flatten
+    Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https',
+                    :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
+        # perform get request on full path.
+        request = Net::HTTP::Get.new uri
+        response = http.request request # Net::HTTPResponse object
 
-  name = (0...10).map { o[rand(o.length)] }.join
-  new_client = Client.create(:name          => name,
-                             :contact_name  => 'bob',
-                             :contact_email => 'bob@example.com',
-                             :description   => 'blah')
-
-  name = (0...10).map { o[rand(o.length)] }.join
-  new_project = Project.create(:name        => name,
-                               :client_id   => new_client.id,
-                               :resources   => 'node, thingy',
-                               :description => 'blah')
-
-  name = (0...10).map { o[rand(o.length)] }.join
-  new_code = NodeResource.create(:project_id => new_project.id,
-                                  :name       => name,
-                                  :type       => 'ganeti',
-                                  :cluster    => 'cluster1.osuosl.org',
-                                  :created    => DateTime.now,
-                                  :modified   => DateTime.now)
-
-  print "Clients:"
-  for client in Client.all do
-    puts client.name
-  end
-
-  print "Projects:"
-  for project in Project.all do
-    puts project.name
-  end
-
-  print "NodeResources:"
-  for node_resource in NodeResource.all do
-    puts node_resource.name
-  end
-
-  print "Plugins:"
-  for plugin in Plugin.all do
-    puts plugin.name
-  end
-
+        # Store returned information in redis with datetime and cluster name
+        redis.set(name, response.body)
+        redis.set(name + ':datetime', Time.new.inspect)
+        puts redis.get(name)
+        puts redis.get(name + ':datetime')
+    end
 end
+
+# To retrieve the the cluster information, use redis.get and JSON.parse. This
+# will give you a ruby hash of the cluster information.
+#
+# cluster_info = JSON.parse(redis.get("ganeti-psf.osuosl.bak"))

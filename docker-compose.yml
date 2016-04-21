@@ -4,32 +4,38 @@ services:
   ###
   # Base app container. Inherited by dev and eventually prod containers.
   ###
-  app_USERNAME:
+  app:
     build:
       context: .
       dockerfile:  ./dockerfiles/app
-    command: rake
-    working_dir: /data/code
+    command: /data/code/scripts/rake-app.sh
     env_file:
       - ./dockerfiles/app.env
+    working_dir: /data/code
 
   ###
   # Dev container extends the base application.
   ###
-  dev_USERNAME:
+  dev:
+    command: /data/code/scripts/rake-dev.sh
     extends:
-      service: app_USERNAME
+      service: app
+    links:
+      - redis
+      - postgres
     ports:
-      - "5000:5000"
-      - "8000:8000"
+      - "4567:4567"
     volumes:
       - .:/data/code
-    links:
-      - redis_USERNAME:redis
-    command: rake test
 
   ###
   # Redis used for redis things we do.
   ###
-  redis_USERNAME:
+  redis:
     image: redis
+
+  ###
+  # Postgres used for redis things we do.
+  ###
+  postgres:
+    image: postgres
