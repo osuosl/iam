@@ -1,6 +1,8 @@
-require 'sequel'
-
-db = Sequel.connect(ENV.fetch('DATABASE_URL'))
+# if we are in test mode, run the migrations first to make sure
+# the test db is all set up
+if ENV['RACK_ENV'] == 'test'
+    Sequel::Migrator.run(Iam.settings.DB, "migrations")
+end
 
 class Client < Sequel::Model
   one_to_many :projects
