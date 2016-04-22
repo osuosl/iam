@@ -7,16 +7,16 @@ describe 'The Client Model and table' do
 
   include Rack::Test::Methods
 
-  it "can create a client" do
-    client = Client.create(:name => 'Testo')
+  it 'can create a client' do
+    client = Client.create(name: 'Testo')
     expect(client).to exist
   end
 
-  it "has no clients" do
-  	expect(Client.all).to be_empty
+  it 'has no clients' do
+    expect(Client.all).to be_empty
   end
 
-  it "has a name" do
-	expect(Client.name).to eq('Client')
+  it 'has a name' do
+    expect(Client.name).to eq('Client')
   end
 end
