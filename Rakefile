@@ -6,17 +6,12 @@ task run: [:migrate] do
   ruby 'app.rb'
 end
 
-task migrate: [:version] do |args|
+task :migrate do
   require 'sequel'
   Sequel.extension :migration
   db = Sequel.connect(ENV.fetch('DATABASE_URL'))
-  if args[:version]
-    puts 'Migrating to version #{args[:version]}'
-    Sequel::Migrator.run(db, 'migrations', target: args[:version].to_i)
-  else
-    puts 'Migrating to latest'
-    Sequel::Migrator.run(db, 'migrations')
-  end
+  puts 'Migrating to latest'
+  Sequel::Migrator.run(db, 'migrations')
 end
 
 task test: [:migrate] do
