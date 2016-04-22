@@ -6,7 +6,7 @@ task run: [:migrate] do
   ruby 'app.rb'
 end
 
-task migrate: [:version] do |args|
+task :migrate, [:version] do |t, args|
   require 'sequel'
   Sequel.extension :migration
   db = Sequel.connect(ENV.fetch('DATABASE_URL'))
