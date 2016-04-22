@@ -9,6 +9,28 @@ class Iam < Sinatra::Base
   # load up all the plugins
   Dir[File.dirname(__FILE__) + '/plugins/*.rb'].each { |file| require file }
 
+  ##
+  # static Pages
+  ##
+
+  get '/' do
+    'Hello'
+  end
+
+  ##
+  # Clients
+  ##
+
+  get '/clients' do
+    @clients = Client.each { |x| p x.name }
+    erb :'clients/index'
+  end
+
+  get '/clients/new' do
+    erb :'clients/new'
+  end
+
+  ## TODO - move this somewhere
   redis = Redis.new(host: ENV['REDIS_HOST'])
 
   # TODO: Query database for each unique cluster fqdn
