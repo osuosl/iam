@@ -36,3 +36,9 @@ task :rubocop do
     task.fail_on_error = false
   end
 end
+
+RSpec::Core::RakeTask.new(:spec) do |t|
+    ENV["RACK_ENV"] = "test"
+    t.pattern = Dir.glob('spec/**/*_spec.rb')
+    t.rspec_opts = '--format documentation'
+end
