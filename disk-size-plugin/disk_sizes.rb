@@ -1,7 +1,7 @@
 require 'sinatra/base'
-#require 'models'
-#require 'sequel'
-#require 'sqlite3'
+require 'models'
+require 'sequel'
+require 'sqlite3'
 require 'redis'
 require_relative '../collectors'
 
@@ -35,26 +35,17 @@ class DiskSizePlugin
   def self.collect(fqdn)
     dataset = DB[:disk_size_measurements]
     redis = Redis.new
-    nodes = redis.keys(fqdn)
-    data = {}
 
-    # for each node in the redis db, get key and value, then sum
-    nodes.each do |key|
-      unless key.end_with?(':datetime')
-        node_info = JSON.parse(redis.get(key))
-        disk_sizes = node_info['disk_sizes']
-        data[key] = {disk_template: node_info['disk_template'],
-                     disk_size:     eval(disk_sizes).inject(0, :+)}
-        dataset.insert(:resource_id => fqdn,
-                       :value       => eval(disk_sizes).inject(0, :+),
-                       :active      => node_info['oper_state'],
-                       :created     => DateTime.now)
-      end
+    begin
+      node_info = JSON.parse(redis.get(fqdn))
+      disk_sizes = node_info['disk_sizes']
+      dataset.insert(:resource_id => fqdn,
+                     :value       => eval(disk_sizes).inject(0, :+),
+                     :active      => node_infop['oper_state'],
+                     :created     => DateTime.now)
+    rescue
+      STDERR.puts "There was an error"
     end
-
-    dataset.insert(:resource_id => resource.id,
-                   :value => value,
-                   :created => DateTime.now)
   end
 
   # Future, do this
@@ -63,6 +54,4 @@ class DiskSizePlugin
   # end
 
 end
-
-disk_sizes = DiskSizePlugin.report()
 
