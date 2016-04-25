@@ -31,9 +31,10 @@ class DiskSizePlugin
     begin
       node_info = JSON.parse(redis.get(fqdn))
       disk_sizes = node_info['disk_sizes']
+      active = node_info['oper_state'] ? 1 : 0
       dataset.insert(:resource_id => fqdn,
                      :value       => eval(disk_sizes).inject(0, :+),
-                     :active      => node_infop['oper_state'],
+                     :active      => active,
                      :created     => DateTime.now)
     rescue
       STDERR.puts "There was an error"

@@ -5,7 +5,7 @@ Sequel.migration do
       primary_key :id
       foreign_key :resource_id, :node_resources
       String      :value
-      Boolean     :active
+      Integer     :active
       DateTime    :created
     end
   end
