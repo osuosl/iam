@@ -9,14 +9,6 @@ class DiskSizePlugin
 
 
   def self.register_plugin()
-
-    DB.create_table? :disk_size_measurements do
-      primary_key :id
-      foreign_key :resource_id, :node_resources  # this is plugin specific!
-      String      :value
-      DateTime    :created
-    end
-
     # add this plugin's info to the plugins table
     Plugin.create(:name          => 'disk_size',
                   :resource_type => 'node',
@@ -48,10 +40,9 @@ class DiskSizePlugin
     end
   end
 
-  # Future, do this
-  # if !DB.table_exists?('testo_measurements')
-  #   self.register_plugin()
-  # end
+  if !DB.table_exists?('disk_size_measurements')
+    self.register_plugin()
+  end
 
 end
 
