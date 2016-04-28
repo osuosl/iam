@@ -79,4 +79,20 @@ Some Environment variables are set:
 ```
 $REDIS_HOST    # The host on which the linked redis container can be reached
 $POSTGRES_PORT # The host on which the linked postgres container can be reached
+$POSTGRES_USER # postgre's user
+$POSTGRES_PASSWORD # postgres's user's password
+```
+
+If the postgres environment variables are not taking into effect:
+```
+$ docker-compose kill
+$ docker-compose rm
+```
+To access the postgres DB from a workstation:
+```
+$ docker-compose run dev psql -h postgres -U $POSTGRES_USER
+ ```
+or from inside the container:
+```
+$ psql -h postgres -U $POSTGRES_USER
 ```
