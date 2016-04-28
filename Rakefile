@@ -1,4 +1,7 @@
-require 'sequel'
+#require 'sequel'
+require 'rake'
+require 'rspec/core/rake_task'
+require File.expand_path '../environment.rb', __FILE__
 
 task default: [:run]
 
@@ -6,21 +9,14 @@ task run: [:migrate] do
   ruby 'app.rb'
 end
 
-task :migrate, [:version] do |t, args|
-  require 'sequel'
-  Sequel.extension :migration
-  db = Sequel.connect(ENV.fetch('DATABASE_URL'))
+task :migrate do |args|
   if args[:version]
     puts "Migrating to version #{args[:version]}"
-    Sequel::Migrator.run(db, 'migrations', target: args[:version].to_i)
+    Sequel::Migrator.run(Iam.DB, 'migrations', target: args[:version].to_i)
   else
     puts 'Migrating to latest'
-    Sequel::Migrator.run(db, 'migrations')
+    Sequel::Migrator.run(Iam.DB, 'migrations')
   end
-end
-
-task test: [:migrate] do
-  ruby 'app.rb'
 end
 
 # rake lint
@@ -35,4 +31,10 @@ task :rubocop do
     # don't abort rake on failure
     task.fail_on_error = false
   end
+end
+
+RSpec::Core::RakeTask.new(:spec) do |t|
+    ENV["RACK_ENV"] = "test"
+    t.pattern = Dir.glob('spec/**/*_spec.rb')
+    t.rspec_opts = '--format documentation'
 end
