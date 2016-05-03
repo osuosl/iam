@@ -33,8 +33,19 @@ task :rubocop do
   end
 end
 
-RSpec::Core::RakeTask.new(:spec) do |t|
-    ENV["RACK_ENV"] = "test"
-    t.pattern = Dir.glob('spec/**/*_spec.rb')
-    t.rspec_opts = '--format documentation'
+# rake spec
+task spec: [:specs, :spec_plugins] do
+end
+
+# spec files in the spec/ folder
+RSpec::Core::RakeTask.new(:specs) do |t|
+  ENV['RACK_ENV'] = 'test'
+  t.pattern = Dir.glob('spec/**/*_spec.rb')
+  t.rspec_opts = '--format documentation'
+end
+
+# spec files in the plugins folders
+RSpec::Core::RakeTask.new(:spec_plugins) do |t|
+  t.pattern = Dir.glob('plugins/**/*spec.rb')
+  t.rspec_opts = '--format documentation'
 end
