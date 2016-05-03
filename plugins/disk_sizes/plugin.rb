@@ -26,4 +26,5 @@ class DiskSize
   end
 end
 
-DiskSize.new.register
+# Uncomment to test:
+# DiskSize.new.register
