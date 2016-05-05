@@ -1,4 +1,4 @@
-#require 'sequel'
+# require 'sequel'
 require 'rake'
 require 'rspec/core/rake_task'
 require File.expand_path '../environment.rb', __FILE__
@@ -9,9 +9,9 @@ task run: [:migrate] do
   ruby 'app.rb'
 end
 
-task :migrate do |args|
+task :migrate, [:version] do |t, args|
   if args[:version]
-    puts 'Migrating to version #{args[:version]}'
+    puts "Migrating to version #{args[:version]}"
     Sequel::Migrator.run(Iam.DB, 'migrations', target: args[:version].to_i)
   else
     puts 'Migrating to latest'
