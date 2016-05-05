@@ -18,5 +18,6 @@ class Iam < Sinatra::Base
   e = ExamplePlugin.new
 
   e._foo()
+  e.register('CPU', 'cpus', 'node')
 
 end
