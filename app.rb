@@ -7,7 +7,11 @@ class Iam < Sinatra::Base
   require 'models'
 
   # load up all the plugins
-  Dir[File.dirname(__FILE__) + '/plugins/*.rb'].each { |file| require file }
+  plugin_dirs = File.dirname(__FILE__) + '/plugins/**/'
+
+  Rake::FileList[plugin_dirs + "*_plugin.rb"].each { |file|
+    require file
+  }
 
   ##
   # static Pages
