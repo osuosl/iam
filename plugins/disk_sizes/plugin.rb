@@ -5,19 +5,33 @@ require_relative '../../models.rb'
 # Disk Sizes data plugin
 class DiskSize
   def register
-    Plugin.find_or_create(name: 'DiskSizes', # create entry in Plugins table
+    Plugin.find_or_create(name: 'disk_size', # create entry in Plugins table
                           resource_name: 'node',
-                          storage_table: 'disk_sizes',
+                          storage_table: 'disk_size_measurements',
                           units: 'bytes')
     # execute migration
     Sequel::Migrator.run(Iam.settings.DB,
                          '/data/code/plugins/disk_sizes/migrations',
-                         column: :diskSize_ver
+                         column: :disk_size_ver
                         )
   end
 
-  def collect
-    # collect method should go here
+  def store(fqdn)
+    resource_id = Iam.settings.DB[:node_resources].where(:name=>fqdn).get(:id)
+    dataset = Iam.settings.DB[:disk_size_measurements]
+    redis = Redis.new(:host => ENV['REDIS_HOST'])
+
+    begin
+      node_info = JSON.parse(redis.get(fqdn))
+      disk_sizes = node_info['disk_sizes']
+      dataset.insert(:node          => fqdn,
+                     :value         => eval(disk_sizes).inject(0, :+),
+                     :active        => node_info['active'],
+                     :created       => DateTime.now,
+                     :node_resource => resource_id)
+    rescue => e
+      STDERR.puts e
+    end
   end
 
   def report
@@ -26,4 +40,5 @@ class DiskSize
 end
 
 # Uncomment to test:
-# DiskSize.new.register
+DiskSize.new.register
+DiskSize.new.store('silver.osuosl.org')

@@ -3,12 +3,13 @@
 Sequel.migration do
   transaction
   change do
-    create_table(:measurementDiskSizes) do # Plugin's DB model
+    create_table(:disk_size_measurements) do # Plugin's DB model
       primary_key   :id
       foreign_key   :node_resource
-      Time          :time, null: false
+      Time          :created, null: false
       String        :node
       Integer       :value
+      Boolean       :active
     end
   end
 end
