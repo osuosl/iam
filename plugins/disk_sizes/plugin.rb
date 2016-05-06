@@ -19,7 +19,7 @@ class DiskSize
   def collect
     # collect method should go here
   end
-  
+
   SECONDS_IN_DAY = 60 * 60 * 24
   def report(fqdn = '*', days = 1)
     # setup time range
@@ -43,3 +43,5 @@ end
 
 # Uncomment to test:
 # DiskSize.new.register
+# DiskSize.new.report('FACEYMYBOOKY.com', 1)
+# DiskSize.new.report
