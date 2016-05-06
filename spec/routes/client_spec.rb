@@ -54,10 +54,12 @@ describe 'The Clients endpoint' do
 
   it 'allows us to create a new client, then redirects to the list' do
     post '/clients', {"name": "I'm new!"}
-    expect(last_response.status).to eq(200)
+
+    expect(last_response.status).to eq(302)
     follow_redirect!
     last_request.path.should == '/clients'
     expect(last_response.body).to include("I'm new!")
+
     client = Client(name: "I'm new!")
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
@@ -85,5 +87,22 @@ describe 'The Clients endpoint' do
     expect(last_response.body).to include("Edited Client")
   end
 
+  it 'allows us to edit a single client field then redirects to the list' do
+    client = Client.create(name: "Edit Description", description: "Boring")
+
+    edited_client = {'id': client.id, 'description': "Not Boring!"}
+
+    patch "/clients", edited_client
+
+    expect({ Client[name: 'Edit Description'].description }).to eq('Not Boring!')
+    expect(last_response.status).to eq(302)
+    follow_redirect!
+    last_request.path.should == '/clients'
+    expect(last_response.body).to include("Not Boring!")
+
+    get "/clients/#{client.id}"
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include("Not Boring!")
+  end
 end
 
