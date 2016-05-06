@@ -10,11 +10,10 @@ Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
 # String    :description,   :text => true
 class Client < Sequel::Model
   one_to_many :projects
-  # uncomment to pass 'required fields' test
-  #def validate
-  #  super
-  #  errors.add(:name, 'cannot be empty') if !name || name.empty?
-  #end
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
 end
 
 # Project data model
