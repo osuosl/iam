@@ -30,7 +30,7 @@ describe 'The Client Model and table' do
     client = Client.create(name: 'Testo')
     # expect creating another with the same name to give us a constraint
     # violation
-    expect { Client.create(name: 'Testo') }.to raise_error(Sequel::UniqueConstraintViolation, /UNIQUE constraint failed: clients.name/)
+    expect { Client.create(name: 'Testo') }.to raise_error(Sequel::UniqueConstraintViolation)
   end
 
   it 'can create two clients with different names' do
@@ -77,7 +77,7 @@ describe 'The Client Model and table' do
     expect(client1.name).to eq('Testo')
     expect(client2.name).to eq('Testo 2')
 
-    expect { client2.update(name: 'Testo') }.to raise_error(Sequel::UniqueConstraintViolation, /UNIQUE constraint failed: clients.name/)
+    expect { client2.update(name: 'Testo') }.to raise_error(Sequel::UniqueConstraintViolation)
 
     # weirdly, client2 can still be in memory with the 'updated' name
     # so refresh the model and see what it has stored
