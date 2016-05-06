@@ -55,4 +55,5 @@ class Iam < Sinatra::Base
   end
 
   set :DB, Sequel.connect(settings.database) if defined? settings.database
+  set :REDIS, Redis.new(host: ENV['REDIS_HOST']) if defined? ENV['REDIS_HOST']
 end
