@@ -17,11 +17,16 @@ class DiskSize
   end
 
   def store(fqdn)
+    # Get node_resources id that matches fqdn
     resource_id = Iam.settings.DB[:node_resources].where(:name=>fqdn).get(:id)
-    dataset = Iam.settings.DB[:disk_size_measurements]
+
+    # Pull from our cache
     redis = Redis.new(:host => ENV['REDIS_HOST'])
 
-    begin
+    # Insert data into disk_size_measurements table
+    dataset = Iam.settings.DB[:disk_size_measurements]
+
+    begin   # Catch any errors that occur when accessing our cache or DB
       node_info = JSON.parse(redis.get(fqdn))
       disk_sizes = node_info['disk_sizes']
       dataset.insert(:node          => fqdn,
@@ -40,5 +45,5 @@ class DiskSize
 end
 
 # Uncomment to test:
-DiskSize.new.register
-DiskSize.new.store('silver.osuosl.org')
+# DiskSize.new.register
+# DiskSize.new.store('silver.osuosl.org')
