@@ -11,7 +11,7 @@ class DiskSize
                           units: 'bytes')
     # execute migration
     Sequel::Migrator.run(Iam.settings.DB,
-                         '/data/code/plugins/disk_sizes/',
+                         '/data/code/plugins/disk_sizes/migrations',
                          column: :diskSize_ver
                         )
   end
@@ -26,4 +26,4 @@ class DiskSize
 end
 
 # Uncomment to test:
-# DiskSize.new.register
+DiskSize.new.register
