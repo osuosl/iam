@@ -39,3 +39,5 @@ services:
   ###
   postgres:
     image: postgres
+    env_file:
+      - ./dockerfiles/app.env
