@@ -12,7 +12,7 @@ s.every '30m', :first_in => 0.4 do
 end
 
 # Change '15m' on next line to 4 to test
-s.every '30m', :first_in => 4 do
+s.every '30m', :first_in => '15m' do
   redis = Redis.new(:host => ENV['REDIS_HOST'])
   DiskSize.new.register
   redis.keys().each do |key|
