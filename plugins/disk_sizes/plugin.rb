@@ -26,17 +26,13 @@ class DiskSize
     # Insert data into disk_size_measurements table
     dataset = Iam.settings.DB[:disk_size_measurements]
 
-    begin   # Catch any errors that occur when accessing our cache or DB
-      node_info = JSON.parse(redis.get(fqdn))
-      disk_sizes = node_info['disk_sizes']
-      dataset.insert(:node          => fqdn,
-                     :value         => eval(disk_sizes).inject(0, :+),
-                     :active        => node_info['active'],
-                     :created       => DateTime.now,
-                     :node_resource => resource_id)
-    rescue => e
-      STDERR.puts e
-    end
+    node_info = JSON.parse(redis.get(fqdn))
+    disk_sizes = node_info['disk_sizes']
+    dataset.insert(:node          => fqdn,
+                   :value         => eval(disk_sizes).inject(0, :+),
+                   :active        => node_info['active'],
+                   :created       => DateTime.now,
+                   :node_resource => resource_id)
   end
 
   def report
