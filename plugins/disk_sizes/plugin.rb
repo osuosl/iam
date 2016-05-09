@@ -17,8 +17,8 @@ class DiskSize
   end
 
   def store(fqdn)
-    # Get node_resources id that matches fqdn
-    begin
+    begin    # Don't crash when an error is encountered
+      # Get node_resources id that matches fqdn
       resource_id = Iam.settings.DB[:node_resources].where(:name=>fqdn).get(:id)
 
       # Pull from our cache
@@ -35,7 +35,7 @@ class DiskSize
                      :created       => DateTime.now,
                      :node_resource => resource_id)
     rescue => e
-      STDERR.puts e
+      STDERR.puts e    # Log the error
     end
   end
 
