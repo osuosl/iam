@@ -19,90 +19,92 @@ describe 'The Clients endpoint' do
   end
 
   it 'includes the names of existing clients' do
-    get "/clients"
+    get 'clients'
     expect(last_response.body).to include('Client X')
     expect(last_response.body).to include('Client Y')
     expect(last_response.body).to include('Client Z')
   end
 
   it 'displays a specific client by id' do
-    client = Client.create(name: "New Client")
+    client = Client.create(name: 'New Client')
     get "/clients/#{client.id}"
     expect(last_response.body).to include('New Client')
   end
 
   it 'answers 404 when asked for a non-existent client' do
-    get "/clients/1200438"
+    get '/clients/1200438'
     expect(last_response.status).to eq(404)
   end
 
   it 'responds ok when asked for clients/new' do
-    get "/clients/new"
+    get '/clients/new'
     expect(last_response.status).to eq(200)
   end
 
   it 'responds ok when asked for the form to edit an existing client' do
-    client = Client.create(name: "Editable")
+    client = Client.create(name: 'Editable')
     get "/clients/#{client.id}/edit"
     expect(last_response.status).to eq(200)
   end
 
   it 'responds 404 when asked for the form to edit an absent client' do
-    get "/clients/9884093/edit"
+    get '/clients/9884093/edit'
     expect(last_response.status).to eq(404)
   end
 
   it 'allows us to create a new client, then redirects to the list' do
-    post '/clients', {"name": "I'm new!"}
+    post '/clients', name: 'I\'m new!'
 
     expect(last_response.status).to eq(302)
     follow_redirect!
-    last_request.path.should == '/clients'
-    expect(last_response.body).to include("I'm new!")
+    expect(last_request.path).to  eq('/clients')
+    expect(last_response.body).to include('I\'m new!')
 
-    client = Client(name: "I'm new!")
+    client = Client(name: 'I\'m new!')
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to include("I'm new!")
+    expect(last_response.body).to include('I\'m new!')
   end
 
   it 'allows us to edit a client, then redirects to the list' do
-    client = Client.create(name: "Edit Me")
+    client = Client.create(name: 'Edit Me')
 
-    edited_client = {'id': client.id,
-                     'name': 'Edited Client',
-                     'description': client.description,
-                     'contact_name': client.contact_name,
-                     'contact_email': client.contact_email}
+    edited_client = { id: client.id,
+                      name: 'Edited Client',
+                      description: client.description,
+                      contact_name: client.contact_name,
+                      contact_email: client.contact_email }
 
-    patch "/clients", edited_client
+    patch '/clients', edited_client
 
     expect(last_response.status).to eq(302)
     follow_redirect!
-    last_request.path.should == '/clients'
-    expect(last_response.body).to include("Edited Client")
+    expect(last_request.path).to eq'/clients'
+    expect(last_response.body).to include('Edited Client')
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to include("Edited Client")
+    expect(last_response.body).to include('Edited Client')
   end
 
   it 'allows us to edit a single client field then redirects to the list' do
-    client = Client.create(name: "Edit Description", description: "Boring")
+    client = Client.create(name: 'Edit Description', description: 'Boring')
 
-    edited_client = {'id': client.id, 'description': "Not Boring!"}
+    edited_client = { id: client.id, description: 'Not Boring!' }
 
-    patch "/clients", edited_client
+    patch '/clients', edited_client
 
-    expect({ Client[name: 'Edit Description'].description }).to eq('Not Boring!')
+    expect do
+      Client[name: 'Edit Description'].description
+    end.to eq('Not Boring!')
+
     expect(last_response.status).to eq(302)
     follow_redirect!
-    last_request.path.should == '/clients'
-    expect(last_response.body).to include("Not Boring!")
+    epxect(last_request.path).to eq('/clients')
+    expect(last_response.body).to include('Not Boring!')
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to include("Not Boring!")
+    expect(last_response.body).to include('Not Boring!')
   end
 end
-
