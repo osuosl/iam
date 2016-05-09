@@ -40,6 +40,3 @@ class DiskSize
   end
 end
 
-# Uncomment to test:
-# DiskSize.new.register
-# DiskSize.new.store('silver.osuosl.org')
