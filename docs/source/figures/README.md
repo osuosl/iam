@@ -8,6 +8,9 @@ The all figures described by `<filename>.dot` files in the `figures/` directory
 are automatically built in `<filename>.png` and `<filename>.svg` format and
 placed in the `_static`.
 
+To install the `dot` utility to build the graphics in the docs. Otherwise it
+will fail to build updated versions of the graphics.
+
 ## Example:
 
 The following will build and produce a fairly useful graph describing key
