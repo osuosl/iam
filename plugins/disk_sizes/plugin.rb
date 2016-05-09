@@ -18,21 +18,25 @@ class DiskSize
 
   def store(fqdn)
     # Get node_resources id that matches fqdn
-    resource_id = Iam.settings.DB[:node_resources].where(:name=>fqdn).get(:id)
+    begin
+      resource_id = Iam.settings.DB[:node_resources].where(:name=>fqdn).get(:id)
 
-    # Pull from our cache
-    redis = Redis.new(:host => ENV['REDIS_HOST'])
+      # Pull from our cache
+      redis = Redis.new(:host => ENV['REDIS_HOST'])
 
-    # Insert data into disk_size_measurements table
-    dataset = Iam.settings.DB[:disk_size_measurements]
+      # Insert data into disk_size_measurements table
+      dataset = Iam.settings.DB[:disk_size_measurements]
 
-    node_info = JSON.parse(redis.get(fqdn))
-    disk_sizes = node_info['disk_sizes']
-    dataset.insert(:node          => fqdn,
-                   :value         => eval(disk_sizes).inject(0, :+),
-                   :active        => node_info['active'],
-                   :created       => DateTime.now,
-                   :node_resource => resource_id)
+      node_info = JSON.parse(redis.get(fqdn))
+      disk_sizes = node_info['disk_sizes']
+      dataset.insert(:node          => fqdn,
+                     :value         => eval(disk_sizes).inject(0, :+),
+                     :active        => node_info['active'],
+                     :created       => DateTime.now,
+                     :node_resource => resource_id)
+    rescue => e
+      STDERR.puts e
+    end
   end
 
   def report
