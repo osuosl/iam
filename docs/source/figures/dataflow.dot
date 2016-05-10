@@ -1,0 +1,21 @@
+digraph "IaM Dataflow" {
+    TITLE
+    "ohai"   -> disk_usage -> "ohai_collect()"   -> H_STORE
+    "Ganeti" -> disk_size  -> "ganeti_collect()" -> H_STORE
+    H_STORE -> "Plugin.store()" -> DB -> "Plugin.report()" -> {CSV,HTML,JSON}
+
+    TITLE              [shape=box      ,label="\G"]
+    "ohai"             [shape=plaintext,tooltip="External API Call"]
+    "Ganeti"           [shape=plaintext,tooltip="External API Call"]
+    disk_usage         [shape=ellipse  ,tooltip="API return field"]
+    disk_size          [shape=ellipse  ,tooltip="API return field"]
+    "ohai_collect()"   [shape=diamond  ,tooltip="Plugin method for recording data in the database."]
+    "ganeti_collect()" [shape=diamond  ,tooltip="Plugin method for reporting data from the database to the user."]
+    H_STORE            [shape=box3d    ,tooltip="Postgres Key:Value Store"]
+    "Plugin.store()"   [shape=diamond  ,tooltip="Plugin method for recording data in the database."]
+    "Plugin.report()"  [shape=diamond  ,tooltip="Plugin method for reporting data from the database to the user."]
+    DB                 [shape=box3d    ,tooltip="Postgres Backed Database"]
+    CSV                [shape=plaintext,tooltip="Output Format"]
+    HTML               [shape=plaintext,tooltip="Output Format"]
+    JSON               [shape=plaintext,tooltip="Output Format"]
+}
