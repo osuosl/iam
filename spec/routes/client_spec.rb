@@ -63,11 +63,11 @@ describe 'The Clients endpoint' do
     expect(last_response.status).to eq(302)
     follow_redirect!
     expect(last_request.path).to eq("/clients/#{client.id}")
-    expect(last_response.body).to include('I\'m new!')
+    expect(last_response.body).to include("I'm new!")
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to include('I\'m new!')
+    expect(last_response.body).to include("I'm new!")
   end
 
   it 'allows us to edit a client, then redirects to the list' do
