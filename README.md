@@ -10,6 +10,7 @@ Collect billable metrics from projects hosted at the OSL.
 
 Design and research phase - 1-27-16
 
+
 ## Development (with Docker)
 
 Invoicing and Metric (iam) is developed in `docker` using `docker-compose`:
@@ -70,7 +71,8 @@ dockerfiles/          # Houses all docker related files (except docker-compose.y
 ├── app.env.dist
 ├── centos-ruby       # Specifies the base container for the app image.
 │                     # Pulled from dockerhub as a static container.
-├── cleanup.sh        # Changes file permissions from root to $USER on shell exit
+├── cleanup.sh        # Changes file permissions from root to $USER on shell exit.
+│                     # Also deletes Gemfile.lock to avoid weird versioning bugs.
 └── startup.sh        # general statup needs (dynamic env vars, etc).
 ```
 
