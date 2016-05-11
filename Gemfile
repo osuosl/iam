@@ -8,7 +8,7 @@ group :default do
   gem 'rake'
 
   # Database
-  gem 'sequel'
+  gem 'sequel', '~>4.33.0'
   gem 'sinatra-sequel'
 
   # Tools
@@ -17,6 +17,7 @@ group :default do
   gem 'json'
   gem 'redis', '~>3.2'
   gem 'rubocop', require: false
+  gem 'rufus-scheduler'
 end
 
 # Development

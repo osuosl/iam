@@ -9,7 +9,7 @@ require 'erb'
 # systems, such as ganeti, chef, etc.
 class Collectors
   def initialize
-    @redis = Redis.new
+    @redis = Redis.new(host: ENV['REDIS_HOST'])
     # TODO: Query database for each unique cluster name
     @cluster = ['ganeti']
     @template = ERB.new File.new('datastruct.erb').read, nil, '%'
