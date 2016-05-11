@@ -8,9 +8,7 @@ describe 'The Clients endpoint' do
   include Rack::Test::Methods
 
   before(:all) do
-    FactoryGirl.create(:client, name: 'Client X')
-    FactoryGirl.create(:client, name: 'Client Y')
-    FactoryGirl.create(:client, name: 'Client Z')
+    # anything that should happen before all tests
   end
 
   it 'responds OK' do
@@ -19,7 +17,12 @@ describe 'The Clients endpoint' do
   end
 
   it 'includes the names of existing clients' do
+    FactoryGirl.create(:client, name: 'Client X')
+    FactoryGirl.create(:client, name: 'Client Y')
+    FactoryGirl.create(:client, name: 'Client Z')
+
     get 'clients'
+
     expect(last_response.body).to include('Client X')
     expect(last_response.body).to include('Client Y')
     expect(last_response.body).to include('Client Z')
@@ -55,12 +58,13 @@ describe 'The Clients endpoint' do
   it 'allows us to create a new client, then redirects to the list' do
     post '/clients', name: 'I\'m new!'
 
+    client = Client[name: 'I\'m new!']
+    expect(client).to exist
     expect(last_response.status).to eq(302)
     follow_redirect!
-    expect(last_request.path).to  eq('/clients')
+    expect(last_request.path).to eq("/clients/#{client.id}")
     expect(last_response.body).to include('I\'m new!')
 
-    client = Client(name: 'I\'m new!')
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('I\'m new!')
@@ -79,11 +83,8 @@ describe 'The Clients endpoint' do
 
     expect(last_response.status).to eq(302)
     follow_redirect!
-    expect(last_request.path).to eq'/clients'
-    expect(last_response.body).to include('Edited Client')
-
-    get "/clients/#{client.id}"
     expect(last_response.status).to eq(200)
+    expect(last_request.path).to eq("/clients/#{client.id}")
     expect(last_response.body).to include('Edited Client')
   end
 
@@ -94,16 +95,11 @@ describe 'The Clients endpoint' do
 
     patch '/clients', edited_client
 
-    expect do
-      Client[name: 'Edit Description'].description
-    end.to eq('Not Boring!')
+    expect(Client[name: 'Edit Description'].description).to eq('Not Boring!')
 
     expect(last_response.status).to eq(302)
     follow_redirect!
-    epxect(last_request.path).to eq('/clients')
-    expect(last_response.body).to include('Not Boring!')
-
-    get "/clients/#{client.id}"
+    expect(last_request.path).to eq("/clients/#{client.id}")
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('Not Boring!')
   end
