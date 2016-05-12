@@ -5,8 +5,8 @@
 # ENV VARS
 require_relative '../../environment.rb'
 
-#DB CONNECT
-DB_Table = Iam.DB[:measurementDiskSizes]
+# DB CONNECT
+DB_Table = Iam.DB[:disk_size_measurements]
 
 # BEFORE
 puts
@@ -21,7 +21,7 @@ puts
   node_data = 'FACEYMYBOOKY.com' + i.to_s
   value_data = 1234 + rand(i)
 
-  DB_Table.insert(time: time_data,
+  DB_Table.insert(created: time_data,
                   node: node_data,
                   value: value_data
                  )
@@ -34,7 +34,7 @@ sleep(2)
   node_data = 'FACEYMYBOOKY.com'
   value_data = 1234 + rand(i)
 
-  DB_Table.insert(time: time_data,
+  DB_Table.insert(created: time_data,
                   node: node_data,
                   value: value_data
                  )

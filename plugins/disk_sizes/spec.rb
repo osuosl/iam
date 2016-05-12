@@ -1,5 +1,6 @@
 require_relative './plugin.rb'
 describe DiskSize do
+  # register method
   it '.register does not raise an error when invoked' do
     expect { DiskSize.new.register }.to_not raise_error
   end
@@ -12,6 +13,7 @@ describe DiskSize do
     expect { Iam.settings.DB.table_exists?(:disk_size_measurements).to be_true }
   end
 
+  # Store method
   it '.store does not fail with valid data' do
     redis = Redis.new(host: ENV['REDIS_HOST'])
     redis.mset('nodename', JSON.generate(disk_sizes: '[10,20]', active: true),
@@ -56,6 +58,35 @@ describe DiskSize do
     redis.del('nodename:datetime')
   end
 
-  it '.report' do
+  # Report method
+  it '.report should return data on all nodes for the last day by default' do
+    DiskSize.new.register
+    result = DiskSize.new.report
+    # could be empty if no new data has been inserted lately
+    expect { result.to exist }
+  end
+
+  it '.report returns data on a known specific nodes for 1 day' do
+    result = DiskSize.new.report('facebook1.osuosl.org', 1)
+    # could be empty if no new data has been inserted lately
+    expect { result.to exist }
+  end
+
+  it '.report returns empty on unknown node' do
+    result = DiskSize.new.report('1_234_567_890', 1)
+    # Might fail if the DB is empty
+    expect { result.to be_empty }
+  end
+
+  it '.report should return empty on invalid day input' do
+    result = DiskSize.new.report('*', 'one')
+    # Might fail if the DB is empty
+    expect { result.to be_empty }
+  end
+
+  it '.report should return empty on invalid fqdn input' do
+    result = DiskSize.new.report(1_234_567_890, 'one')
+    # Might fail if the DB is empty
+    expect { result.to be_empty }
   end
 end

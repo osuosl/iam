@@ -44,26 +44,30 @@ class DiskSize
 
   SECONDS_IN_DAY = 60 * 60 * 24
   def report(fqdn = '*', days = 1)
+    # return empty if days is not an integer
+    return {} unless days.is_a? Integer
+    return {} unless fqdn.is_a? String
+
     # setup time range
     end_time = Time.now
     start_time = Time.now - (days * SECONDS_IN_DAY)
 
     # go into db table,
-    data_table = Iam.settings.DB[:measurementDiskSizes]
+    data_table = Iam.settings.DB[:disk_size_measurements]
     # if fqdn is default, return all
     if fqdn == '*'
-      dataset = data_table.where(time: start_time..end_time)
+      dataset = data_table.where(created: start_time..end_time)
     # else return data filtered with fqdn name
     else
       dataset = data_table.where(node: fqdn)
-                          .where(time: start_time..end_time)
+                          .where(created: start_time..end_time)
     end
     # format and make json/csv thing
-    puts dataset.all.to_json
+    dataset.all.to_json
   end
 end
 
 # Uncomment to test:
 # DiskSize.new.register
-# DiskSize.new.report('FACEYMYBOOKY.com', 1)
-# DiskSize.new.report
+# puts DiskSize.new.report('FACEYMYBOOKY.com', 1)
+# puts DiskSize.new.report
