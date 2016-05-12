@@ -3,6 +3,9 @@
 Draft Design
 ============
 
+.. figure:: /_static/dataflow.svg
+    :target: /_static/dataflow.svg
+
 The following document outlines the design of IAM in general terms.
 
 .. contents::
@@ -51,7 +54,7 @@ Metrics Gathering
 
 #. For each measurement corresponding to each resource, that measurement's
    plugin is called.
-   
+
    **if** the resource's ``cluster`` field is **not** ``null``, query our cache
    at ``cluster-fqdn`` for the relevant measurement.
 
@@ -129,8 +132,8 @@ Try this out:
                        :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
            # perform get request on full path.
            request = Net::HTTP::Get.new uri
-           response = http.request request # Net::HTTPResponse object 
-    
+           response = http.request request # Net::HTTPResponse object
+
            # Store returned information in redis with datetime and cluster name
            redis.set(name, response.body)
            redis.set(name + ':datetime', Time.new.inspect)
