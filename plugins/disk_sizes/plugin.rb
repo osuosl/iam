@@ -11,9 +11,8 @@ class DiskSize
                           units: 'bytes')
     # execute migration
     Sequel::Migrator.run(Iam.settings.DB,
-                         '/data/code/plugins/disk_sizes/migrations',
-                         column: :disk_size_ver
-                        )
+                         File.dirname(__FILE__) + '/migrations',
+                         column: :disk_size_ver)
   end
 
   def store(fqdn)
@@ -41,7 +40,32 @@ class DiskSize
     STDERR.puts e    # Log the error
   end
 
-  def report
-    # report method should go here
+  SECONDS_IN_DAY = 60 * 60 * 24
+  def report(fqdn = '*', days = 1)
+    # return empty if days is not an integer
+    return {} unless days.is_a? Integer
+    return {} unless fqdn.is_a? String
+
+    # setup time range
+    end_time = Time.now
+    start_time = Time.now - (days * SECONDS_IN_DAY)
+
+    # go into db table,
+    data_table = Iam.settings.DB[:disk_size_measurements]
+    # if fqdn is default, return all
+    if fqdn == '*'
+      dataset = data_table.where(created: start_time..end_time)
+    # else return data filtered with fqdn name
+    else
+      dataset = data_table.where(node: fqdn)
+                          .where(created: start_time..end_time)
+    end
+    # format and make json/csv thing
+    dataset.all.to_json
   end
 end
+
+# Uncomment to test:
+# DiskSize.new.register
+# puts DiskSize.new.report('FACEYMYBOOKY.com', 1)
+# puts DiskSize.new.report
