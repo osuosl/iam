@@ -59,34 +59,41 @@ describe DiskSize do
   end
 
   # Report method
-  it '.report should return data on all nodes for the last day by default' do
-    DiskSize.new.register
-    result = DiskSize.new.report
-    # could be empty if no new data has been inserted lately
-    expect { result.to exist }
-  end
+  describe '.report method' do
+    before do
+      DiskSize.new.register
+      @db_table = Iam.DB[:disk_size_measurements]
+      @db_table.insert(created: Time.now,
+                       node: 'TEST_NODE',
+                       value: 1_234_567_890)
+    end
+    it 'should return data on all nodes for the last day by default' do
+      result = DiskSize.new.report
+      expect { result.should include(node: 'TEST_NODE') }
+    end
 
-  it '.report returns data on a known specific nodes for 1 day' do
-    result = DiskSize.new.report('facebook1.osuosl.org', 1)
-    # could be empty if no new data has been inserted lately
-    expect { result.to exist }
-  end
+    it 'returns data on a known specific nodes for 1 day' do
+      result = DiskSize.new.report('TEST_NODE', 1)
+      expect { result.should include(node: 'TEST_NODE') }
+    end
 
-  it '.report returns empty on unknown node' do
-    result = DiskSize.new.report('1_234_567_890', 1)
-    # Might fail if the DB is empty
-    expect { result.to be_empty }
-  end
+    it 'returns empty on unknown node' do
+      result = DiskSize.new.report('1_234_567_890', 1)
+      expect { result.to be_empty }
+    end
 
-  it '.report should return empty on invalid day input' do
-    result = DiskSize.new.report('*', 'one')
-    # Might fail if the DB is empty
-    expect { result.to be_empty }
-  end
+    it 'should return empty on invalid day input' do
+      result = DiskSize.new.report('*', 'one')
+      expect { result.to be_empty }
+    end
 
-  it '.report should return empty on invalid fqdn input' do
-    result = DiskSize.new.report(1_234_567_890, 'one')
-    # Might fail if the DB is empty
-    expect { result.to be_empty }
+    it 'should return empty on invalid fqdn input' do
+      result = DiskSize.new.report(1_234_567_890, 'one')
+      expect { result.to be_empty }
+    end
+
+    after do
+      @db_table.where(node: 'TEST_NODE').delete
+    end
   end
 end
