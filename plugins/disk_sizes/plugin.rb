@@ -10,11 +10,10 @@ class DiskSize
                           storage_table: 'disk_size_measurements',
                           units: 'bytes')
     # execute migration
-    Sequel::Migrator.run(
-                        Iam.settings.DB,
-                        '/data/code/plugins/disk_sizes/migrations',
-                        column: :disk_size_ver
-    )
+    path = File.dirname(__FILE__) + '/migrations'
+    Sequel::Migrator.run(Iam.settings.DB,
+                         path,
+                         column: :disk_size_ver)
   end
 
   def store(fqdn)
