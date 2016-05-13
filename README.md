@@ -98,3 +98,19 @@ or from inside the container:
 ```
 $ psql -h postgres -U $POSTGRES_USER
 ```
+
+### Troubleshooting
+When you try to run the app with `rake spec` or `ruby app.rb` and receive errors like:
+```
+Could not find parser-2.3.0.7 in any of the sources
+Run `bundle install` to install missing gems.
+```
+or
+```
+/usr/local/lib/ruby/gems/2.3.0/gems/bundler-1.12.3/lib/bundler/runtime.rb:35:in `block in setup': You have already activated redis 3.3.0, but your Gemfile requires redis 3.2.2. Prepending `bundle exec` to your command may solve this. (Gem::LoadError)
+
+```
+This represents that your docker image has gem dependencies that are out of date.   
+To fix:   
+Run `docker-compose build --no-cache`  
+This will rebuild the container and rerun the command `bundle install` to refresh all the gems
