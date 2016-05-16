@@ -1,6 +1,6 @@
-require File.expand_path '../../spec_helper.rb', __FILE__
+require_relative '../spec_helper.rb'
 
-describe 'The Client list endpoint' do
+describe 'The Clients endpoint' do
   def app
     Iam
   end
@@ -8,7 +8,7 @@ describe 'The Client list endpoint' do
   include Rack::Test::Methods
 
   before(:all) do
-    FactoryGirl.create(:client, name: 'Client X')
+    # anything that should happen before all tests
   end
 
   it 'responds OK' do
@@ -16,8 +16,91 @@ describe 'The Client list endpoint' do
     expect(last_response).to be_ok
   end
 
-  it 'contains the name of a client we added' do
-    get '/clients'
-    expect(last_response).to match(/Client X/)
+  it 'includes the names of existing clients' do
+    FactoryGirl.create(:client, name: 'Client X')
+    FactoryGirl.create(:client, name: 'Client Y')
+    FactoryGirl.create(:client, name: 'Client Z')
+
+    get 'clients'
+
+    expect(last_response.body).to include('Client X')
+    expect(last_response.body).to include('Client Y')
+    expect(last_response.body).to include('Client Z')
+  end
+
+  it 'displays a specific client by id' do
+    client = Client.create(name: 'New Client')
+    get "/clients/#{client.id}"
+    expect(last_response.body).to include('New Client')
+  end
+
+  it 'answers 404 when asked for a non-existent client' do
+    get '/clients/1200438'
+    expect(last_response.status).to eq(404)
+  end
+
+  it 'responds ok when asked for clients/new' do
+    get '/clients/new'
+    expect(last_response.status).to eq(200)
+  end
+
+  it 'responds ok when asked for the form to edit an existing client' do
+    client = Client.create(name: 'Editable')
+    get "/clients/#{client.id}/edit"
+    expect(last_response.status).to eq(200)
+  end
+
+  it 'responds 404 when asked for the form to edit an absent client' do
+    get '/clients/9884093/edit'
+    expect(last_response.status).to eq(404)
+  end
+
+  it 'allows us to create a new client, then redirects to the list' do
+    post '/clients', name: "I'm new!"
+
+    client = Client[name: "I'm new!"]
+    expect(client).to exist
+    expect(last_response.status).to eq(302)
+    follow_redirect!
+    expect(last_request.path).to eq("/clients/#{client.id}")
+    expect(last_response.body).to include("I'm new!")
+
+    get "/clients/#{client.id}"
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include("I'm new!")
+  end
+
+  it 'allows us to edit a client, then redirects to the list' do
+    client = Client.create(name: 'Edit Me')
+
+    edited_client = { id: client.id,
+                      name: 'Edited Client',
+                      description: client.description,
+                      contact_name: client.contact_name,
+                      contact_email: client.contact_email }
+
+    patch '/clients', edited_client
+
+    expect(last_response.status).to eq(302)
+    follow_redirect!
+    expect(last_response.status).to eq(200)
+    expect(last_request.path).to eq("/clients/#{client.id}")
+    expect(last_response.body).to include('Edited Client')
+  end
+
+  it 'allows us to edit a single client field then redirects to the list' do
+    client = Client.create(name: 'Edit Description', description: 'Boring')
+
+    edited_client = { id: client.id, description: 'Not Boring!' }
+
+    patch '/clients', edited_client
+
+    expect(Client[name: 'Edit Description'].description).to eq('Not Boring!')
+
+    expect(last_response.status).to eq(302)
+    follow_redirect!
+    expect(last_request.path).to eq("/clients/#{client.id}")
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include('Not Boring!')
   end
 end
