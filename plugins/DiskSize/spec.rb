@@ -6,11 +6,11 @@ describe DiskSize do
 
   # Register method
   describe '.register method' do
-    it '.register does not raise an error when invoked' do
+    it 'does not raise an error when invoked' do
       expect { DiskSize.new.register }.to_not raise_error
     end
 
-    it '.register actually actually creates a disk_size_measurements table' do
+    it 'actually actually creates a disk_size_measurements table' do
       # Table shouldn't exist before registration
       expect do
         Iam.settings.DB.table_exists?(:disk_size_measurements).to be_false
@@ -44,7 +44,7 @@ describe DiskSize do
       @db_table.where(node: %w(badnode goodnode)).delete
     end
 
-    it '.store does not fail with valid data' do
+    it 'does not fail with valid data' do
       # Store redis nodes in DB, no error
       expect { DiskSize.new.store('goodnode') }.to_not raise_error
 
@@ -52,12 +52,12 @@ describe DiskSize do
       expect { @db_table.where(node: 'goodnode').to exist }
     end
 
-    it '.store fails when not passed node name' do
+    it 'fails when not passed node name' do
       # This is bad plugin usage that should actually crash
       expect { DiskSize.new.store }.to raise_error(ArgumentError)
     end
 
-    it '.store does not crash when passed improperly formatted data' do
+    it 'does not crash when passed improperly formatted data' do
       # Don't crash on bad info, but don't store anything either
       expect { DiskSize.new.store('badnode') }.to_not raise_error
       expect { @db_table.where(node: 'badnode').to not_exist }
@@ -67,7 +67,7 @@ describe DiskSize do
       expect { @db_table.where(node: 'goodnode').to exist }
     end
 
-    it '.store properly sums all disk sizes when storing in DB' do
+    it 'properly sums all disk sizes when storing in DB' do
       # Store node data
       DiskSize.new.store('goodnode')
 
