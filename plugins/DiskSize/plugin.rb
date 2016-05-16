@@ -29,7 +29,10 @@ class DiskSize
     @database[@table].insert(
       node:          fqdn,
       value:         node_info['disk_sizes']
-                       .tr('[]', '').split(',').map(&:to_i).inject(0, :+),
+                       .tr('[]', '')    # remove '[' and ']' from string
+                       .split(',')      # split into array of strings on ','
+                       .map(&:to_i)     # convert each element to integer
+                       .inject(0, :+),  # inject a + method to sum the array
       active:        node_info['active'],
       created:       DateTime.now,
       node_resource: @database[:node_resources].where(name: fqdn).get(:id))

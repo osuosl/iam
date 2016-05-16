@@ -10,7 +10,7 @@ describe DiskSize do
       expect { DiskSize.new.register }.to_not raise_error
     end
 
-    it 'actually actually creates a disk_size_measurements table' do
+    it 'creates a disk_size_measurements table' do
       # Table shouldn't exist before registration
       expect do
         Iam.settings.DB.table_exists?(:disk_size_measurements).to be_false
