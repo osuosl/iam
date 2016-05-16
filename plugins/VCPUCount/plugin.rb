@@ -14,7 +14,7 @@ class VCPUCount
   end
 
   def register
-    Plugin.find_or_create(name: 'vcpu_count', # create entry in Plugins table
+    Plugin.find_or_create(name: 'VCPUCount', # create entry in Plugins table
                           resource_name: 'node',
                           storage_table: @table.to_s,
                           units: 'vcpu')
@@ -56,4 +56,6 @@ class VCPUCount
     # format and make json/csv thing
     dataset.all.to_json
   end
+
+  VCPUCount.new.register
 end

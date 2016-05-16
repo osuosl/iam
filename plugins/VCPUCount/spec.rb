@@ -28,7 +28,6 @@ describe 'VCPUCount plugin' do
   # Store method
   describe '.store method' do
     before(:all) do
-      VCPUCount.new.register
       @redis = Redis.new(host: ENV['REDIS_HOST'])
     end
 
@@ -79,7 +78,6 @@ describe 'VCPUCount plugin' do
   # Report method
   describe '.report method' do
     before(:all) do
-      VCPUCount.new.register
       @db_table.insert(created: Time.now,
                        node:    'goodnode',
                        value:   8)
