@@ -56,9 +56,9 @@ describe 'The Clients endpoint' do
   end
 
   it 'allows us to create a new client, then redirects to the list' do
-    post '/clients', name: 'I\'m new!'
+    post '/clients', name: "I'm new!"
 
-    client = Client[name: 'I\'m new!']
+    client = Client[name: "I'm new!"]
     expect(client).to exist
     expect(last_response.status).to eq(302)
     follow_redirect!
