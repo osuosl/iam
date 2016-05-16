@@ -3,6 +3,9 @@ require_relative '../../environment.rb'
 require_relative '../../models.rb'
 
 # VCPU Count data plugin
+# TODO: If this turns out to be the same for physical CPUs, rename this plugin
+#       CPUCount. Leaving it as VCPUCount for now in case VCPUs are billed
+#       differently.
 class VCPUCount
   def initialize
     @redis = Redis.new(host: ENV['REDIS_HOST'])
@@ -14,7 +17,7 @@ class VCPUCount
     Plugin.find_or_create(name: 'vcpu_count', # create entry in Plugins table
                           resource_name: 'node',
                           storage_table: @table.to_s,
-                          units: 'count')
+                          units: 'vcpu')
     # execute migration
     Sequel::Migrator.run(@database,
                          File.dirname(__FILE__) + '/migrations',
