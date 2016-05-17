@@ -6,7 +6,8 @@ require_relative '../../models.rb'
 class DiskSize
   def initialize
     @redis = Redis.new(host: ENV['REDIS_HOST'])
-    @dataset = Iam.settings.DB
+    @database = Iam.settings.DB
+    @table = :disk_size_measurements
     register
   end
 
@@ -63,7 +64,4 @@ class DiskSize
   end
 
 end
-<<<<<<< HEAD:plugins/DiskSize/plugin.rb
 
-=======
->>>>>>> ac073fd... Make spec tests more efficient:plugins/disk_sizes/plugin.rb
