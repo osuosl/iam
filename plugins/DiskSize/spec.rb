@@ -1,5 +1,5 @@
 require_relative './plugin.rb'
-describe DiskSize do
+describe 'DiskSize plugin' do
   before(:all) do
     @db_table = Iam.DB[:disk_size_measurements]
   end
