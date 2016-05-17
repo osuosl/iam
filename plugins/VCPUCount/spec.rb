@@ -1,7 +1,7 @@
 require_relative './plugin.rb'
 describe 'VCPUCount plugin' do
   before(:all) do
-    @db_table = Iam.DB[:vcpu_count_measurements]
+    @db_table = Iam.settings.DB[:vcpu_count_measurements]
   end
 
   # Register method
@@ -78,6 +78,7 @@ describe 'VCPUCount plugin' do
   # Report method
   describe '.report method' do
     before(:all) do
+      VCPUCount.new    # Make sure initialize is called
       @db_table.insert(created: Time.now,
                        node:    'goodnode',
                        value:   8)

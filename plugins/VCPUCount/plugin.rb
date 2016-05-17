@@ -11,6 +11,7 @@ class VCPUCount
     @redis = Redis.new(host: ENV['REDIS_HOST'])
     @database = Iam.settings.DB
     @table = :vcpu_count_measurements
+    register
   end
 
   def register
@@ -56,6 +57,4 @@ class VCPUCount
     # format and make json/csv thing
     dataset.all.to_json
   end
-
-  VCPUCount.new.register
 end
