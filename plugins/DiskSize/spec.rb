@@ -1,68 +1,85 @@
 require_relative './plugin.rb'
 describe DiskSize do
-  # register method
-  it '.register does not raise an error when invoked' do
-    expect { DiskSize.new.register }.to_not raise_error
+  before(:all) do
+    @db_table = Iam.DB[:disk_size_measurements]
   end
 
-  it '.register actually actually creates a disk_size_measurements table' do
-    expect do
-      Iam.settings.DB.table_exists?(:disk_size_measurements).to be_false
+  # Register method
+  describe '.register method' do
+    it 'does not raise an error when invoked' do
+      expect { DiskSize.new.register }.to_not raise_error
     end
-    DiskSize.new.register
-    expect { Iam.settings.DB.table_exists?(:disk_size_measurements).to be_true }
+
+    it 'creates a disk_size_measurements table' do
+      # Table shouldn't exist before registration
+      expect do
+        Iam.settings.DB.table_exists?(:disk_size_measurements).to be_false
+      end
+
+      DiskSize.new.register
+
+      # Table should exist after registration
+      expect do
+        Iam.settings.DB.table_exists?(:disk_size_measurements).to be_true
+      end
+    end
   end
 
   # Store method
-  it '.store does not fail with valid data' do
-    redis = Redis.new(host: ENV['REDIS_HOST'])
-    redis.mset('nodename', JSON.generate(disk_sizes: '[10,20]', active: true),
-               'nodename:datetime', DateTime.now)
-    DiskSize.new.register
-    expect { DiskSize.new.store('nodename') }.to_not raise_error
-    expect do
-      Iam.settings.DB[:disk_size_measurements].where(node: 'nodename').to exist
+  describe '.store method' do
+    before(:all) do
+      DiskSize.new.register
+      @redis = Redis.new(host: ENV['REDIS_HOST'])
     end
-    redis.del('nodename')
-    redis.del('nodename:datetime')
-  end
 
-  it '.store fails when not passed node name' do
-    expect { DiskSize.new.store }.to raise_error(ArgumentError)
-  end
+    before(:each) do
+      @redis.mset(
+        'goodnode', JSON.generate(disk_sizes: '[10,20]', active: true),
+        'badnode', JSON.generate(disk_size: '[10,20]', active: true))
+    end
 
-  it '.store does not crash when passed improperly formatted data' do
-    redis = Redis.new(host: ENV['REDIS_HOST'])
-    redis.mset('badnode', JSON.generate(disk_size: '[10,20]', active: true),
-               'goodnode', JSON.generate(disk_sizes: '[10,20]', active: true))
-    DiskSize.new.register
-    expect { DiskSize.new.store('badnode') }.to_not raise_error
-    dataset = Iam.settings.DB[:disk_size_measurements]
-    expect { dataset.where(node: 'badnode').to not_exist }
+    after(:each) do
+      @redis.del('goodnode')
+      @redis.del('badnode')
+      @db_table.where(node: %w(badnode goodnode)).delete
+    end
 
-    DiskSize.new.store('goodnode')
-    expect { dataset.where(node: 'goodnode').to exist }
-    redis.del('badnode')
-    redis.del('goodnode')
-  end
+    it 'does not fail with valid data' do
+      # Store redis nodes in DB, no error
+      expect { DiskSize.new.store('goodnode') }.to_not raise_error
 
-  it '.store properly sums all disk sizes when storing in DB' do
-    redis = Redis.new(host: ENV['REDIS_HOST'])
-    redis.mset('nodename', JSON.generate(disk_sizes: '[10,20]', active: true),
-               'nodename:datetime', DateTime.now)
-    DiskSize.new.register
-    dataset = Iam.settings.DB[:disk_size_measurements]
-    DiskSize.new.store('nodename')
-    expect(dataset.where(node: 'nodename').get(:value)).to eq(30)
-    redis.del('nodename')
-    redis.del('nodename:datetime')
+      # Check that store actually stored the node
+      expect { @db_table.where(node: 'goodnode').to exist }
+    end
+
+    it 'fails when not passed node name' do
+      # This is bad plugin usage that should actually crash
+      expect { DiskSize.new.store }.to raise_error(ArgumentError)
+    end
+
+    it 'does not crash when passed improperly formatted data' do
+      # Don't crash on bad info, but don't store anything either
+      expect { DiskSize.new.store('badnode') }.to_not raise_error
+      expect { @db_table.where(node: 'badnode').to not_exist }
+
+      # Store good info
+      DiskSize.new.store('goodnode')
+      expect { @db_table.where(node: 'goodnode').to exist }
+    end
+
+    it 'properly sums all disk sizes when storing in DB' do
+      # Store node data
+      DiskSize.new.store('goodnode')
+
+      # Make sure store method properly summed disk sizes
+      expect(@db_table.where(node: 'goodnode').get(:value)).to eq(30)
+    end
   end
 
   # Report method
   describe '.report method' do
-    before do
+    before(:all) do
       DiskSize.new.register
-      @db_table = Iam.DB[:disk_size_measurements]
       @db_table.insert(created: Time.now,
                        node: 'TEST_NODE',
                        value: 1_234_567_890)
@@ -92,7 +109,7 @@ describe DiskSize do
       expect { result.to be_empty }
     end
 
-    after do
+    after(:all) do
       @db_table.where(node: 'TEST_NODE').delete
     end
   end
