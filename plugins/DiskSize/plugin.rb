@@ -4,6 +4,10 @@ require_relative '../../models.rb'
 
 # Disk Sizes data plugin
 class DiskSize
+  def initialize
+    register
+  end
+
   def register
     Plugin.find_or_create(name: 'DiskSize', # create entry in Plugins table
                           resource_name: 'node',
@@ -64,6 +68,5 @@ class DiskSize
     dataset.all.to_json
   end
 
-  DiskSize.new.register
 end
 
