@@ -1,4 +1,4 @@
-# Disk_Size's migration file
+# DiskSize's migration file
 
 Sequel.migration do
   transaction

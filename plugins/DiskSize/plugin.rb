@@ -4,8 +4,12 @@ require_relative '../../models.rb'
 
 # Disk Sizes data plugin
 class DiskSize
+  def initialize
+    register
+  end
+
   def register
-    Plugin.find_or_create(name: 'disk_size', # create entry in Plugins table
+    Plugin.find_or_create(name: 'DiskSize', # create entry in Plugins table
                           resource_name: 'node',
                           storage_table: 'disk_size_measurements',
                           units: 'bytes')
@@ -63,9 +67,6 @@ class DiskSize
     # format and make json/csv thing
     dataset.all.to_json
   end
+
 end
 
-# Uncomment to test:
-# DiskSize.new.register
-# puts DiskSize.new.report('FACEYMYBOOKY.com', 1)
-# puts DiskSize.new.report
