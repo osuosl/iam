@@ -62,6 +62,4 @@ class DiskSize
     # format and make json/csv thing
     dataset.all.to_json
   end
-
 end
-

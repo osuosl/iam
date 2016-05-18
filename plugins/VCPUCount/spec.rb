@@ -78,7 +78,7 @@ describe 'VCPUCount plugin' do
   # Report method
   describe '.report method' do
     before(:all) do
-      VCPUCount.new    # Make sure initialize is called
+      VCPUCount.new # Make sure initialize is called
       @db_table.insert(created: Time.now,
                        node:    'goodnode',
                        value:   8)
