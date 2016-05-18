@@ -42,6 +42,7 @@ end
 
 # rake plugins
 task :plugins do
+  puts 'Registering plugins'
   # Get name of each plugin from folder name.
   # At this point, we are assuming the plugin is *not* registered and is
   # therefore not in the plugins table.
