@@ -50,9 +50,7 @@ task :plugins do
     # The actual name is the last part of the filename (plugin/<name>).
     plugin_name = File.split(name)[-1]
     # Require each plugin and register.
-    Dir["#{name}/plugin.rb"].each do |plugin|
-      require plugin
-      Object.const_get(plugin_name).new
-    end
+    require "#{name}/plugin.rb"
+    Object.const_get(plugin_name).new
   end
 end
