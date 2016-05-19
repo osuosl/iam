@@ -1,5 +1,7 @@
 FactoryGirl.define do
   # use sequences to dynamically create unique records on demand
+
+  # Clients
   sequence :email do |n|
     "sarah#{n}@example.com"
   end
@@ -12,6 +14,11 @@ FactoryGirl.define do
     "Client number #{n}"
   end
 
+  # Projects
+  sequence :project_name do |n|
+    "Project number #{n}"
+  end
+
   factory :client, class: Client do
     # this lets factory girl save Sequel models
     to_create(&:save)
@@ -19,5 +26,12 @@ FactoryGirl.define do
     contact_name  { generate(:contact_name) }
     contact_email { generate(:email) }
     description   'An important client'
+  end
+
+  factory :project, class: Project do
+    to_create(&:save)
+    name        { generate(:project_name) }
+    resources   'node,ftp'
+    description 'An important project'
   end
 end

@@ -23,6 +23,10 @@ end
 # String    :description, :text => true
 class Project < Sequel::Model
   many_to_one :client
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
 end
 
 # Plugin data model
