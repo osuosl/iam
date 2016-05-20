@@ -26,6 +26,11 @@ class DiskSize
     # Pull node information from redis as a ruby hash
     node_info = JSON.parse(@redis.get(fqdn))
 
+    # Check for valid data
+    if node_info['disk_sizes'].nil? || node_info['disk_sizes'] == 'unknown'
+      raise "No disk_sizes information for #{fqdn}"
+    end
+
     # Insert data into disk_size_measurements table
     @database[@table].insert(
       node:          fqdn,
@@ -37,8 +42,8 @@ class DiskSize
       active:        node_info['active'],
       created:       DateTime.now,
       node_resource: @database[:node_resources].where(name: fqdn).get(:id))
-  rescue => e        # Don't crash on errors
-    STDERR.puts e    # Log the error
+  rescue => e                        # Don't crash on errors
+    STDERR.puts "#{e}: #{node_info}" # Log the error
   end
 
   SECONDS_IN_DAY = 60 * 60 * 24
@@ -62,6 +67,4 @@ class DiskSize
     # format and make json/csv thing
     dataset.all.to_json
   end
-
 end
-
