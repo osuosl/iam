@@ -29,6 +29,11 @@ class VCPUCount
     # Pull node information from redis as a ruby hash
     node_info = JSON.parse(@redis.get(fqdn))
 
+    # Error check for valid data
+    if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'
+      raise "No num_cpus information for #{fqdn}"
+    end
+
     # Insert data into disk_size_measurements table
     @database[@table].insert(
       node:          fqdn,
@@ -36,8 +41,8 @@ class VCPUCount
       active:        node_info['active'],
       created:       DateTime.now,
       node_resource: @database[:node_resources].where(name: fqdn).get(:id))
-  rescue => e        # Don't crash on errors
-    STDERR.puts e    # Log the error
+  rescue => e                        # Don't crash on errors
+    STDERR.puts "#{e}: #{node_info}" # Log the error
   end
 
   SECONDS_IN_DAY = 60 * 60 * 24
