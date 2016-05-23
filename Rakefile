@@ -46,9 +46,9 @@ task :plugins do
   # Get name of each plugin from folder name. Require each plugin and register.
   # At this point, we are assuming the plugin is *not* registered and is
   # therefore not in the plugins table.
-  Dir['plugins/*'].each do |name|
-    require "#{name}/plugin.rb"
-    # The actual name is the last part of the filename (plugin/<name>).
-    Object.const_get(File.split(name)[-1]).new
+  Dir['plugins/*/plugin.rb'].each do |name|
+    require name
+    # The actual name is the middle part of the path (plugin/<name>/plugin.rb).
+    Object.const_get(name.split('/')[1]).new
   end
 end

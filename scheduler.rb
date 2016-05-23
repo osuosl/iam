@@ -14,6 +14,7 @@ end
 
 # Change '15m' on next line to 4 to test
 s.every '30m', first_in: '15m' do
+  `rake plugins`
   # For each entry in the plugins table
   Iam.settings.DB[:plugins].each do |p|
     # Require the plugin based on the name in the table
