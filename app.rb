@@ -29,6 +29,14 @@ class Iam < Sinatra::Base
     'Hello'
   end
 
+  get '/demo' do
+    @data = DiskSize.new.report
+    @data = JSON.parse(@data)
+    # puts @data
+    puts 'get demo'
+    erb :demo
+  end
+
   ##
   # Clients
   ##
@@ -148,4 +156,8 @@ class Iam < Sinatra::Base
     404
   end
 
+  set :port, 4567
+  set :bind, '0.0.0.0'
 end
+
+Iam.run!

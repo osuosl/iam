@@ -1,7 +1,7 @@
 require 'rufus/scheduler'
 require 'redis'
 require_relative 'collectors'
-require_relative 'plugins/disk_sizes/plugin.rb'
+require_relative 'plugins/DiskSize/plugin.rb'
 
 s = Rufus::Scheduler.new
 
@@ -18,6 +18,7 @@ s.every '30m', first_in: 4 do
   redis.keys.each do |key|
     DiskSize.new.store key unless key.end_with?(':datetime')
   end
+  puts 'done'
 end
 
 s.join
