@@ -12,5 +12,6 @@ class Iam < Sinatra::Base
   end
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
+  register Sinatra::ProjectRoutes
 
 end
