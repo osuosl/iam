@@ -14,6 +14,33 @@ class Iam < Sinatra::Base
     require file
   end
 
+  # generate data
+  (0...10).each do
+    o = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
+    name = (0...10).map { o[rand(o.length)] }.join
+
+    new_client = Client.create(name:  name,
+                               contact_name:  'bob',
+                               contact_email:  'bob@example.com',
+                               description:  'blah')
+
+    name = (0...10).map { o[rand(o.length)] }.join
+
+    new_project = Project.create(name: name,
+                                 client_id: 1 + rand(new_client.id),
+                                 resources: 'node,thingy',
+                                 description: 'blah')
+
+    name = (0...10).map { o[rand(o.length)] }.join
+
+    NodeResource.create(project_id: 1 + rand(new_client.id),
+                        name: name,
+                        type: 'ganeti',
+                        cluster: 'cluster1.osuosl.org',
+                        created: DateTime.now,
+                        modified: DateTime.now)
+  end
+
   ##
   # Errors
   ##
