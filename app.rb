@@ -15,7 +15,7 @@ class Iam < Sinatra::Base
   end
 
   # generate data
-  (0...10).each do
+  (0...25).each do
     o = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
     name = (0...10).map { o[rand(o.length)] }.join
 
@@ -33,7 +33,7 @@ class Iam < Sinatra::Base
 
     name = (0...10).map { o[rand(o.length)] }.join
 
-    NodeResource.create(project_id: 1 + rand(new_client.id),
+    NodeResource.create(project_id: 1 + rand(new_project.id),
                         name: name,
                         type: 'ganeti',
                         cluster: 'cluster1.osuosl.org',
@@ -139,6 +139,7 @@ class Iam < Sinatra::Base
     # view a project
     @project = Project[id: params[:id]]
     halt 404, 'Project not found' if @project.nil?
+    @resources = NodeResource.filter(project_id: @project.id)
     erb :'projects/show'
   end
 

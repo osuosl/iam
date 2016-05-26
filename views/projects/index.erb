@@ -2,7 +2,12 @@
 <table>
   <% for @project in @projects %>
     <tr>
-      <td><%= @project.name %><td>
+      <td><td>
+      <td>
+        <a href="projects/<%= @project.id %>" >
+          <%= @project.name %>
+        </a>
+      <td>
     </tr>
   <% end %>
 </table>
