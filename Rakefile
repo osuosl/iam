@@ -40,3 +40,15 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = '--format documentation'
 end
 
+# rake plugins
+task :plugins do
+  puts 'Registering plugins'
+  # Get name of each plugin from folder name. Require each plugin and register.
+  # At this point, we are assuming the plugin is *not* registered and is
+  # therefore not in the plugins table.
+  Dir['plugins/*/plugin.rb'].each do |name|
+    require name
+    # The actual name is the middle part of the path (plugin/<name>/plugin.rb).
+    Object.const_get(name.split('/')[1]).new
+  end
+end
