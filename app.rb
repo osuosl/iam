@@ -154,27 +154,27 @@ class Iam < Sinatra::Base
 
   get '/node/new' do
     # get new node form
-    erb :'node/edit'
+    erb :'nodes/edit'
   end
 
   get '/node/:id' do
     # view a node
     @node = NodeResource[id: params[:id]]
     halt 404, 'node not found' if @node.nil?
-    erb :'node/show'
+    erb :'nodes/show'
   end
 
   get '/node/:id/edit' do
     # get node edit form
     @node = NodeResource[id: params[:id]]
     halt 404, 'node not found' if @node.nil?
-    erb :'node/edit'
+    erb :'nodes/edit'
   end
 
   get '/nodes' do
     # get a list of all node
     @node = NodeResource.all
-    erb :'clients/index'
+    erb :'nodes/index'
   end
 
   # This could also be PUT
