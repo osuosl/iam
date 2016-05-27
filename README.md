@@ -58,7 +58,7 @@ $ docker-compose up
 If you want to write code and run commands in a dev shell run
 
 ```
-$ docker-compose --service-ports run dev bash
+$ docker-compose run --service-ports dev bash
 ```
 
 ### Docker Files and Env Variables
