@@ -79,8 +79,6 @@ class Iam < Sinatra::Base
     halt 404, 'Client not found' if @client.nil?
     # @projects = Project[client_id: @client.id].all
     @projects = Project.filter(client_id: @client.id)
-    puts @projects
-
     erb :'clients/show'
   end
 
@@ -152,7 +150,7 @@ class Iam < Sinatra::Base
 
   get '/projects' do
     # get a list of all projects
-    @projects = Project.each { |x| p x.name }
+    @projects = Project.all
     erb :'projects/index'
   end
 

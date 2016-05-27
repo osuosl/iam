@@ -13,9 +13,11 @@
   <body>
 
       <div class="container">
-        <h2> <%= @client.name %> </h2>
-        <%= @client.description %><br>
-        <%= @client.contact_name %><br>
+        <h2>Client: <%= @client.name %> </h2>
+        <p>
+          Name: <%= @client.contact_name %> <br>
+          Description: <%= @client.description %>
+        </p>
 
         <div class="container">
           <table class="table">
