@@ -154,19 +154,10 @@ class Iam < Sinatra::Base
     erb :'projects/index'
   end
 
-  # This could also be PUT
-  post '/projects' do
-    # recieve new project
-    project = Project.create(name:        params[:name],
-                             client_id:   Iam.settings.DB[:clients]
-                                            .where(name: params[:client_name])
-                                            .get(:id) || '',
-                             resources:   params[:resources] || '',
-                             description: params[:description] || '')
-    redirect "/projects/#{project.id}"
-  end
 
-  patch '/projects' do
+  patch '/projects/?' do
+    puts '/projects patch executed'
+
     # recieve an updated project
     project = Project[id: params[:id]]
     project.update(name:        params[:name] || project.name,
@@ -178,6 +169,19 @@ class Iam < Sinatra::Base
     redirect "/projects/#{params[:id]}"
   end
 
+  # This could also be PUT
+  post '/projects/?' do
+    # recieve new project
+    puts '/projects POST executed'
+    project = Project.create(name:        params[:name],
+                             client_id:   Iam.settings.DB[:clients]
+                                            .where(name: params[:client_name])
+                                            .get(:id) || '',
+                             resources:   params[:resources] || '',
+                             description: params[:description] || '')
+    redirect "/projects/#{project.id}"
+  end
+
   delete '/projects/:id' do
     # delete a project
     @project = Project[id: params[:id]]
@@ -186,6 +190,7 @@ class Iam < Sinatra::Base
     404
   end
 
+  enable :method_override
   set :port, 4567
   set :bind, '0.0.0.0'
 end
