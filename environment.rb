@@ -14,6 +14,11 @@ class Iam < Sinatra::Base
 
   require 'bundler'
 
+  # sinatra configs
+  enable :method_override
+  set :port, 4567
+  set :bind, '0.0.0.0'
+
   # basic Ruby stuff
   require 'rubygems'
   require 'bundler/setup'
