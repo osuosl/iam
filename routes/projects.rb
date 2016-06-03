@@ -16,6 +16,7 @@ module Sinatra
         # view a project
         @project = Project[id: params[:id]]
         halt 404, 'Project not found' if @project.nil?
+        @resources = NodeResource.filter(project_id: @project.id)
         erb :'projects/show'
       end
 
@@ -28,7 +29,7 @@ module Sinatra
 
       app.get '/projects' do
         # get a list of all projects
-        @projects = Project.each { |x| p x.name }
+        @projects = Project.all
         erb :'projects/index'
       end
 
@@ -36,23 +37,27 @@ module Sinatra
       app.post '/projects' do
         # recieve new project
         project = Project.create(name:        params[:name],
-               client_id:   Iam.settings.DB[:clients]
-                  .where(name: params[:client_name])
-                  .get(:id) || '',
-               resources:   params[:resources] || '',
-               description: params[:description] || '')
+                                 client_id:   Iam.settings.DB[:clients]
+                                    .where(name: params[:client_name])
+                                    .get(:id) || '',
+                                 resources:   params[:resources] || '',
+                                 description: params[:description] || '')
         redirect "/projects/#{project.id}"
       end
 
       app.patch '/projects' do
+        # set blanks to nil
+        params[:name] = nil if params[:name] == ''
+        params[:resources] = nil if params[:resources] == ''
+        params[:description] = nil if params[:description] == ''
         # recieve an updated project
         project = Project[id: params[:id]]
         project.update(name:        params[:name] || project.name,
-           client_id:   Iam.settings.DB[:clients]
-              .where(name: params[:client_name])
-              .get(:id) || project.client_id,
-           resources:   params[:resources] || project.resources,
-           description: params[:description] || project.description)
+                       client_id:   Iam.settings.DB[:clients]
+                          .where(name: params[:client_name])
+                          .get(:id) || project.client_id,
+                       resources:   params[:resources] || project.resources,
+                       description: params[:description] || project.description)
         redirect "/projects/#{params[:id]}"
       end
 
