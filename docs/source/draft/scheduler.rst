@@ -1,4 +1,4 @@
-.. _draft_plugins:
+.. _draft_scheduler:
 
 Draft Scheduler
 ===============
@@ -20,7 +20,7 @@ Store Task
 
 Offset by 15 minutes, and running every 30 minutes, all plugin ``store``
 methods are called. These methods take all the data out of the cache and store
-them in our database. For this task, it is necessary to ``\`rake plugins\```
+them in our database. For this task, it is necessary to ```rake plugins```
 as the first step in order to find all the plugins and store them in our
 plugins table.
 
