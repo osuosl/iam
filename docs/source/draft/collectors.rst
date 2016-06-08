@@ -24,8 +24,10 @@ method can store data on the same cache instance. ``initialize`` also currently
 defines a list of ganeti clusters to query. Finally, a template file is read
 that contains the data structure with which we will store our cached data.
 
-TODO: Query our database for each unique cluster name. This is low priority
-      because management only bills for the cluster named ``ganeti``.
+.. todo::
+
+   Query our database for each unique cluster name. This is low priority because
+   management only bills for the cluster named ``ganeti``.
 
 Collect Methods
 ~~~~~~~~~~~~~~~
@@ -55,27 +57,46 @@ number of tasks to query the relevant API and store it in the database.
 
          response = http.request Net::HTTP::Get.new uri
 
-   #. Parse the response and store it into variables **that are defined in the
-      data structure template**, ``datastruct.rb``. This is necessary so that
-      you can create a binding in the next step. For example:
+   #. For each object in the response:
 
       .. code-block:: ruby
 
-         node_name = node['name'] || 'unknown'
+         JSON.parse(response.body).each do |node|
 
-      stores the response's ``name`` field in ``node_name`` if it exists. If it
-      does not exist, an ``'unknown'`` string is stored. This is important
-      because ``nil`` values break the template.
+      #. Parse the response and store it into variables **that are defined in the
+         data structure template**, ``datastruct.rb``. This is necessary so that
+         you can create a binding in the next step. For example:
 
-   #. Store the result of a template binding to the cache at the name of the
-      resource. Also store the datetime of the query at ``<name>:datetime``. In
-      Redis, it looks like this:
+         .. code-block:: ruby
 
-      .. code-block:: ruby
+            node_name = node['name'] || 'unknown'
 
-         @redis.mset(<resource_name>, @template.result(binding),
-                     <resource_name> + ':datetime', Time.new.inspect)
+         stores the response's ``name`` field in ``node_name`` if it exists. If it
+         does not exist, an ``'unknown'`` string is stored. This is important
+         because ``nil`` values break the template.
+
+      #. Store the result of a template binding to the cache at the name of the
+         resource. Also store the datetime of the query at ``<name>:datetime``. In
+         Redis, it looks like this:
+
+         .. code-block:: ruby
+
+            @redis.mset(<resource_name>, @template.result(binding),
+                        <resource_name> + ':datetime', Time.new.inspect)
 
 #. Rescue any socket errors (``SocketError``) and log the information. The
    collector should not fail because of one socket error.
 
+Schedule
+--------
+
+All collect methods must be scheduled in the ``rufus`` scheduler in
+``scheduler.rb``. These methods are scheduled every 30 minutes, offset from the
+plugin methods by 15 minutes.
+
+To add a new method to the collect task, simply add another line at the end of
+the block:
+
+.. code-block:: ruby
+
+   collector.<new method name>
