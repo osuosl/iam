@@ -3,9 +3,10 @@
 Draft Collectors
 ================
 
-IAM Collectors query various configuration management APIs and store all
-relevant data in a key-value store. We currently use Redis to do this, but are
-considering memcache as another option.
+IAM Collectors query various configuration management APIs and resources
+(including databases) and store all relevant data in a key-value store. We
+currently use Redis to do this, but are considering file storage as another
+option.
 
 .. contents::
 
@@ -32,57 +33,36 @@ that contains the data structure with which we will store our cached data.
 Collect Methods
 ~~~~~~~~~~~~~~~
 
-The remaining methods are ``collect_<api>`` methods. These methods complete a
-number of tasks to query the relevant API and store it in the database.
+The remaining methods are ``collect_<resource>`` methods. These methods must
+complete a number of tasks to query the resource for measurement data and store
+it in the database.
 
-#. For each node/API endpoint/cluster to query:
+#. For each node/resource fqdn, connect to the resource and perform any other
+   required processing methods. For example, if you are getting information
+   from a MySQL database this step includes the relevant SQL queries to query
+   the data you need.
 
-   #. Construct the fqdn and create a URI from it.
+#. Parse the response and store it into variables **that are defined in the data
+   structure template**, ``datastruct.rb``. This is necessary so that you can
+   create a binding with the template before storing in the cache. For example:
 
-      .. code-block:: ruby
+   .. code-block:: ruby
 
-         uri = URI(<fqdn>)
+      node_name = node['name'] || 'unknown'
 
-   #. Open a connection to the fqdn, an easy way to do this is:
+  stores the ``node['name']`` field in the ``node_name`` variable that is
+  defined in the template. If ``node['name']`` does not exist, the string
+  ``'unknown'`` is stored. This is important because ``nil`` values break the
+  template.
 
-      .. code-block:: ruby
+#. Store the result of a binding to the cache at the name of the resource. Also
+   store the datetime of the query at ``<name>:datetime``. In Redis, it looks
+   like this:
 
-         Net::HTTP.start(uri.host,    uri.port,
-                         use_ssl:     uri.scheme == 'https',
-                         verify_mode: OpenSSL::SSL::VERIFY_NONE) do |http|
+   .. code-block:: ruby
 
-   #. Send your request to the URI
-
-      .. code-block:: ruby
-
-         response = http.request Net::HTTP::Get.new uri
-
-   #. For each object in the response:
-
-      .. code-block:: ruby
-
-         JSON.parse(response.body).each do |node|
-
-      #. Parse the response and store it into variables **that are defined in the
-         data structure template**, ``datastruct.rb``. This is necessary so that
-         you can create a binding in the next step. For example:
-
-         .. code-block:: ruby
-
-            node_name = node['name'] || 'unknown'
-
-         stores the response's ``name`` field in ``node_name`` if it exists. If it
-         does not exist, an ``'unknown'`` string is stored. This is important
-         because ``nil`` values break the template.
-
-      #. Store the result of a template binding to the cache at the name of the
-         resource. Also store the datetime of the query at ``<name>:datetime``. In
-         Redis, it looks like this:
-
-         .. code-block:: ruby
-
-            @redis.mset(<resource_name>, @template.result(binding),
-                        <resource_name> + ':datetime', Time.new.inspect)
+      @redis.mset(<resource_name>, @template.result(binding),
+                  <resource_name> + ':datetime', Time.new.inspect)
 
 #. Rescue any socket errors (``SocketError``) and log the information. The
    collector should not fail because of one socket error.
