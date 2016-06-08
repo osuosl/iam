@@ -2,13 +2,11 @@ require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
 
-SECONDS_IN_DAY = 60 * 60 * 24
-
 class BasePlugin
+  SECONDS_IN_DAY = 60 * 60 * 24
   def initialize
     @redis = Redis.new(host: ENV['REDIS_HOST'])
     @database = Iam.settings.DB
-    register
   end
 
   def register
