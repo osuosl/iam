@@ -7,22 +7,24 @@ describe 'DiskTemplate plugin' do
   # Store method
   describe '.store method' do
     before(:all) do
-      @redis = Redis.new(host: ENV['REDIS_HOST'])
+      @cache = Cache.new(ENV['CACHE_FILE'])
     end
 
     before(:each) do
-      @redis.mset('goodnode', JSON.generate(disk_template: 'drbd', active: true),
-                  'badnode', JSON.generate(disk_type: '1', active: true))
+      @cache.set('goodnode', disk_template: 'drbd', active: true)
+      @cache.set('badnode', disk_type: '1', active: true)
+      @cache.write
     end
 
     after(:each) do
-      @redis.del('goodnode')
-      @redis.del('badnode')
+      @cache.del('goodnode')
+      @cache.del('badnode')
+      @cache.write
       @db_table.where(node: %w(badnode goodnode)).delete
     end
 
     it 'does not fail with valid data' do
-      # Store redis nodes in DB, no error
+      # Store cached nodes in DB, no error
       expect { DiskTemplate.new.store('goodnode') }.to_not raise_error
 
       # Check that store actually stored the node

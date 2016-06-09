@@ -1,7 +1,7 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../lib/BasePlugin/plugin.rb'
+require_relative '../../lib/cache'
 
 # VCPU Count data plugin
 # TODO: If this turns out to be the same for physical CPUs, rename this plugin
@@ -9,18 +9,22 @@ require_relative '../../lib/BasePlugin/plugin.rb'
 #       differently.
 class VCPUCount < BasePlugin
   def initialize
+<<<<<<< HEAD
     @@name = 'VCPUCount'
     @@resource_name = 'node'
     @@units = 'vcpu'
     @@table = :vcpu_count_measurements
     @@db_column = :vcpu_count_ver
     @@migrations_dir= File.dirname(__FILE__) + '/migrations'
+    @@database = Iam.settings.DB
+    @@table = :vcpu_count_measurements
+    @cache = Cache.new(ENV['CACHE_FILE'])
     register
   end
 
   def store(fqdn)
-    # Pull node information from redis as a ruby hash
-    node_info = JSON.parse(@@redis.get(fqdn))
+    # Pull node information from cache as a ruby hash
+    node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'

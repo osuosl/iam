@@ -8,23 +8,24 @@ describe 'DiskSize plugin' do
   describe '.store method' do
     before(:all) do
       DiskSize.new.register
-      @redis = Redis.new(host: ENV['REDIS_HOST'])
+      @cache = Cache.new(ENV['CACHE_FILE'])
     end
 
     before(:each) do
-      @redis.mset(
-        'goodnode', JSON.generate(disk_sizes: '[10,20]', active: true),
-        'badnode', JSON.generate(disk_size: '[10,20]', active: true))
+      @cache.set('goodnode', disk_sizes: '[10,20]', active: true)
+      @cache.set('badnode', disk_size: '[10,20]', active: true)
+      @cache.write
     end
 
     after(:each) do
-      @redis.del('goodnode')
-      @redis.del('badnode')
+      @cache.del('goodnode')
+      @cache.del('badnode')
+      @cache.write
       @db_table.where(node: %w(badnode goodnode)).delete
     end
 
     it 'does not fail with valid data' do
-      # Store redis nodes in DB, no error
+      # Store cached nodes in DB, no error
       expect { DiskSize.new.store('goodnode') }.to_not raise_error
 
       # Check that store actually stored the node
