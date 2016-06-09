@@ -1,9 +1,9 @@
 require 'rufus/scheduler'
-require 'redis'
-require_relative 'collectors'
-require_relative 'environment'
+require_relative 'collectors.rb'
+require_relative 'environment.rb'
+require_relative 'lib/cache.rb'
 
-redis = Redis.new(host: ENV['REDIS_HOST'])
+cache = Cache.new(ENV['CACHE_FILE'])
 s = Rufus::Scheduler.new
 
 s.every '30m', first_in: 0.4 do
@@ -19,8 +19,8 @@ s.every '30m', first_in: '15m' do
   Iam.settings.DB[:plugins].each do |p|
     # Require the plugin based on the name in the table
     require_relative "plugins/#{p[:name]}/plugin.rb"
-    # For each key in redis
-    redis.keys.each do |key|
+    # For each key in cache
+    cache.keys.each do |key|
       # Store the node information in the proper table with the plugin's store
       # method. The plugin object is retrieved from the name string using
       # Object.const_get. Do not try to store keys that store a datetime object.

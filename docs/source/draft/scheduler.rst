@@ -13,7 +13,7 @@ Collect Task
 By our application design, we collect information with our ``collect_<api>``
 methods every 30 minutes. Those methods store the various API returns in a
 common data structure before storing them in a cache. We are currently using
-Redis as our caching system.
+files via the Cache object as our caching system.
 
 Store Task
 ----------

@@ -6,7 +6,6 @@ require_relative '../../lib/cache'
 # DiskTemplate plugin
 class DiskTemplate < BasePlugin
   def initialize
-<<<<<<< HEAD
     @@name = 'DiskTemplate'
     @@resource_name = 'node'
     @@units = 'type'

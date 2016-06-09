@@ -1,7 +1,7 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../lib/cache'
+require_relative '../../lib/cache.rb'
 
 # Disk Sizes data plugin
 class DiskSize < BasePlugin

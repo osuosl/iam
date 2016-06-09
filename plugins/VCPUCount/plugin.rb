@@ -9,7 +9,6 @@ require_relative '../../lib/cache'
 #       differently.
 class VCPUCount < BasePlugin
   def initialize
-<<<<<<< HEAD
     @@name = 'VCPUCount'
     @@resource_name = 'node'
     @@units = 'vcpu'

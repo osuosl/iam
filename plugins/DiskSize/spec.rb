@@ -8,7 +8,7 @@ describe 'DiskSize plugin' do
   describe '.store method' do
     before(:all) do
       DiskSize.new.register
-      @cache = Cache.new(ENV['CACHE_FILE'])
+      @cache = Cache.new(ENV['CACHE_DIR'])
     end
 
     before(:each) do

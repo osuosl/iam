@@ -21,7 +21,6 @@ services:
     extends:
       service: app
     links:
-      - redis
       - postgres
     ports:
       - "4567:4567"
@@ -29,13 +28,7 @@ services:
       - .:/data/code
 
   ###
-  # Redis used for redis things we do.
-  ###
-  redis:
-    image: redis
-
-  ###
-  # Postgres used for redis things we do.
+  # Postgres for databases.
   ###
   postgres:
     image: postgres
