@@ -13,3 +13,4 @@ Draft Documentation
     models.rst
     plugins.rst
     scheduler.rst
+    collectors.rst
