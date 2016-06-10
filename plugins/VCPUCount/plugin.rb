@@ -1,7 +1,6 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../lib/cache'
 
 # VCPU Count data plugin
 # TODO: If this turns out to be the same for physical CPUs, rename this plugin

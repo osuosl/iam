@@ -28,6 +28,7 @@ class Iam < Sinatra::Base
   require 'uri'
   require 'openssl'
   require 'json'
+  require_relative 'lib/cache.rb'
 
   # Test stuff
   if env == 'development' || env == 'test'
