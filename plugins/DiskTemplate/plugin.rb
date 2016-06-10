@@ -1,7 +1,7 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../BasePlugin/plugin.rb'
+require_relative '../../lib/BasePlugin/plugin.rb'
 
 # DiskTemplate plugin
 class DiskTemplate < BasePlugin

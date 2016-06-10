@@ -36,7 +36,7 @@ end
 # rake spec
 RSpec::Core::RakeTask.new(:spec) do |t|
   ENV['RACK_ENV'] = 'test'
-  t.pattern = Dir.glob('{spec,plugins}/**/*spec.rb')
+  t.pattern = Dir.glob('{lib,spec,plugins}/**/*spec.rb')
   t.rspec_opts = '--format documentation'
 end
 
