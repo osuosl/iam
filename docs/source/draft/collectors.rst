@@ -5,8 +5,8 @@ Draft Collectors
 
 IAM Collectors query various configuration management APIs and resources
 (including databases) and store all relevant data in a key-value store. We
-currently use Redis to do this, but are considering file storage as another
-option.
+currently use a hacked together file-based cacher ``Cache`` to do this, but are
+considering file storage as another option.
 
 .. contents::
 
@@ -20,10 +20,11 @@ project's root directory.
 Initialize Method
 ~~~~~~~~~~~~~~~~~
 
-The ``initialize`` method sets a ``redis`` cache variable so each collection
-method can store data on the same cache instance. ``initialize`` also currently
-defines a list of ganeti clusters to query. Finally, a template file is read
-that contains the data structure with which we will store our cached data.
+The ``initialize`` method creates a shared ``Cache`` object to cache data so
+each collection method can store data on the same cache instance.
+``initialize`` also currently defines a list of ganeti clusters to query.
+Finally, a template file is read that contains the data structure with which we
+will store our cached data.
 
 .. todo::
 
@@ -56,13 +57,14 @@ it in the database.
   template.
 
 #. Store the result of a binding to the cache at the name of the resource. Also
-   store the datetime of the query at ``<name>:datetime``. In Redis, it looks
+   store the datetime of the query at ``<name>:datetime``. With Cache, it looks
    like this:
 
    .. code-block:: ruby
 
-      @redis.mset(<resource_name>, @template.result(binding),
-                  <resource_name> + ':datetime', Time.new.inspect)
+      @cache.set(<resource_name>, @template.result(binding))
+      @cache.set(<resource_name> + ':datetime', Time.new.inspect)
+      @cache.write
 
 #. Rescue any socket errors (``SocketError``) and log the information. The
    collector should not fail because of one socket error.

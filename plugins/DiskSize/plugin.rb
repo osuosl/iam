@@ -1,7 +1,7 @@
 require 'sequel'
+require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../lib/BasePlugin/plugin.rb'
 
 # Disk Sizes data plugin
 class DiskSize < BasePlugin
@@ -12,12 +12,14 @@ class DiskSize < BasePlugin
     @@table = :disk_size_measurements
     @@db_column = :disk_size_ver
     @@migrations_dir = File.dirname(__FILE__) + '/migrations'
+    @@database = Iam.settings.DB
+    @cache = Cache.new(ENV['CACHE_FILE'])
     register
   end
 
   def store(fqdn)
-    # Pull node information from redis as a ruby hash
-    node_info = JSON.parse(@@redis.get(fqdn))
+    # Pull node information from cache as a ruby hash
+    node_info = @cache.get(fqdn)
 
     # Check for valid data
     if node_info['disk_sizes'].nil? || node_info['disk_sizes'] == 'unknown'

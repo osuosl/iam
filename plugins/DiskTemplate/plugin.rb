@@ -1,7 +1,7 @@
 require 'sequel'
+require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../lib/BasePlugin/plugin.rb'
 
 # DiskTemplate plugin
 class DiskTemplate < BasePlugin
@@ -12,12 +12,14 @@ class DiskTemplate < BasePlugin
     @@table = :disk_template_measurements
     @@db_column = :disk_template_ver
     @@migrations_dir = File.dirname(__FILE__) + '/migrations'
+    @@database = Iam.settings.DB
+    @cache = Cache.new(ENV['CACHE_FILE'])
     register
   end
 
   def store(fqdn)
-    # Pull node information from redis as a ruby hash
-    node_info = JSON.parse(@@redis.get(fqdn))
+    # Pull node information from cache as a ruby hash
+    node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['disk_template'].nil?

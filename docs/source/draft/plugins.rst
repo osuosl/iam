@@ -70,4 +70,4 @@ provides helper methods to make building a plugin as easy as possible.
 The ``collect`` method is passed a ``resource_type`` parameter that identifies
 how the resource is managed. For example, if ``resource_type`` indicates that
 the resource is a Ganeti VM, then the resource information will be gathered
-by querying the redis data structure. 
+by querying the cache data structure.
