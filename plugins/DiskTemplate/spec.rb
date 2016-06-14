@@ -4,27 +4,6 @@ describe 'DiskTemplate plugin' do
     @db_table = Iam.settings.DB[:disk_template_measurements]
   end
 
-  # Register method
-  describe '.register method' do
-    it 'does not raise an error when invoked' do
-      expect { DiskTemplate.new.register }.to_not raise_error
-    end
-
-    it 'creates a disk_template_measurements table' do
-      # Table shouldn't exist before registration
-      expect do
-        Iam.settings.DB.table_exists?(:disk_template_measurements).to be_false
-      end
-
-      DiskTemplate.new.register
-
-      # Table should exist after registration
-      expect do
-        Iam.settings.DB.table_exists?(:disk_template_measurements).to be_true
-      end
-    end
-  end
-
   # Store method
   describe '.store method' do
     before(:all) do
@@ -72,40 +51,6 @@ describe 'DiskTemplate plugin' do
       # Make sure store method properly stored integer representation of
       # num_cpus
       expect(@db_table.where(node: 'goodnode').get(:value)).to eq('drbd')
-    end
-  end
-
-  # Report method
-  describe '.report method' do
-    before(:all) do
-      DiskTemplate.new # Make sure initialize is called
-      @db_table.insert(created: Time.now,
-                       node:    'goodnode',
-                       value:   'drbd')
-    end
-
-    after(:all) do
-      @db_table.where(node: 'goodnode').delete
-    end
-
-    it 'should return data on all nodes for the last day by default' do
-      result = DiskTemplate.new.report
-      expect { result.should include(node: 'goodnode') }
-    end
-
-    it 'returns data on a known specific nodes for 1 day' do
-      result = DiskTemplate.new.report('goodnode', 1)
-      expect { result.should include(node: 'goodnode') }
-      expect { result.should include(value: 8) }
-    end
-
-    it 'returns empty on unknown node' do
-      result = DiskTemplate.new.report('newnode', 1)
-      expect { result.to be_empty }
-    end
-
-    it 'should return TypeError on invalid day input' do
-      expect { DiskTemplate.new.report('*', 'one') }.to raise_error(TypeError)
     end
   end
 end
