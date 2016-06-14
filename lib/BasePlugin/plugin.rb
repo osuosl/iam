@@ -1,10 +1,11 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
+require_relative '../cache.rb'
 
 class BasePlugin
   SECONDS_IN_DAY = 60 * 60 * 24
-  @@redis = Redis.new(host: ENV['REDIS_HOST'])
+  @@cache = Cache.new(ENV['CACHE_FILE'])
   @@database = Iam.settings.DB
 
   @@name = nil

@@ -1,4 +1,5 @@
 require 'sequel'
+require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
 
