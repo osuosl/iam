@@ -49,7 +49,7 @@ The Cache
 ~~~~~~~~~
 
 Our temporary cache is stored in a ``Cache`` object. The source code for this
-can be found in ``lib/cache.rb``. Basically all it does is:
+can be found in ``lib/util.rb``. Basically all it does is:
 
 * Read in a JSON key:value store into a Ruby hash.
 * Write that hash to the cache file with the ``.write`` method.

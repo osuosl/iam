@@ -12,8 +12,8 @@ describe 'RamSize plugin' do
     end
 
     before(:each) do
-      @cache.set('goodnode', ram_size: '512', active: true)
-      @cache.set('badnode', ram_sizes: '[1024,256]', active: true)
+      @cache.set('goodnode', total_ram_meas: '512', active: true)
+      @cache.set('badnode', total_ram_meas: '[1024,256]', active: true)
       @cache.write
     end
 
@@ -25,11 +25,9 @@ describe 'RamSize plugin' do
     end
 
     it 'does not fail with valid data' do
-      # Store cached nodes in DB, no error
+      # Everything works as expected
       expect { RamSize.new.store('goodnode') }.to_not raise_error
-
-      # Check that store actually stored the node
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode').get(:value)).to eq(512)
     end
 
     it 'fails when not passed node name' do
@@ -45,14 +43,6 @@ describe 'RamSize plugin' do
       # Store good info
       RamSize.new.store('goodnode')
       expect { @db_table.where(node: 'goodnode').to exist }
-    end
-
-    it 'properly sums all ram sizes when storing in DB' do
-      # Store node data
-      RamSize.new.store('goodnode')
-
-      # Make sure store method properly summed ram sizes
-      expect(@db_table.where(node: 'goodnode').get(:value)).to eq(30)
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'sequel'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../cache.rb'
+require_relative '../util.rb'
 
 class BasePlugin
   SECONDS_IN_DAY = 60 * 60 * 24

@@ -1,7 +1,7 @@
 require 'rufus/scheduler'
 require_relative 'collectors.rb'
 require_relative 'environment.rb'
-require_relative 'lib/cache.rb'
+require_relative 'lib/util.rb'
 
 cache = Cache.new(ENV['CACHE_FILE'])
 s = Rufus::Scheduler.new
