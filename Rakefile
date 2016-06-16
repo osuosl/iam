@@ -1,12 +1,13 @@
 # require 'sequel'
 require 'rake'
 require 'rspec/core/rake_task'
-require File.expand_path '../environment.rb', __FILE__
+require_relative 'environment'
 
 task default: [:run]
 
 task run: [:migrate] do
   ruby 'app.rb'
+  ruby 'scheduler.rb'
 end
 
 task :migrate, [:version] do |t, args|

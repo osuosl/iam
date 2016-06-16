@@ -51,6 +51,10 @@ class Cache
     end
   end
 
+  def keys
+    return @hash.keys
+  end
+
   def __ensure_path
     directory = File.dirname(@path)
     FileUtils.mkdir_p(directory) unless File.directory?(directory)
