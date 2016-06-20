@@ -9,3 +9,6 @@ venv/
 dockerfiles/app.env
 *.db
 dump.rdb
+.*.swo
+.*.swp
+.iam-cache

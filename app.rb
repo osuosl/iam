@@ -1,5 +1,5 @@
 require 'sinatra/base'
-require_relative 'environment.rb'
+require_relative 'environment'
 
 # IAM - a resource usage metric collection and reporting system
 class Iam < Sinatra::Base
@@ -10,9 +10,11 @@ class Iam < Sinatra::Base
   (Dir['plugins/*/plugin.rb'] + Dir['routes/*.rb']).each do |file|
     require file
   end
+
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
+
+  run! unless ENV['RACK_ENV'] == 'test'
 end
-Iam.run!

@@ -7,33 +7,33 @@ module Sinatra
       # Projects
       ##
 
-      app.get '/projects/new' do
+      app.get '/projects/new/?' do
         # get new project form
         erb :'projects/edit'
       end
 
-      app.get '/projects/:id' do
+      app.get '/projects/:id/?' do
         # view a project
         @project = Project[id: params[:id]]
         halt 404, 'Project not found' if @project.nil?
         erb :'projects/show'
       end
 
-      app.get '/projects/:id/edit' do
+      app.get '/projects/:id/edit/?' do
         # get project edit form
         @project = Project[id: params[:id]]
         halt 404, 'Project not found' if @project.nil?
         erb :'projects/edit'
       end
 
-      app.get '/projects' do
+      app.get '/projects/?' do
         # get a list of all projects
         @projects = Project.each { |x| p x.name }
         erb :'projects/index'
       end
 
       # This could also be PUT
-      app.post '/projects' do
+      app.post '/projects/?' do
         # recieve new project
         project = Project.create(name:        params[:name],
                client_id:   Iam.settings.DB[:clients]
@@ -44,7 +44,7 @@ module Sinatra
         redirect "/projects/#{project.id}"
       end
 
-      app.patch '/projects' do
+      app.patch '/projects/?' do
         # recieve an updated project
         project = Project[id: params[:id]]
         project.update(name:        params[:name] || project.name,
@@ -56,7 +56,7 @@ module Sinatra
         redirect "/projects/#{params[:id]}"
       end
 
-      app.delete '/projects/:id' do
+      app.delete '/projects/:id/?' do
         # delete a project
         @project = Project[id: params[:id]]
         @project.delete unless @project.nil?

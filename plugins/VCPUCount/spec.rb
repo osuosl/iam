@@ -4,46 +4,27 @@ describe 'VCPUCount plugin' do
     @db_table = Iam.settings.DB[:vcpu_count_measurements]
   end
 
-  # Register method
-  describe '.register method' do
-    it 'does not raise an error when invoked' do
-      expect { VCPUCount.new.register }.to_not raise_error
-    end
-
-    it 'creates a vcpu_count_measurements table' do
-      # Table shouldn't exist before registration
-      expect do
-        Iam.settings.DB.table_exists?(:vcpu_count_measurements).to be_false
-      end
-
-      VCPUCount.new.register
-
-      # Table should exist after registration
-      expect do
-        Iam.settings.DB.table_exists?(:vcpu_count_measurements).to be_true
-      end
-    end
-  end
-
   # Store method
   describe '.store method' do
     before(:all) do
-      @redis = Redis.new(host: ENV['REDIS_HOST'])
+      @cache = Cache.new(ENV['CACHE_FILE'])
     end
 
     before(:each) do
-      @redis.mset('goodnode', JSON.generate(num_cpus: '8', active: true),
-                  'badnode', JSON.generate(num_cpu: 'eight', active: true))
+      @cache.set('goodnode', num_cpus: '8', active: true)
+      @cache.set('badnode', num_cpu: 'eight', active: true)
+      @cache.write
     end
 
     after(:each) do
-      @redis.del('goodnode')
-      @redis.del('badnode')
+      @cache.del('goodnode')
+      @cache.del('badnode')
+      @cache.write
       @db_table.where(node: %w(badnode goodnode)).delete
     end
 
     it 'does not fail with valid data' do
-      # Store redis nodes in DB, no error
+      # Store cached nodes in DB, no error
       expect { VCPUCount.new.store('goodnode') }.to_not raise_error
 
       # Check that store actually stored the node
@@ -72,40 +53,6 @@ describe 'VCPUCount plugin' do
       # Make sure store method properly stored integer representation of
       # num_cpus
       expect(@db_table.where(node: 'goodnode').get(:value)).to eq(8)
-    end
-  end
-
-  # Report method
-  describe '.report method' do
-    before(:all) do
-      VCPUCount.new # Make sure initialize is called
-      @db_table.insert(created: Time.now,
-                       node:    'goodnode',
-                       value:   8)
-    end
-
-    after(:all) do
-      @db_table.where(node: 'goodnode').delete
-    end
-
-    it 'should return data on all nodes for the last day by default' do
-      result = VCPUCount.new.report
-      expect { result.should include(node: 'goodnode') }
-    end
-
-    it 'returns data on a known specific nodes for 1 day' do
-      result = VCPUCount.new.report('goodnode', 1)
-      expect { result.should include(node: 'goodnode') }
-      expect { result.should include(value: 8) }
-    end
-
-    it 'returns empty on unknown node' do
-      result = VCPUCount.new.report('8', 1)
-      expect { result.to be_empty }
-    end
-
-    it 'should return TypeError on invalid day input' do
-      expect { VCPUCount.new.report('*', 'one') }.to raise_error(TypeError)
     end
   end
 end

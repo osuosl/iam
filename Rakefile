@@ -1,12 +1,13 @@
 # require 'sequel'
 require 'rake'
 require 'rspec/core/rake_task'
-require File.expand_path '../environment.rb', __FILE__
+require_relative 'environment'
 
 task default: [:run]
 
 task run: [:migrate] do
   ruby 'app.rb'
+  ruby 'scheduler.rb'
 end
 
 task :migrate, [:version] do |t, args|
@@ -36,7 +37,7 @@ end
 # rake spec
 RSpec::Core::RakeTask.new(:spec) do |t|
   ENV['RACK_ENV'] = 'test'
-  t.pattern = Dir.glob('{spec,plugins}/**/*spec.rb')
+  t.pattern = Dir.glob('{lib,spec,plugins}/**/*spec.rb')
   t.rspec_opts = '--format documentation'
 end
 
