@@ -12,8 +12,8 @@ describe 'RamSize plugin' do
     end
 
     before(:each) do
-      @cache.set('goodnode', total_ram_meas: '512', active: true)
-      @cache.set('badnode', total_ram_meas: '[1024,256]', active: true)
+      @cache.set('goodnode', total_ram: '512', active: true)
+      @cache.set('badnode', total_ram: '[1024,256]', active: true)
       @cache.write
     end
 
@@ -38,11 +38,11 @@ describe 'RamSize plugin' do
     it 'does not crash when passed improperly formatted data' do
       # Don't crash on bad info, but don't store anything either
       expect { RamSize.new.store('badnode') }.to_not raise_error
-      expect { @db_table.where(node: 'badnode').to not_exist }
+      expect(@db_table.where(node: 'badnode').all).to be_empty
 
       # Store good info
       RamSize.new.store('goodnode')
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode').all).to_not be_nil
     end
   end
 end

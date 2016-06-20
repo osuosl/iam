@@ -22,14 +22,16 @@ class RamSize < BasePlugin
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
-    if node_info['total_ram_meas'].nil? || node_info['total_ram_meas'] == 'unknown'
-      raise "No total_ram_meas information for #{fqdn}"
+    if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
+      raise "No total_ram information for #{fqdn}"
+    elsif not node_info['total_ram'].is_number?
+      raise "total_ram information for #{fqdn} malformed (should be number)"
     end
 
     # Insert data into disk_size_measurements table
     @@database[@@table].insert(
       node:          fqdn,
-      value:         node_info['total_ram_meas'].to_i,
+      value:         node_info['total_ram'].to_i,
       active:        node_info['active'],
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
