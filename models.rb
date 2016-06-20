@@ -35,6 +35,10 @@ end
 # String    :storage_table
 # String    :units
 class Plugin < Sequel::Model
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
 end
 
 # Node Resource data model
@@ -47,4 +51,8 @@ end
 # DateTime  :modified
 class NodeResource < Sequel::Model
   many_to_one :projects
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
 end

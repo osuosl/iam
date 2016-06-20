@@ -14,6 +14,8 @@ describe 'The Clients endpoint' do
   it 'responds OK' do
     get '/clients'
     expect(last_response).to be_ok
+    get '/clients/'
+    expect(last_response).to be_ok
   end
 
   it 'includes the names of existing clients' do

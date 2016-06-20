@@ -33,7 +33,7 @@ class Iam < Sinatra::Base
   require 'uri'
   require 'openssl'
   require 'json'
-  require 'redis'
+  require_relative 'lib/cache.rb'
 
   # Test stuff
   if env == 'development' || env == 'test'
@@ -60,5 +60,4 @@ class Iam < Sinatra::Base
   end
 
   set :DB, Sequel.connect(settings.database) if defined? settings.database
-  set :REDIS, Redis.new(host: ENV['REDIS_HOST']) if defined? ENV['REDIS_HOST']
 end

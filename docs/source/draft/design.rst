@@ -43,8 +43,19 @@ at least 15 minutes prior.
 #. Run a GET request against each
    ``<cluster-fqdn>/<ganeti-version>/instances?bulk=1``
 
-#. Store the returned JSON in a cache such as redis
-   (http://redis.io/documentation) with the cluster name and a datetime.
+#. Store the returned JSON in a cache with the cluster name and a datetime.
+
+The Cache
+~~~~~~~~~
+
+Our temporary cache is stored in a ``Cache`` object. The source code for this
+can be found in ``lib/cache.rb``. Basically all it does is:
+
+* Read in a JSON key:value store into a Ruby hash.
+* Write that hash to the cache file with the ``.write`` method.
+* Provides the ``.get`` and ``.set`` methods.
+
+K.I.S.S.
 
 Metrics Gathering
 ~~~~~~~~~~~~~~~~~
@@ -80,67 +91,57 @@ This is the general procedure for collecting data:
 #. This data is compiled into a generic object and returned to the user as a
    CSV, JSON object, or whatever they want really.
 
-Pre-Processing Proof of Concept
--------------------------------
 
-This is a simple ruby script to serve as a proof of concept for pre-processing
-Ganeti clusters. The script stores the resulting JSON data in redis at
-``<fqdn>`` and the datetime of the request at ``<fqdn>:<datetime>``.
+.. I'm not sure this will work so I'm commenting it out for now.
 
-**TODO:** Query our database of resources for unique ganeti cluster fqdns and
-iterate over those instead of the hard-coded fqdn list.
+..  Pre-Processing Proof of Concept
+..  -------------------------------
 
-Try this out:
+..  This is a simple ruby script to serve as a proof of concept for
+..  pre-processing Ganeti clusters. The script stores the resulting JSON data
+..  in the cache at ``<fqdn>`` and the datetime of the request at
+..  ``<fqdn>:<datetime>``.
 
-#. copy the below script into a file called ``rapi-interface.rb``.
+..  **TODO:** Query our database of resources for unique ganeti cluster fqdns
+..  and iterate over those instead of the hard-coded fqdn list.
 
-#. ``gem install redis``
+..  Try this out:
 
-#. install redis - http://redis.io/topics/quickstart
+..  #. copy the below script into a file called ``rapi-interface.rb``.
 
-#. start redis in another terminal - http://redis.io/topics/quickstart under
-   ``Starting Redis`` heading.
+..  #. run ``ruby rapi-interface.rb``
 
-#. run ``ruby rapi-interface.rb``
+..  .. code-block:: ruby
 
-#. cd to your installed redis source code - ``redis-stable/src/``.
+..     require 'net/http'
+..     require 'uri'
+..     require 'openssl'
+..     require 'json'
 
-#. run ``./redis-cli`` and try ``get ganeti-psf.osuosl.bak``. You should get a
-   ton of JSON back. Alternatively you can try
-   ``get ganeti-psf.osuosl.bak:datetime`` and you should get a datetime back.
+..     cache = Cache.new
 
-.. code-block:: ruby
+..     # TODO: Query database for each unique cluster fqdn
+..     # for each cluster fqdn, append port number, endpoint, and query
+..     fqdn = ['ganeti-psf.osuosl.bak', 'ganeti-civicrm.osuosl.bak']
+..     fqdn.each do |name|
+..         endpoint = ':5080/2/instances'
+..         query = '?bulk=1'
+..         url = 'https://' + name + endpoint + query
+..         uri = URI(url)
 
-   require 'net/http'
-   require 'uri'
-   require 'openssl'
-   require 'json'
-   require 'redis'
+..         Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https',
+..                         :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
+..             # perform get request on full path.
+..             request = Net::HTTP::Get.new uri
+..             response = http.request request # Net::HTTPResponse object
 
-   redis = Redis.new
+..             # Store returned information in cache with datetime and cluster name
+..             cache.set(name, response.body)
+..             cache.set(name + ':datetime', Time.new.inspect)
+..         end
+..     end
 
-   # TODO: Query database for each unique cluster fqdn
-   # for each cluster fqdn, append port number, endpoint, and query
-   fqdn = ['ganeti-psf.osuosl.bak', 'ganeti-civicrm.osuosl.bak']
-   fqdn.each do |name|
-       endpoint = ':5080/2/instances'
-       query = '?bulk=1'
-       url = 'https://' + name + endpoint + query
-       uri = URI(url)
-
-       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https',
-                       :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
-           # perform get request on full path.
-           request = Net::HTTP::Get.new uri
-           response = http.request request # Net::HTTPResponse object
-
-           # Store returned information in redis with datetime and cluster name
-           redis.set(name, response.body)
-           redis.set(name + ':datetime', Time.new.inspect)
-       end
-   end
-
-   # To retrieve the the cluster information, use redis.get and JSON.parse. This
-   # will give you a ruby hash of the cluster information.
-   #
-   # cluster_info = JSON.parse(redis.get("ganeti-psf.osuosl.bak"))
+..     # To retrieve the the cluster information, use cache.get and JSON.parse.
+..     # This will give you a ruby hash of the cluster information.
+..     #
+..     # cluster_info = JSON.parse(cache.get("ganeti-psf.osuosl.bak"))
