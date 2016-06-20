@@ -14,6 +14,8 @@ describe 'The Projects endpoint' do
   it 'responds OK' do
     get '/projects'
     expect(last_response).to be_ok
+    get '/projects/'
+    expect(last_response).to be_ok
   end
 
   it 'includes the names of existing projects' do
