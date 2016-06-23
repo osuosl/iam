@@ -17,3 +17,4 @@ Contents:
    :maxdepth: 2
 
    draft/index
+   meeting-notes/index
