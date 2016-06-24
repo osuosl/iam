@@ -1,0 +1,55 @@
+.. _2016_06_23:
+
+Thursday, June 23, 2016
+=======================
+
+This meeting spec'd out the project's goals for the next week through Thursday,
+June 30th.
+
+Developers
+----------
+
+Recently a few OSL devs decided to start working on IaM. They are:
+
+- `athai`_ is able to work on IaM and will be dedicating about 12 hrs this
+  sprint to the project.
+- `subnomo`_ is out of the office this sprint.
+- `alxngyn`_ is going to donate about 90% of this time on IaM.
+- `elijahcaine`_ is going to donate about 60% of this time (30 hrs) on IaM.
+- `LyonesGamer`_ is not able to work on IaM until his work on TimeSync-Node
+  wraps up.
+- `kennric`_ will be working on IaM for about 10 hrs this sprint.
+
+.. note:: all names are Github user names and link to GH user pages.
+
+.. _LyonesGamer: https://github.com/LyonesGamer
+.. _subnomo: https://github.com/subnomo
+.. _alxngyn: https://github.com/alxngyn
+.. _elijahcaine: https://github.com/elijahcaine
+.. _athai: https://github.com/athai
+.. _kennric: https://github.com/kennric
+
+Tasks for this sprint
+---------------------
+
+Our main goals this sprint are:
+
+#. Get an instance of IaM up and running collecting data.
+#. Get a rudimentary views setup for projects, nodes, and clients.
+#. Get `athai`_ and `subnomo`_ up to speed on the project.
+    - https://github.com/osuosl/iam/issues/99 will be tacked by `athai`_
+    - https://github.com/osuosl/iam/issues/81 will be worked on by `subnomo`_
+      most likely, if he has time.
+
+Current Blockers
+----------------
+
+These two Pull Requests are blocking `alxngyn`_ from implementing the views for
+Projects, Clients, and Nodes:
+
+- updated app.rb for method_override, port and host
+  (https://github.com/osuosl/iam/pull/87)
+- Node resource CRUD (https://github.com/osuosl/iam/pull/85)
+
+There are also a few PRs blocking the deployment, including our Ansible
+playbooks for deploying the app which needs to be reviewed one last time.
