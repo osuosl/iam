@@ -1,12 +1,10 @@
+
 <div class="container">
-       <form action='/clients' method='post'>
-         <input type="hidden" name="_method" value="patch">
-         <input type="hidden" name="id" value="<%= @client.id %>">
+       <form action='/clients' name="createForm" method='post' onsubmit="return validateForm()">
          <table class="table">
            <thead>
              <tr>
                <th>Name</th>
-               <th>Old</th>
                <th>New</th>
              </tr>
            </thead>
@@ -14,25 +12,11 @@
              <tr>
                <td>name</td>
                <td>
-                 <% if @client %>
-                   <%= @client.name %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
                  <input type="text" name="name" placeholder="New name">
                </td>
              </tr>
              <tr>
                <td>contact_name</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.contact_name %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
                <td>
                  <input type="text" name="contact_name" placeholder="New contact_name">
                </td>
@@ -41,33 +25,29 @@
              <tr>
                <td>description</td>
                <td>
-                 <% if @client %>
-                   <%= @client.description %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
                  <input type="text" name="description" placeholder="New description">
                </td>
              </tr>
              <tr>
                <td>contact_email</td>
                <td>
-                 <% if @client %>
-                   <%= @client.contact_email %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
                  <input type="text" name="contact_email" placeholder="New contact_email">
                </td>
              </tr>
            </tbody>
          </table>
-         <input type="submit" value="Update" class="btn btn-primary">
+         <input type="submit" value="Create" class="btn btn-primary">
        </form>
      </div>
    </div>
    <br>
+
+   <script>
+   function validateForm() {
+       var x = document.forms["createForm"]["name"].value;
+       if (x == null || x == "") {
+           alert("Name must be filled out");
+           return false;
+       }
+   }
+   </script>

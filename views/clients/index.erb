@@ -1,7 +1,48 @@
-<table>
-<% for @client in @clients %>
-<tr>
-	<td><%= @client.name %><td>
-</tr>
-<% end %>
-</table>
+
+      <div class="container">
+        <br>
+        <div class="title">
+          <h2>Clients List</h2>
+          <a href="#">Create</a>
+        </div>
+        <br>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Client Name</th>
+              <th>Contact Name</th>
+							<th>Contact Email</th>
+              <th>Description</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+						<% for @client in @clients %>
+            <tr>
+              <th scope="row"><%= @client.id %></th>
+							<td>
+								<a href="clients/<%= @client.id %>" >
+									<%= @client.name %>
+								</a>
+							</td>
+							<td>
+								<%= @client.contact_name %>
+							</td>
+							<td>
+								<%= @client.contact_email %>
+							</td>
+							<td>
+								<%= @client.description %>
+							</td>
+              <td>
+								<a href="clients/<%= @client.id %>/edit" >
+									Edit
+								</a>
+							</td>
+            </tr>
+						<% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
