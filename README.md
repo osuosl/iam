@@ -13,7 +13,7 @@ Design and research phase - 1-27-16
 
 ## Development With `docker`
 
-Invoicing and Metric (iam) is developed in `docker` using `docker-compose`:
+Invoicing and Metrics (iam) is developed in `docker` using `docker-compose`:
 
 - `docker` version 1.10.3
 - `docker-compose` version 1.6.2.
@@ -119,27 +119,53 @@ You may be prompted to `bundle install`.
 
 ## Development Without `docker`
 
-If you do not want to install `docker` and `docker-copmose` and instead want to
-run the service natively you can try installing the following packages:
+If you do not want to install `docker` and `docker-compose` and instead want to
+run the service natively you can try installing the following packages with
+your system package manager:
 
+- `git`
 - `sqlite-devel`
 - `postgresql`
 - `postgresql-devel`
 - `ruby-2.3.0` and `gem`
-- `gem install bundle`
 
-Unfortunately we are not able to help with getting `postgresql` up and running
-on your system, but there's plenty of tutorials that *can* help with that.
+**Note**: You may need to install `ruby-2.3.0` from source. [Here is a page
+that can help you install
+ruby-2.3.0](https://www.ruby-lang.org/en/documentation/installation/). This may require the installation of the following dependencies:
 
-If you do have problems installing your system, try reading the
-`dockerfiles/app` file to see how the docker environment is created (it's
-basically a bash script). If you're still having problems setting up your
-environment please feel free to make an issue and we'll help out.
+- `gcc` and `gcc-c++`
+- `openssl` and `openssl-devel`
+- `zlib-devel`
+
+**Note:** Using Ruby's `gem` package manager install `bundle`.
+
+Next, clone the repo. Run this command in the directory that you use to store
+your source code and the Ruby dependencies.
+
+```
+$ git clone https://github.com/osuosl/iam.git /home/myuser/my-source-dir/iam
+$ cd /home/myuser/my-source-dir/iam/
+[~/my-source-dir/iam] $ bundle install
+[... yay bundle! ...]
+```
+
+**Note** Unfortunately we are not able to help with getting `postgresql` up and
+running on your system, but there's plenty of tutorials that *can* help with
+that. For instance, [the PostgreSQL
+documentation](https://www.postgresql.org/docs/9.2/static/index.html)
+
+If you have problems getting setting up IaM try the following:
+
+- Read the `dockerfiles/app` file to see how we setup the docker environments,
+  which are known to work. This may require some digging, but should give you a
+  starting point.
+- Make an issue on this repo! We will try to help you get setup and/or direct
+  you to some helpful documentation.
 
 ### Setting up the Environment
 
-You'll need to add a few environment variables to your computer. I suggest
-adding the following the lines to your `.bashrc`:
+You'll need to add a few environment variables to your computer. Add the
+following the lines to your `.bashrc`:
 
 ```
 export POSTGRES_PASSWORD=changeme   # your postgres password
@@ -152,11 +178,11 @@ and reload your shell with `source ~/.bashrc`.
 ### Running tests
 
 ```
-$ rake spec
+[~/my-source-dir/iam] $ rake spec
 [... tests running ...]
 Finished in 0.1669 seconds (files took 0.36978 seconds to load)
 60 examples, 0 failures
-$ rake
+[~/my-source-dir/iam] $ rake
 Migrating to latest
 /usr/local/bin/ruby app.rb
 == Sinatra (v1.4.7) has taken the stage on 4567 for development with backup from Thin
@@ -167,22 +193,30 @@ Listening on localhost:4567, CTRL+C to stop
 
 ### Troubleshooting
 
-**Problem:** When you try to run the app with `rake spec` or `ruby app.rb` and
-receive errors like:
+**Problem:** *Running the app with `rake spec` or `ruby app.rb` you receive
+errors like*:
 
 ```
 Could not find parser-2.3.0.7 in any of the sources
 Run `bundle install` to install missing gems.
 ```
 
-This represents that your docker image has gem dependencies that are out of
+This means that your Docker image has gem dependencies that are out of
 date.
 
-**To fix:** Run `docker-compose build --no-cache`. This will rebuild the
-container and rerun the command `bundle install` to refresh all the gems
+**To fix:** Run
+```
+docker-compose build --no-cache
+```
 
-**Problem:** ``docker`` or ``docker-compose`` does not work, or you get an
-error along the lines of
+This will rebuild the container and rerun the command `bundle install` to
+refresh all the gems.
+
+If you are not running in a docker container, just run `bundle install` like
+the error says.
+
+**Problem:** *``docker`` or ``docker-compose`` does not work, or you get an
+error along the lines of:*
 
 ```
 $ docker-compose run dev bash
@@ -190,9 +224,9 @@ Could not find file <some file>
 [root@9eea4caf7740 code]#
 ```
 
-or you might get something like `too many symbolic links`.
+*or you might get something like `too many symbolic links`*.
 
-Just `exit` the docker environment and run
+**To fix:** Just `exit` the docker environment and run
 
 ```
 $ sudo systemctl restart docker

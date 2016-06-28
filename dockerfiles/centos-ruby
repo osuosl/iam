@@ -3,7 +3,7 @@ FROM centos:latest
 MAINTAINER voigte@osuosl.org
 
 RUN yum -y groupinstall "Development Tools"
-RUN yum -y install openssl zlib-devel openssl-devel
+RUN yum -y install gcc gcc-c++ openssl zlib-devel openssl-devel
 
 WORKDIR /tmp/
 
