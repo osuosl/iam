@@ -15,9 +15,5 @@ class Iam < Sinatra::Base
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
 
-  enable :method_override
-  set :port, 4567
-  set :bind, '0.0.0.0'
-
   run! unless ENV['RACK_ENV'] == 'test'
 end
