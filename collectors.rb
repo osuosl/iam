@@ -40,7 +40,7 @@ class Collectors
             total_ram          = node['beparams']['memory']       || 'unknown'
             active_meas        = node['oper_state']
 
-            @cache.set(node_name, @template.result(binding))
+            @cache.set(node_name, JSON.parse(@template.result(binding)))
             @cache.set(node_name + ':datetime', Time.new.inspect)
           end
           # To retrieve the the node information, use cache.get and JSON.parse.
