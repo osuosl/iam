@@ -49,6 +49,8 @@ describe 'The Client Model and table' do
     client = Client.create(name: 'Delete Me')
     expect(client).to exist
     expect { client.delete }.to_not raise_error
+### Test passes but it doesn't seem like the item is actually deleted?
+### Can still be accessed/printed -- is that supposed to happen??
     expect(client).to_not exist
   end
 

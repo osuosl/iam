@@ -10,17 +10,18 @@ describe 'BasePlugin plugin' do
       expect { TestingPlugin.new.register }.to_not raise_error
     end
 
+### These two tests are broken ###
     it 'creates a test_plugin_measurements table' do
       # Table shouldn't exist before registration
       expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
+        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
       end
 
       TestingPlugin.new.register
 
       # Table should exist after registration
       expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
+        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
       end
     end
   end
@@ -63,11 +64,11 @@ describe 'BasePlugin plugin' do
              :value=>29}])
     end
 
-    it 'does not return data on know specific resource out of date range' do
+    it 'does not return data on known specific resource out of date range' do
       expect(TestingPlugin.new.report({:resource=>'good_31'})).to eq([])
     end
 
-    it 'does return data on know specific resource with custom date range' do
+    it 'does return data on known specific resource with custom date range' do
       expect(TestingPlugin.new.report({:resource=>'good_31'},
                                    THIRTY_ONE_DAYS_AGO - 1 * DAYS,
                                    THIRTY_ONE_DAYS_AGO)).to\
@@ -79,12 +80,14 @@ describe 'BasePlugin plugin' do
       expect(TestingPlugin.new.report({:resource=>'bad_1'})).to eq([])
     end
 
+### This test also seems to pass arbitrarily
     it 'returns TypeError on invalid day input' do
       expect { TestingPlugin.new.report({:resource=>'good_1'}, start_date='1',
                                     end_date='2') }.to \
         raise_error(TypeError)
     end
 
+### But this one is okay
     it 'returns ArgumentError on inverted date range' do
       expect { TestingPlugin.new.report({:resource=>'good_1'},
                                      start_date=ONE_DAY_AGO,
