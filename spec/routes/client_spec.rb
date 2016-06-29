@@ -105,4 +105,40 @@ describe 'The Clients endpoint' do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('Not Boring!')
   end
+
+  # sinatra has no way of checking which template is rendered, so we will
+  # check for HTML code
+  it '/clients renders the index template' do
+    get '/clients'
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include('Clients List')
+  end
+
+  it '/clients/new renders the create template' do
+    get '/clients/new'
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include('name="createForm"')
+  end
+
+  it '/clients/1 renders the show template' do
+    get '/clients/1'
+    if last_response.status == 200
+      # id found
+      expect(last_response.body).to include('/clients/1/edit')
+    else
+      # id not found
+      expect(last_response.status).to eq(404)
+    end
+  end
+
+  it '/clients/1/edit renders the edit template' do
+    get '/clients/1/edit'
+    if last_response.status == 200
+      # id found
+      expect(last_response.body).to include('<input type="hidden" name="_method" value="patch">')
+    else
+      # id not found
+      expect(last_response.status).to eq(404)
+    end
+  end
 end

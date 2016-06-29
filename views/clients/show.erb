@@ -1,6 +1,8 @@
         <div class="container">
 
-        <h2>Client: <%= @client.name %> </h2>
+        <h2>Client: <%= @client.name %> -
+        <a href="/clients/<%= @client.id %>/edit">edit</a>
+        </h2>
         <p>
           Name: <%= @client.contact_name %> <br>
           Email: <%= @client.contact_email %> <br>
