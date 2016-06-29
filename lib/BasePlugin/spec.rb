@@ -15,6 +15,7 @@ describe 'BasePlugin plugin' do
     it 'creates a test_plugin_measurements table' do
       # Table shouldn't exist before registration
       expect do
+        # (...).to be_false --> (...).to be_true = passing test
         Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
       end
 
@@ -22,6 +23,7 @@ describe 'BasePlugin plugin' do
 
       # Table should exist after registration
       expect do
+        # (...).to be_true --> (...).to be_false = passing test
         Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
       end
     end
