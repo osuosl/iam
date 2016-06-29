@@ -10,18 +10,19 @@ describe 'BasePlugin plugin' do
       expect { TestingPlugin.new.register }.to_not raise_error
     end
 
-### These two tests are broken ###
+    # The following two tests pass, regardless of whether they're set
+    # to be_true/be_false
     it 'creates a test_plugin_measurements table' do
       # Table shouldn't exist before registration
       expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
+        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
       end
 
       TestingPlugin.new.register
 
       # Table should exist after registration
       expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
+        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
       end
     end
   end
@@ -80,14 +81,12 @@ describe 'BasePlugin plugin' do
       expect(TestingPlugin.new.report({:resource=>'bad_1'})).to eq([])
     end
 
-### This test also seems to pass arbitrarily
     it 'returns TypeError on invalid day input' do
       expect { TestingPlugin.new.report({:resource=>'good_1'}, start_date='1',
                                     end_date='2') }.to \
         raise_error(TypeError)
     end
 
-### But this one is okay
     it 'returns ArgumentError on inverted date range' do
       expect { TestingPlugin.new.report({:resource=>'good_1'},
                                      start_date=ONE_DAY_AGO,

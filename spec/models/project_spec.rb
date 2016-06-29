@@ -49,7 +49,7 @@ describe 'The Project Model and table' do
     project = Project.create(name: 'Delete Me')
     expect(project).to exist
     expect { project.delete }.to_not raise_error
-### Test passes as should, but deleted project can still be accessed?
+    ### Test passes as should, but deleted project can still be accessed?
     expect(project).to_not exist
     print project.name
   end
