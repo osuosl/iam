@@ -10,22 +10,16 @@ describe 'BasePlugin plugin' do
       expect { TestingPlugin.new.register }.to_not raise_error
     end
 
-    # The following two tests pass, regardless of whether they're set
-    # to be_true/be_false
     it 'creates a test_plugin_measurements table' do
       # Table shouldn't exist before registration
-      expect do
-        # (...).to be_false --> (...).to be_true = passing test
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
-      end
+      expect(Iam.settings.DB.table_exists?(
+        :test_plugin_measurements)).to be false
 
       TestingPlugin.new.register
 
       # Table should exist after registration
-      expect do
-        # (...).to be_true --> (...).to be_false = passing test
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
-      end
+      expect(Iam.settings.DB.table_exists?(
+        :test_plugin_measurements)).to be true
     end
   end
 

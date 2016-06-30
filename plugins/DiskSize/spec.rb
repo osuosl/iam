@@ -30,7 +30,7 @@ describe 'DiskSize plugin' do
 
       # Check that store actually stored the node
       # Still passes when goodnode --> anything, to --> to_not,
-      #   exist --> not_exist
+      print (@db_table.where(node: 'goodnode')), "\n", @db_table, "\n"
       expect { @db_table.where(node: 'goodnode').to exist }
     end
 
