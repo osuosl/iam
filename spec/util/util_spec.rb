@@ -1,15 +1,11 @@
 require File.expand_path '../../spec_helper.rb', __FILE__
 
-describe 'The utility tests' do
+describe 'The Utility tests' do
   def app
     Iam
   end
 
   include Rack::Test::Methods
-
-  def app
-    Iam
-  end
 
   before(:all) do
     # anything that should happen before all tests
