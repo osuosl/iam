@@ -56,8 +56,7 @@ module Sinatra
                     name:       params[:name] || node.name,
                     type:       params[:type] || node.type,
                     cluster:    params[:cluster] || node.cluster,
-                    created:    params[:created] || node.created,
-                    modified:   params[:modified] || node.modified)
+                    modified:   DateTime.now || node.modified)
         redirect "/node/#{params[:id]}"
       end
 
