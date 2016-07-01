@@ -27,9 +27,8 @@ describe 'DiskTemplate plugin' do
       # Store cached nodes in DB, no error
       expect { DiskTemplate.new.store('goodnode') }.to_not raise_error
 
-      # This bit arbitrarily passes
       # Check that store actually stored the node
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'fails when not passed node name' do
@@ -40,13 +39,11 @@ describe 'DiskTemplate plugin' do
     it 'does not crash when passed improperly formatted data' do
       # Don't crash on bad info, but don't store anything either
       expect { DiskTemplate.new.store('badnode') }.to_not raise_error
-      # Still passes when not_exist --> exist
-      expect { @db_table.where(node: 'badnode').to not_exist }
+      expect(@db_table.where(node: 'badnode')).to be_empty
 
       # Store good info
       DiskTemplate.new.store('goodnode')
-      # Same thing here -- doesn't actually check for object existence
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'stores the right thing in the value field' do

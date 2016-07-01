@@ -28,8 +28,7 @@ describe 'VCPUCount plugin' do
       expect { VCPUCount.new.store('goodnode') }.to_not raise_error
 
       # Check that store actually stored the node
-      # Arbitrarily passes
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'fails when not passed node name' do
@@ -40,13 +39,11 @@ describe 'VCPUCount plugin' do
     it 'does not crash when passed improperly formatted data' do
       # Don't crash on bad info, but don't store anything either
       expect { VCPUCount.new.store('badnode') }.to_not raise_error
-      # Same as above
-      expect { @db_table.where(node: 'badnode').to not_exist }
+      expect(@db_table.where(node: 'badnode')).to be_empty
 
       # Store good info
       VCPUCount.new.store('goodnode')
-      # That bug about invalid existence checking again
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'stores the right thing in the value field' do
