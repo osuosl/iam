@@ -14,6 +14,7 @@ class Iam < Sinatra::Base
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
+  register Sinatra::NodeRoutes
 
   run! unless ENV['RACK_ENV'] == 'test'
 end
