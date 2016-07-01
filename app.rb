@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require_relative 'environment'
+require_relative 'scheduler'
 
 # IAM - a resource usage metric collection and reporting system
 class Iam < Sinatra::Base

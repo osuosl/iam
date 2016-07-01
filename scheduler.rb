@@ -4,6 +4,7 @@ require_relative 'environment.rb'
 require_relative 'lib/cache.rb'
 
 cache = Cache.new(ENV['CACHE_FILE'])
+
 s = Rufus::Scheduler.new
 
 s.every '30m', first_in: 0.4 do
@@ -29,4 +30,7 @@ s.every '30m', first_in: '15m' do
   end
 end
 
-s.join
+# This line was blocking! This is why we *read the quickstart text* instead of
+# just copying the pretty colorful code blocks.
+#
+# s.join
