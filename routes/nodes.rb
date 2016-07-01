@@ -7,37 +7,37 @@ module Sinatra
       # Node Resource
       ##
 
-      app.get '/node/new' do
+      app.get '/node/new/?' do
         # get new node form
         erb :'nodes/edit'
       end
 
-      app.get '/node/:id' do
+      app.get '/node/:id/?' do
         # view a node
         @node = NodeResource[id: params[:id]]
         halt 404, 'node not found' if @node.nil?
         erb :'nodes/show'
       end
 
-      app.get '/node/:id/edit' do
+      app.get '/node/:id/edit/?' do
         # get node edit form
         @node = NodeResource[id: params[:id]]
         halt 404, 'node not found' if @node.nil?
         erb :'nodes/edit'
       end
 
-      app.get '/nodes' do
+      app.get '/nodes/?' do
         # get a list of all node
         @nodes = NodeResource.all
         erb :'nodes/index'
       end
 
       # This could also be PUT
-      app.post '/nodes' do
+      app.post '/nodes/?' do
         # recieve new node
         node = NodeResource.create(project_id: Iam.settings.DB[:projects]
                                                 .where(name: params[:project_name])
-                                                .get(:id) || node.project_id,
+                                                .get(:id) || '',
                                    name:       params[:name],
                                    type:       params[:type] || '',
                                    cluster:    params[:cluster] || '',
@@ -46,7 +46,7 @@ module Sinatra
         redirect "/node/#{node.id}"
       end
 
-      app.patch '/nodes' do
+      app.patch '/nodes/?' do
         # recieve an updated node
         node = NodeResource[id: params[:id]]
 
@@ -61,7 +61,7 @@ module Sinatra
         redirect "/node/#{params[:id]}"
       end
 
-      app.delete '/node/:id' do
+      app.delete '/node/:id/?' do
         # delete a node
         @node = NodeResource[id: params[:id]]
         @node.delete unless @node.nil?
