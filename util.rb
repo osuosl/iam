@@ -16,6 +16,7 @@ class Util
     end
     return max
   end
+
   def self.min_value(data)
     return 0 if data.empty?
     min = data[0][:value]
@@ -27,6 +28,7 @@ class Util
     end
     return min
   end
+
   def self.average_value(data)
     if data.empty?
       return 0
@@ -37,9 +39,10 @@ class Util
       average += item[:value]
       count += 1
     end
-    average = average / count
+    average /= count
     return average
   end
+
   def self.is_positive_integer_value(data)
     flag = true
     i = 0
