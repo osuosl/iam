@@ -78,7 +78,7 @@ describe 'The Utility tests' do
           node: 'cthalmann.osuosl.org', value: 4, active: true }
       ]
 
-      expect(Util.is_positive_integer_value(@data_set_false)).to eq(false)
+      expect(Util.positive_integer_value?(@data_set_false)).to eq(false)
     end
 
     it 'returns true if all the values of all the items in the array are
@@ -97,7 +97,7 @@ describe 'The Utility tests' do
           created: Time.parse('2016-07-01 21:43:27 +0000'),
           node: 'cthalmann.osuosl.org', value: 4, active: true }
       ]
-      expect(Util.is_positive_integer_value(@data_set_true)).to eq(true)
+      expect(Util.positive_integer_value?(@data_set_true)).to eq(true)
     end
   end
 end
