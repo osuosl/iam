@@ -3,7 +3,7 @@ require 'uri'
 require 'openssl'
 require 'json'
 require 'erb'
-require_relative 'lib/cache'
+require_relative 'lib/util'
 
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
@@ -37,10 +37,10 @@ class Collectors
             num_cpus_meas      = node['oper_vcpus']               ||
                                  node['beparams']['vcpus']        ||
                                  node['custom_beparams']['vcpus'] || 'unknown'
-            total_ram_meas     = node['beparams']['memory']       || 'unknown'
+            total_ram          = node['beparams']['memory']       || 'unknown'
             active_meas        = node['oper_state']
 
-            @cache.set(node_name, @template.result(binding))
+            @cache.set(node_name, JSON.parse(@template.result(binding)))
             @cache.set(node_name + ':datetime', Time.new.inspect)
           end
           # To retrieve the the node information, use cache.get and JSON.parse.
