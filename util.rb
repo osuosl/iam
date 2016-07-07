@@ -23,32 +23,19 @@ class Util
   end
 
   def self.avg_val(data)
-    # return average value
-    return 0 if data.empty?
-    sum = 0
-    data.each do |item|
-      sum += item[:value]
-    end
-    sum / data.length
+    # returns the average of values
+    data.map { |a| a[:value] }.reduce(:+) / data.length
   end
 
   def self.min_val(data)
     # return the minimum of values
     return 0 if data.empty?
-    min = data[0][:value]
-    data.each do |item|
-      min = item[:value] if item[:value] < min
-      return min
-    end
+    data.min { |a, b| a[:value] <=> b[:value] }[:value]
   end
 
   def self.max_val(data)
     # return the maximum of values
     return 0 if data.empty?
-    max = data[0][:value]
-    data.each do |item|
-      max = item[:value] if item[:value] > max
-    end
-    max
+    data.max { |a, b| a[:value] <=> b[:value] }[:value]
   end
 end
