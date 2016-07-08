@@ -13,7 +13,7 @@ describe 'The Data Utility tests' do
     # to test for max: 80
     # to test for min: 2
     # to test for average: 25
-    @data_max_80 = [
+    @test_data = [
       { id: 1, node_resource: nil,
         created: Time.parse('2016-07-01 21:43:27 +0000'),
         node: 'alembic-java.osuosl.org', value: 14, active: true },
@@ -32,7 +32,7 @@ describe 'The Data Utility tests' do
 
   describe 'the util.max_value method' do
     it 'returns the max value' do
-      expect(DataUtil.max_value(@data_max_80)).to eq(80)
+      expect(DataUtil.max_value(@test_data)).to eq(80)
     end
 
     it 'returns 0 for max value if array is empty' do
@@ -42,7 +42,7 @@ describe 'The Data Utility tests' do
 
   describe 'the util.min_value method' do
     it 'returns the min value' do
-      expect(DataUtil.min_value(@data_max_80)).to eq(2)
+      expect(DataUtil.min_value(@test_data)).to eq(2)
     end
 
     it 'returns 0 for min value if array is empty' do
@@ -52,7 +52,7 @@ describe 'The Data Utility tests' do
 
   describe 'the util.average_value method' do
     it 'returns the average value' do
-      expect(DataUtil.average_value(@data_max_80)).to eq(25)
+      expect(DataUtil.average_value(@test_data)).to eq(25)
     end
 
     it 'returns 0 for average of values if array is empty' do
