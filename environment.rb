@@ -33,7 +33,7 @@ class Iam < Sinatra::Base
   require 'uri'
   require 'openssl'
   require 'json'
-  require_relative 'lib/cache.rb'
+  require_relative 'lib/util.rb'
 
   # Test stuff
   if env == 'development' || env == 'test'

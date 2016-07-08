@@ -2,33 +2,30 @@ require File.expand_path '../../spec_helper.rb', __FILE__
 require_relative '../../lib/util.rb'
 require 'time'
 
-describe 'The Utility tests' do
+describe 'The DataUtil class tests' do
   def app
     Iam
   end
 
   include Rack::Test::Methods
-
   before(:all) do
-    # anything that should happen before all tests
-    # Make several data sets with known expected results:
-    # sample_data has a min of 3, max of 80, avg of 33, across ~3 days
-    @sample_data = [
+    # sample data from report method
+    # to test for max: 80
+    # to test for min: 2
+    # to test for average: 25
+    @test_data = [
       { id: 1, node_resource: nil,
         created: Time.parse('2016-07-01 21:43:27 +0000'),
-        node: 'alembic-java.osuosl.org', value: 3, active: true },
+        node: 'alembic-java.osuosl.org', value: 14, active: true },
       { id: 2, node_resource: nil,
         created: Time.parse('2016-07-02 21:43:27 +0000'),
-        node: 'amahi.osuosl.org', value: 16, active: true },
+        node: 'amahi.osuosl.org', value: 2, active: true },
       { id: 3, node_resource: nil,
         created: Time.parse('2016-07-03 21:43:28 +0000'),
-        node: 'answers.ros.osuosl.org', value: 80, active: true }
-    ]
-    # test data of only one day
-    @data_1day = [
-      { id: 1, node_resource: nil,
-        created: Time.parse('2015-06-01 21:43:27 +0000'),
-        node: 'alembic-java.osuosl.org', value: 3, active: true }
+        node: 'answers.ros.osuosl.org', value: 80, active: true },
+      { id: 4, node_resource: nil,
+        created: Time.parse('2016-07-01 21:43:27 +0000'),
+        node: 'cthalmann.osuosl.org', value: 4, active: true }
     ]
     # test data of several hashes in the same day
     @data_several_1day = [
@@ -53,12 +50,6 @@ describe 'The Utility tests' do
     ]
     # test data includes invalid date (in the future)
     @data_future = [
-      { id: 1, node_resource: nil,
-        created: Time.parse('2016-07-01 21:43:27 +0000'),
-        node: 'alembic-java.osuosl.org', value: 3, active: true },
-      { id: 2, node_resource: nil,
-        created: Time.parse('2016-08-04 21:43:27 +0000'),
-        node: 'amahi.osuosl.org', value: 16, active: true },
       { id: 3, node_resource: nil,
         created: Time.now + 100,
         node: 'answers.ros.osuosl.org', value: 80, active: true }
@@ -98,42 +89,62 @@ describe 'The Utility tests' do
         created: '2016-07-01 21:43:27 +0000',
         node: 'alembic-java.osuosl.org', value: -3, active: true }
     ]
-    @empty_data = []
+    @data_empty = []
   end
 
-  it 'Util.max_value method returns correct value' do
-    expect(Util.max_value(@sample_data)).to eq(80)
-    expect(Util.max_value(@empty_data)).to eq(0)
-  end
-  it 'Util.min_value method returns correct value' do
-    expect(Util.min_value(@sample_data)).to eq(3)
-    expect(Util.min_value(@empty_data)).to eq(0)
-  end
-  it 'Util.avg_value method returns correct value' do
-    expect(Util.avg_value(@sample_data)).to eq(33)
-    expect(Util.avg_value(@empty_data)).to eq(0)
+  describe 'the max_value method' do
+    it 'returns the max value' do
+      expect(DataUtil.max_value(@test_data)).to eq(80)
+    end
+
+    it 'returns 0 for max value if array is empty' do
+      expect(DataUtil.max_value(@data_empty)).to eq(0)
+    end
   end
 
-  context 'Util.days_in_range method' do
+  describe 'the min_value method' do
+    it 'returns the min value' do
+      expect(DataUtil.min_value(@test_data)).to eq(2)
+    end
+
+    it 'returns 0 for min value if array is empty' do
+      expect(DataUtil.min_value(@data_empty)).to eq(0)
+    end
+  end
+
+  describe 'the average_value method' do
+    it 'returns the average value' do
+      expect(DataUtil.average_value(@test_data)).to eq(25)
+    end
+
+    it 'returns 0 for average of values if array is empty' do
+      expect(DataUtil.average_value(@data_empty)).to eq(0)
+    end
+  end
+
+  describe 'the days_in_range method' do
     it 'properly handles a range of dates with identical times of day' do
-      expect(Util.days_in_range(@data_matching_times)).to eq(2.0)
+      expect(DataUtil.days_in_range(@data_matching_times)).to eq(2.0)
     end
     it 'returns correct number of days in a range' do
-      expect(Util.days_in_range(@sample_data)).to be_within(0.01).of(3)
-      expect(Util.days_in_range(@data_7days)).to be_within(0.1).of(7)
-      expect(Util.days_in_range(@empty_data)).to eq(0)
+      expect(DataUtil.days_in_range(@test_data)).to be_within(0.01).of(3)
+      expect(DataUtil.days_in_range(@data_7days)).to be_within(0.1).of(7)
+      expect(DataUtil.days_in_range(@data_empty)).to eq(0)
     end
     it 'returns 1.0 for a single day' do
-      expect(Util.days_in_range(@data_1day)).to eq(1.0)
-      expect(Util.days_in_range(@data_several_1day)).to be_within(0.5).of(1.0)
+      expect(DataUtil.days_in_range([@data_several_1day.first])).to eq(1.0)
+      expect(DataUtil.days_in_range(@data_several_1day))
+        .to be_within(0.5).of(1.0)
     end
     it 'properly handles leap years' do
-      expect(Util.days_in_range(@data_leap_year)).to be_within(0.01).of(30)
-      expect(Util.days_in_range(@data_no_leap_year)).to be_within(0.01).of(29)
+      expect(DataUtil.days_in_range(@data_leap_year))
+        .to be_within(0.01).of(30)
+      expect(DataUtil.days_in_range(@data_no_leap_year))
+        .to be_within(0.01).of(29)
     end
     it 'returns nil if called with invalid data' do
-      expect(Util.days_in_range(@data_invalid)).to eq(nil)
-      expect(Util.days_in_range(@data_future)).to eq(nil)
+      expect(DataUtil.days_in_range(@data_invalid)).to eq(nil)
+      expect(DataUtil.days_in_range(@data_future)).to eq(nil)
     end
   end
 end
