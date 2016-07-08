@@ -1,8 +1,8 @@
 require File.expand_path '../../spec_helper.rb', __FILE__
 require 'time'
-require_relative '../../util.rb'
+require_relative '../../lib/util.rb'
 
-describe 'The Utility tests' do
+describe 'The Data Utility tests' do
   def app
     Iam
   end
@@ -32,31 +32,31 @@ describe 'The Utility tests' do
 
   describe 'the util.max_value method' do
     it 'returns the max value' do
-      expect(Util.max_value(@data_max_80)).to eq(80)
+      expect(DataUtil.max_value(@data_max_80)).to eq(80)
     end
 
     it 'returns 0 for max value if array is empty' do
-      expect(Util.max_value(@data_empty)).to eq(0)
+      expect(DataUtil.max_value(@data_empty)).to eq(0)
     end
   end
 
   describe 'the util.min_value method' do
     it 'returns the min value' do
-      expect(Util.min_value(@data_max_80)).to eq(2)
+      expect(DataUtil.min_value(@data_max_80)).to eq(2)
     end
 
     it 'returns 0 for min value if array is empty' do
-      expect(Util.min_value(@data_empty)).to eq(0)
+      expect(DataUtil.min_value(@data_empty)).to eq(0)
     end
   end
 
   describe 'the util.average_value method' do
     it 'returns the average value' do
-      expect(Util.average_value(@data_max_80)).to eq(25)
+      expect(DataUtil.average_value(@data_max_80)).to eq(25)
     end
 
     it 'returns 0 for average of values if array is empty' do
-      expect(Util.average_value(@data_empty)).to eq(0)
+      expect(DataUtil.average_value(@data_empty)).to eq(0)
     end
   end
 end

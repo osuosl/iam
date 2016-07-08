@@ -2,6 +2,7 @@ require 'json'
 require 'erb'
 require 'fileutils'
 require_relative '../environment.rb'
+require 'sinatra/base'
 
 # A simple file-based caching system.
 # Replaces our use of redis.
@@ -64,5 +65,26 @@ end
 class Object
   def is_number?
     self.to_f.to_s == self.to_s || self.to_i.to_s == self.to_s
+  end
+end
+
+# Class to find the min, max, and average of the values in the array of
+# hashes from the report plugin method.
+class DataUtil
+  include Enumerable
+
+  def self.max_value(data)
+    return 0 if data.empty?
+    (data.max { |a, b| a[:value] <=> b[:value] })[:value]
+  end
+
+  def self.min_value(data)
+    return 0 if data.empty?
+    (data.min { |a, b| a[:value] <=> b[:value] })[:value]
+  end
+
+  def self.average_value(data)
+    return 0 if data.empty?
+    (data.reduce(0) { |a, e| a + e[:value] }) / data.length
   end
 end
