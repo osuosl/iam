@@ -12,8 +12,8 @@ describe 'DiskSize plugin' do
     end
 
     before(:each) do
-      @cache.set('goodnode', disk_sizes: '[10,20]', active: true)
-      @cache.set('badnode', disk_size: '[10,20]', active: true)
+      @cache.set('goodnode', disk_sizes: '[10, 20]', active: true)
+      @cache.set('badnode', disk_size: '[10, 20]', active: true)
       @cache.write
     end
 
@@ -47,12 +47,14 @@ describe 'DiskSize plugin' do
       expect { @db_table.where(node: 'goodnode').to exist }
     end
 
-    it 'properly sums all disk sizes when storing in DB' do
+    it 'properly stores all disk sizes when storing in DB' do
       # Store node data
       DiskSize.new.store('goodnode')
 
       # Make sure store method properly summed disk sizes
-      expect(@db_table.where(node: 'goodnode').get(:value)).to eq(30)
+      expect(@db_table.where(node: 'goodnode').get(:disk_count)).to eq(2)
+      expect(@db_table.where(node: 'goodnode').get(:disk1_size)).to eq(10)
+      expect(@db_table.where(node: 'goodnode').get(:disk2_size)).to eq(20)
     end
   end
 end
