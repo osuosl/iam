@@ -3,6 +3,7 @@ require 'erb'
 require 'fileutils'
 require_relative '../environment.rb'
 require 'sinatra/base'
+require 'time'
 
 # A simple file-based caching system.
 # Replaces our use of redis.
@@ -86,5 +87,28 @@ class DataUtil
   def self.average_value(data)
     return 0 if data.empty?
     (data.reduce(0) { |a, e| a + e[:value] }) / data.length
+  end
+
+  # Return the number of days in a range of hashes
+  def self.days_in_range(data)
+    # an empty range is 0 days
+    return 0 if data.empty?
+    earliest = data.first[:created]
+    latest = data.last[:created]
+    now = Time.now()
+    data.each do |line|
+      l = line[:created]
+      # dates must be in a Time format
+      return nil if l.class != Time
+      # dates cannot be in the future
+      return nil if l > now
+      earliest = l if l < earliest
+      latest = l if l > latest
+    end
+    # latest-earliest is number of seconds BETWEEN two timestamps
+    # there are 60*60*24 seconds in every day (even DST)
+    # return 1 day minimum, rounded to 2 decimal places
+    day = 60 * 60 * 24
+    ((latest - earliest + day) / day).round(2)
   end
 end
