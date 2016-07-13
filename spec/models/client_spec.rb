@@ -49,9 +49,7 @@ describe 'The Client Model and table' do
     client = Client.create(name: 'Delete Me')
     expect(client).to exist
     expect { client.delete }.to_not raise_error
-    ### Test passes but the item's name and address can still be printed?
-    expect(client).to_not exist
-    print client, ' ', client.name
+    expect(client.exists?).to be false
   end
 
   it 'can update a client' do
