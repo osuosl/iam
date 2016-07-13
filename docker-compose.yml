@@ -12,6 +12,8 @@ services:
     env_file:
       - ./dockerfiles/app.env
     working_dir: /data/code
+    volumes:
+      - .:/data/code
 
   ###
   # Dev container extends the base application.
@@ -24,8 +26,6 @@ services:
       - postgres
     ports:
       - "4567:4567"
-    volumes:
-      - .:/data/code
 
   ###
   # Postgres for databases.
