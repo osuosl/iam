@@ -18,6 +18,8 @@ class Iam < Sinatra::Base
   enable :method_override
   set :port, 4567
   set :bind, '0.0.0.0'
+  set :root, File.dirname(__FILE__)
+  set :public_folder, proc { File.join(root, 'static') }
 
   # basic Ruby stuff
   require 'rubygems'
