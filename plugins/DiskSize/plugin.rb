@@ -26,14 +26,20 @@ class DiskSize < BasePlugin
       raise "No disk_sizes information for #{fqdn}"
     end
 
+    # prep data for DB insert
+    # get array length and data formatted
+    count = node_info['disk_sizes'].split.length
+    values = node_info['disk_sizes'].tr('[]', '')    # remove '[' and ']'
+                                    .split(',')      # split into array
+                                    .map(&:to_i)     # convert to integer
+
     # Insert data into disk_size_measurements table
     @@database[@@table].insert(
       node:          fqdn,
-      value:         node_info['disk_sizes']
-                       .tr('[]', '')    # remove '[' and ']' from string
-                       .split(',')      # split into array of strings on ','
-                       .map(&:to_i)     # convert each element to integer
-                       .inject(0, :+),  # inject a + method to sum the array
+      disk_count:    count,
+      disk1_size:    values[0] || 0,
+      disk2_size:    values[1] || 0,
+      disk3_size:    values[2] || 0,
       active:        node_info['active'],
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))

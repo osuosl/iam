@@ -8,7 +8,10 @@ Sequel.migration do
       foreign_key   :node_resource
       Time          :created, null: false
       String        :node
-      Integer       :value
+      Integer       :disk_count
+      Integer       :disk1_size, default: 0
+      Integer       :disk2_size, default: 0
+      Integer       :disk3_size, default: 0
       Boolean       :active
     end
   end
