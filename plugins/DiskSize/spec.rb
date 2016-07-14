@@ -29,7 +29,7 @@ describe 'DiskSize plugin' do
       expect { DiskSize.new.store('goodnode') }.to_not raise_error
 
       # Check that store actually stored the node
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'fails when not passed node name' do
@@ -40,11 +40,11 @@ describe 'DiskSize plugin' do
     it 'does not crash when passed improperly formatted data' do
       # Don't crash on bad info, but don't store anything either
       expect { DiskSize.new.store('badnode') }.to_not raise_error
-      expect { @db_table.where(node: 'badnode').to not_exist }
+      expect(@db_table.where(node: 'badnode')).to be_empty
 
       # Store good info
       DiskSize.new.store('goodnode')
-      expect { @db_table.where(node: 'goodnode').to exist }
+      expect(@db_table.where(node: 'goodnode')).to_not be_empty
     end
 
     it 'properly sums all disk sizes when storing in DB' do

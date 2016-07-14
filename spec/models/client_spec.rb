@@ -49,7 +49,7 @@ describe 'The Client Model and table' do
     client = Client.create(name: 'Delete Me')
     expect(client).to exist
     expect { client.delete }.to_not raise_error
-    expect(client).to_not exist
+    expect(client.exists?).to be false
   end
 
   it 'can update a client' do

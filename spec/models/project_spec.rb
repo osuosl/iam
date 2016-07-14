@@ -49,7 +49,7 @@ describe 'The Project Model and table' do
     project = Project.create(name: 'Delete Me')
     expect(project).to exist
     expect { project.delete }.to_not raise_error
-    expect(project).to_not exist
+    expect(project.exists?).to be false
   end
 
   it 'can update a project' do
