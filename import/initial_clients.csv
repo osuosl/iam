@@ -1,0 +1,23 @@
+client,project,fqdn
+Drupal,drupal.org,config.drupal.org
+Drupal,drupal.org,git7staging.drupal.org
+Drupal,drupal.org,testbotmaster.devdrupal.org
+Rock the Vote,RTV,rtv-smtp1.osuosl.org
+Rock the Vote,RTV,rtv-smtp2.osuosl.org
+Rock the Vote,RTV,rtvprodvr-lb1.osuosl.org
+Rock the Vote,RTV,rtvprodvr-pdfgen1.osuosl.org
+Rock the Vote,RTV,rtvprodvr-pdfgen2.osuosl.org
+Rock the Vote,RTV,rtvprodvr-util.osuosl.org
+Rock the Vote,RTV,rtvprodvr-web1.osuosl.org
+Rock the Vote,RTV,rtvstaging-util.osuosl.org
+Rock the Vote,RTV,rtvstaging-web1.osuosl.org
+Rock the Vote,RTV,rtvstaging2-util.osuosl.org
+Rock the Vote,RTV,rtvstaging2-web.osuosl.org
+Robot Operating System,ROS,answers.ros.osuosl.org
+Robot Operating System,ROS,ros.osuosl.org
+Apereo,Apereo,apereo.osuosl.org
+OSU Helpdesk,Helpdesk,web1.helpdesk.osuosl.org
+Alembic,Alembic,alembic-java.osuosl.org
+Systers,Systers,systers-prod.osuosl.org
+Systers,Systers,systers-dev.osuosl.org
+Teach Engineering,TeachEng,galena.osuosl.org
