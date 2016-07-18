@@ -7,10 +7,6 @@ describe 'The Client Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has no clients' do
-    expect(Client.all).to be_empty
-  end
-
   it 'has a model name' do
     expect(Client.name).to eq('Client')
   end
