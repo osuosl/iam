@@ -80,4 +80,20 @@ describe 'The Project Model and table' do
     project2.refresh
     expect(project2.name).to eq('Testo 2')
   end
+
+  it 'has an active flag' do
+    project = Project.create(name: 'testo')
+
+    expect(project).to exist
+    expect(project.active).to eq(true)
+  end
+
+  it 'changing the active flag does not result in an error' do
+    project = Project.create(name: 'testo')
+
+    expect(project).to exist
+    expect(project.active).to eq(true)
+    expect { project.update(active: false) }.to_not raise_error
+    expect { project.update(active: true) }.to_not raise_error
+  end
 end

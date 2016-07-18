@@ -80,4 +80,20 @@ describe 'The Client Model and table' do
     client2.refresh
     expect(client2.name).to eq('Testo 2')
   end
+
+  it 'has an active flag' do
+    client = Client.create(name: 'testo')
+
+    expect(client).to exist
+    expect(client.active).to eq(true)
+  end
+
+  it 'changing the active flag does not result in an error' do
+    client = Client.create(name: 'testo')
+
+    expect(client).to exist
+    expect(client.active).to eq(true)
+    expect { client.update(active: false) }.to_not raise_error
+    expect { client.update(active: true) }.to_not raise_error
+  end
 end
