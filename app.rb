@@ -17,5 +17,11 @@ class Iam < Sinatra::Base
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
 
+  get '/report/?' do
+    # get new client form
+    @clients = Client.all
+    erb :'report'
+  end
+
   run! unless ENV['RACK_ENV'] == 'test'
 end
