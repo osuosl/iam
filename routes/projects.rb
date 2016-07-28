@@ -28,7 +28,7 @@ module Sinatra
 
       app.get '/projects/?' do
         # get a list of all projects
-        @projects = Project.each { |x| p x.name }
+        @projects = Project.all
         erb :'projects/index'
       end
 
