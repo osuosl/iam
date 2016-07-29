@@ -1,9 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
+
+<%= erb :header %>
 
 <body>
+  <div class="container">
+    <%= yield %>
+  </div>
 
-  <%= yield %> 
+  <%= erb :footer %>
+</body>
 
 </html>

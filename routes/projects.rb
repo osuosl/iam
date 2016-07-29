@@ -29,7 +29,10 @@ module Sinatra
       app.get '/projects/?' do
         # get a list of all projects
         @projects = Project.all
-        erb :'projects/index'
+
+        erb :layout => false do
+          erb :'projects/index'
+        end
       end
 
       # This could also be PUT

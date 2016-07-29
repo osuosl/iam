@@ -1,33 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/style/app.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-</head>
-<body>
+<div class="page-header">
+  <h1>Projects</h1>
+</div>
 
-<div class="container">
-  <h2>Projects</h2>
-  <div class="panel-group">
-    <% for @project in @projects %>
-
-      <!-- Project heading -->
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" href="#project-<%= @project.id %>">
-              <%= @project.name %>
-            </a>
-          </h4>
-        </div>
+<div class="panel-group">
+  <% for @project in @projects %>
+    <div class="panel panel-default">
+      <%# Project heading %>
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#project-<%= @project.id %>">
+            <%= @project.name %>
+          </a>
+        </h4>
       </div>
 
-      <!-- Project body -->
+      <%# Project body %>
       <div id="project-<%= @project.id %>" class="panel-collapse collapse">
         <div class="panel-body">
+          <%# Client name %>
+          <p>
+            Client:
+            <a href="/clients/<%= @project.client_id %>">
+              <%= Client[id: @project.client_id].name %>
+            </a>
+          </p>
+
+          <%# Resources used %>
+          <p>
+            Resources: <%= @project.resources.gsub(/,/, ', ') %>
+          </p>
+
+          <%# Project info table %>
           <table class="table table-bordered table-hover">
             <tr>
               <td>
@@ -65,17 +68,13 @@
                 </td>
                 <td>
                   <% data = DiskTemplate.new.report({node: n.name}) %>
-                  <%# Errors if `data` is empty: <%= data[0][:value] %>
-                  <%= data %>
+                  <%= data[0][:value] %>
                 </td>
               </tr>
             <% end %>
           </table>
         </div>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>
-
-</body>
-</html>
