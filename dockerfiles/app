@@ -6,7 +6,9 @@ RUN yum -y install vim\
                    sudo\
                    sqlite-devel\
                    postgresql\
-                   postgresql-devel
+                   postgresql-devel\
+                   mysql\
+                   mysql-devel
 
 RUN gem install bundle
 COPY Gemfile /tmp/Gemfile
