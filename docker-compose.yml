@@ -19,7 +19,8 @@ services:
   # Dev container extends the base application.
   ###
   dev:
-    command: /data/code/scripts/rake-dev.sh
+    entrypoint: /wait-for-it.sh -q testing-mysql:3306 --
+    command: rake spec
     extends:
       service: app
     links:

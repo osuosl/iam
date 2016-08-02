@@ -54,6 +54,21 @@ class Collectors
     end
     @cache.write
   end
+  
+  def collect_db
+    # collect mysql
+    self.collect_mysql
+    # collect postgres
+    self.collect_postgres
+  end
+
+  def collect_mysql
+    # collect mysql metadata
+  end
+
+  def collect_postgres
+    # collect postgres metadata
+  end
 end
 
 c = Collectors.new

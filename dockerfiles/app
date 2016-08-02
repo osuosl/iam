@@ -17,4 +17,6 @@ RUN bundle install
 
 RUN echo 'source /data/code/dockerfiles/startup.sh' >> /root/.bashrc
 
+COPY scripts/wait-for-it.sh /wait-for-it.sh
+
 WORKDIR /
