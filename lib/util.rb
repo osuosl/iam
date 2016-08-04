@@ -47,14 +47,20 @@ class Cache
   def read
     __ensure_path
     if File.file?(@path)
+      @hash = JSON.parse(File.read(@path))
       return JSON.parse(File.read(@path))
     else
+      @hash = Hash.new
       return Hash.new
     end
   end
 
   def keys
     return @hash.keys
+  end
+
+  def dump
+    return @hash
   end
 
   def __ensure_path
