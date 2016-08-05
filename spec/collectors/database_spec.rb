@@ -68,20 +68,21 @@ describe 'IaM Database Collector' do
   end
 
   it 'collects the correct data using the given query' do
-    # Call database collector
-    # Create @cache, value is the cache variable,
-    #   reference other uses of the cache file to figure out how to do this
-    # Expect '@expected' to equal '@cache'
-    expect(1).to eq(0)
+    c = Collectors.new
+    c.collect_db
+    cache = Cache.new(ENV['CACHE_FILE'])
+    expect(@expected).to eq(cache.dump)
   end
 
-  it 'logs a failure when it is unable to connect to the database' do
-    # 1. set the variables that the collector uses to connect to the databases
-    #    but set them incorrectly
-    # 2. try to start the collector
-    # 3. check some error logs, it should have failed and the error should be
-    #    in the logs
-    expect(1).to eq(0)
+  it 'raises an error  when it is unable to connect to the database' do
+    # change parameters here
+    # need to implement database collector to be able to set 
+    # uri/user/password that will trigger the error 
+    # after that:
+    c = Collectors.new
+    expect do
+      c.collect_db
+    end.to raise_error(Sequel::DatabaseConnectionError)
   end
 
   # any other tests we should include? I can't think of any.
