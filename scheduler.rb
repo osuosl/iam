@@ -10,7 +10,10 @@ s = Rufus::Scheduler.new
 s.every '30m', first_in: 0.4 do
   # Collect ganeti node information every 30 minutes
   collector = Collectors.new
-  collector.collect_ganeti
+  ['ganeti'].each do |v|
+    collector.collect_ganeti(v)
+  end
+  # TODO: Add database collector
 end
 
 # Change '15m' on next line to 4 to test

@@ -32,11 +32,11 @@ describe 'IaM Database Collector' do
           String :name, :null=>false, :unique=>true
         end
 
-	# Note: The table names for creating the dataset need to be symbols,
-	# hence the .to_sym.
+        # Note: The table names for creating the dataset need to be symbols,
+        # hence the .to_sym.
         dataset = @DB[i][:"table_#{j}"]
-	# Insert i*i records in each of the i*i tables on each of the three
-	# databases
+        # Insert i*i records in each of the i*i tables on each of the three
+        # databases
         (1..(i*i)).each do |k|
           dataset.insert(:name => "data-#{k}")
         end
@@ -54,36 +54,42 @@ describe 'IaM Database Collector' do
                         'Data Base Size in Bytes'
                       FROM information_schema.TABLES
                       GROUP BY table_schema" do |var|
-      @expected.push(var)
+      # @expected is populated like the hash is populated in
+      # collectors.rb/collect_db.
+      # It is later compared against the cache in the first test.
+      @expected.push(var[:"DB Name"] => var[:"Data Base Size in Bytes"])
     end
+
     # Uncomment this line to see what the above query gets us
     # puts @expected
   end
 
+
   after :all do
-    # Drop all of the databases so our tests are idempotent 
+    # Drop all of the databases so our tests are idempotent
     [1,2,3].each do |n|
       @DB["main"].run "DROP DATABASE IF EXISTS db#{n}"
     end
   end
 
-  it 'collects the correct data using the given query' do
+
+  it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db
+    c.collect_db(:mysql, 'testing-mysql', 'root', 'toor')
+
     cache = Cache.new(ENV['CACHE_FILE'])
-    expect(@expected).to eq(cache.dump)
+
+    @expected.each do |var|
+      expect(cache.dump).to include(var)
+    end
   end
 
-  it 'raises an error  when it is unable to connect to the database' do
-    # change parameters here
-    # need to implement database collector to be able to set 
-    # uri/user/password that will trigger the error 
-    # after that:
+
+  it '[mysql] raises an error when it is unable to connect to the database.' do
     c = Collectors.new
+
     expect do
-      c.collect_db
+      c.collect_db(:mysql, 'testing-mysql', 'someuser', 'badpass')
     end.to raise_error(Sequel::DatabaseConnectionError)
   end
-
-  # any other tests we should include? I can't think of any.
 end
