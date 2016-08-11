@@ -103,7 +103,7 @@ c = Collectors.new
 # To test the collect_db method, uncomment the following lines.
 # TODO: Replace with file-evaluated variable.
 #db_creds = [{:type => :mysql,
-#             :host => ENV['MYSQL_HOST'],
+#             :host => ENV['MYSQL_TESTING_HOST'],
 #             :user => ENV['MYSQL_USER'],
 #             :password => ENV['MYSQL_PASSWORD'] }]
 

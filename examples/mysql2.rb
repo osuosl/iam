@@ -11,7 +11,7 @@ Sequel.extension :migration, :core_extensions
 db_ = []
 
 # Just connect to the database server, not a particular db_ on the server
-db_[0] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#{ENV['MYSQL_HOST']}")
+db_[0] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#{ENV['MYSQL_TESTING_HOST']}")
 
 # Create tables db1, db2, db3, db4, and db5 on the server
 [1, 2, 3, 4, 5].each do |n|
@@ -29,7 +29,7 @@ db_[0] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#
   db_[n] = Sequel.mysql("db#{n}",
                         user: ENV['MYSQL_USER'],
                         password: ENV['MYSQL_PASSWORD'],
-                        host: ENV['MYSQL_HOST'])
+                        host: ENV['MYSQL_TESTING_HOST'])
 
   # Create tables table_11, table_12, table_13, table_14, and table_15.
   [11, 12, 13, 14, 15].each do |m|

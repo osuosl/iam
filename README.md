@@ -86,7 +86,7 @@ DATABASE_URL        # The path for a sqlite database file for testing.
 CACHE_FILE          # The path for the application's cache.
 POSTGRES_USER       # Default user for the postgres host.
 POSTGRES_PASSWORD   # Default user's password for the postgres host.
-POSTGRES_DB         # Default datbase for the postgres host.
+POSTGRES_DB         # Default database for the postgres host.
 MYSQL_ROOT_PASSWORD # Root password for the mysql host.
 MYSQL_USER          # Default user for the myql host.
 MYSQL_PASSWORD      # Default user's password for the mysql host.

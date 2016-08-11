@@ -21,7 +21,7 @@ s.every '30m', first_in: 0.4 do
   # Database collector
   # TODO: Replace with file-evaluated variable.
   db_creds = [{:type => :mysql,
-               :host => ENV['MYSQL_HOST'],
+               :host => ENV['MYSQL_TESTING_HOST'],
                :user => ENV['MYSQL_USER'],
                :password => ENV['MYSQL_PASSWORD'] }]
   db_creds.each do |var|

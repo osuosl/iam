@@ -10,20 +10,23 @@ describe 'IaM Database Collector' do
     # Holds the set of all database connections
     @DB = {}
 
+    # Grant complete privileges to our special user
+    # TODO: make this conditional, do not run if running in CI, this kind of
+    # thing gets run in a pre-testing script in that situation
     # Establishes the main database connection using the given credentials.
-    # Credentials should probably use env vars and not be hard-coded.
-    @DB["main"] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#{ENV['MYSQL_HOST']}")
+    @DB[:root] = Sequel.connect("mysql://root:#{ENV['MYSQL_ROOT_PASSWORD']}@#{ENV['MYSQL_TESTING_HOST']}")
 
     # Create three databases on the server
     1.upto 3 do |i|
       # These two lines run the following raw SQL on the server
-      @DB["main"].run "DROP DATABASE IF EXISTS db#{i}"
-      @DB["main"].run "CREATE DATABASE IF NOT EXISTS db#{i};"
+      @DB[:root].run("DROP DATABASE IF EXISTS db#{i}")
+      @DB[:root].run("CREATE DATABASE IF NOT EXISTS db#{i};")
+      @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.* TO '#{ENV['MYSQL_USER']}'@'%' WITH GRANT OPTION;")
 
       # Connect to each database individually
       @DB[i] = Sequel.mysql("db#{i}", :user => ENV['MYSQL_USER'],
                             :password => ENV['MYSQL_PASSWORD'],
-                            :host => ENV['MYSQL_HOST'])
+                            :host => ENV['MYSQL_TESTING_HOST'])
 
       # Create i*i tables on each database
       (1..(i*i)).each do |j|
@@ -47,13 +50,15 @@ describe 'IaM Database Collector' do
     # This query produces a set of hashes
     # { :'DB Name' => 'some name', :'Data Base Size in Bytes' => '#####'}
     # etc
-    @DB["main"].fetch "SELECT
-                      table_schema
-                        'DB Name',
-                      cast(round(sum(data_length+index_length),1) as binary)
-                        'Data Base Size in Bytes'
-                      FROM information_schema.TABLES
-                      GROUP BY table_schema" do |var|
+    # @DB[1] because @DB[:root] has privileges greater than our test DB user,
+    # so the we need to be consistent with the user we're running queries as.
+    @DB[1].fetch("SELECT
+                  table_schema
+                    'DB Name',
+                  cast(round(sum(data_length+index_length),1) as binary)
+                    'Data Base Size in Bytes'
+                  FROM information_schema.TABLES
+                  GROUP BY table_schema") do |var|
       # @expected is populated like the hash is populated in
       # collectors.rb/collect_db.
       # It is later compared against the cache in the first test.
@@ -68,14 +73,14 @@ describe 'IaM Database Collector' do
   after :all do
     # Drop all of the databases so our tests are idempotent
     [1,2,3].each do |n|
-      @DB["main"].run "DROP DATABASE IF EXISTS db#{n}"
+      @DB[:root].run("DROP DATABASE IF EXISTS db#{n}")
     end
   end
 
 
   it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db(:mysql, ENV['MYSQL_HOST'], ENV['MYSQL_USER'], ENV['MYSQL_PASSWORD'])
+    c.collect_db(:mysql, ENV['MYSQL_TESTING_HOST'], ENV['MYSQL_USER'], ENV['MYSQL_PASSWORD'])
 
     cache = Cache.new(ENV['CACHE_FILE'])
 
