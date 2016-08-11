@@ -37,7 +37,7 @@ class Cache
   # Obliterates existing file with new contents.
   def write
     __ensure_path
-    File.open(@path, "w") do |f|
+    File.open(@path, 'w') do |f|
       f.write(JSON.generate(@hash))
     end
   end
@@ -50,8 +50,8 @@ class Cache
       @hash = JSON.parse(File.read(@path))
       return JSON.parse(File.read(@path))
     else
-      @hash = Hash.new
-      return Hash.new
+      @hash = {}
+      return {}
     end
   end
 
@@ -70,7 +70,7 @@ class Cache
 end
 
 class Object
-  def is_number?
+  def number?
     self.to_f.to_s == self.to_s || self.to_i.to_s == self.to_s
   end
 end

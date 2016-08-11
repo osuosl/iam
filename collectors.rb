@@ -41,11 +41,12 @@ class Collectors
           @cache.set(node_name, JSON.parse(@template.result(binding)))
           @cache.set(node_name + ':datetime', Time.new.inspect)
         end
-        # To retrieve the the node information, use cache.get and JSON.parse.
+        # To retrieve the node information, use cache.get and JSON.parse.
         # This will give you a ruby hash of the node information.
         # info = @cache.get(<node_name>)
         # time = @cache.get(<node_name> + ':datetime')
       end
+    # TODO Raise an error instead?
     rescue SocketError
       STDERR.puts "Uh oh, got a SocketError connecting to #{cluster}"
     end
@@ -60,17 +61,14 @@ class Collectors
     when :postgres
       collect_postgres(host, user, password)
     else
-      STDERR.puts "db_type #{db_type} is neither `:mysql` nor `:postgres`."
+      STDERR.puts "db_type `#{db_type}` is neither `:mysql` nor `:postgres`."
     end
   end
 
   def collect_mysql(host, user, password)
+    # TODO Raise an error / print to stderr if something breaks?
     # Establish a connection to the database
-    begin
-      db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
-    rescue
-      STDERR.puts("There was an error connecting to #{host}, u: #{user}, p: #{password}")
-    end
+    db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
 
     # Run the magic statistics gathering query
     db.fetch("SELECT table_schema
@@ -90,23 +88,26 @@ class Collectors
   end
 end
 
-# These are hard-coded for now, but will be moved to a config file soon.
-clusters = ['ganeti']
-db_creds = [{:type => :mysql,
-             :host => 'testing-mysql',
-             :user => 'root',
-             :password => 'toor' }]
 
 c = Collectors.new
 
+# To test the collect_ganeti method, uncomment the following lines.
+# TODO: Replace with file-evaluated variable.
+#clusters = ['ganeti']
+
 # Run the node collector
-clusters.each do |var|
-  c.collect_ganeti(var)
-end
+#clusters.each do |var|
+#  c.collect_ganeti(var)
+#end
+
+# To test the collect_db method, uncomment the following lines.
+# TODO: Replace with file-evaluated variable.
+#db_creds = [{:type => :mysql,
+#             :host => ENV['MYSQL_HOST'],
+#             :user => ENV['MYSQL_USER'],
+#             :password => ENV['MYSQL_PASSWORD'] }]
 
 # Run the database collector
-db_creds.each do |var|
-  c.collect_db(var[:type], var[:host], var[:user], var[:password])
-end
-# To test the collect_ganeti method, uncomment the following line.
-# Collectors.new.collect_ganeti
+#db_creds.each do |var|
+#  c.collect_db(var[:type], var[:host], var[:user], var[:password])
+#end

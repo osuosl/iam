@@ -1,6 +1,7 @@
 require_relative '../lib/util.rb'
 
-puts 'The following output will not make sense unless you read the script you are running (examples/cache.rb)'
+puts 'The following output will not make sense unless you read the script you
+      are running (examples/cache.rb)'
 
 # Create a new cache at
 # Implicitly: Cache.initialize('/tmp/examplecache')
@@ -30,5 +31,5 @@ my_cache.del('xyz')
 my_cache.read
 
 puts my_cache      # prints object stuff
-puts my_cache.hash # prints a number :(
+puts my_cache.hash # prints a number. TODO figure out why.
 puts my_cache.dump # prints the actual hash

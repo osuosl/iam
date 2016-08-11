@@ -24,7 +24,7 @@ class RamSize < BasePlugin
     # Error check for valid data
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
       raise "No total_ram information for #{fqdn}"
-    elsif not node_info['total_ram'].is_number?
+    elsif not node_info['total_ram'].number?
       raise "total_ram information for #{fqdn} malformed (should be number)"
     end
 

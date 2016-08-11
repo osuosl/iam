@@ -10,9 +10,9 @@ describe 'IaM Database Collector' do
     # Holds the set of all database connections
     @DB = {}
 
-    # Establishes the main database connection using the root credentials
-    # Credentials should probably use env vars and not be hard-coded
-    @DB["main"] = Sequel.connect('mysql://root:toor@testing-mysql')
+    # Establishes the main database connection using the given credentials.
+    # Credentials should probably use env vars and not be hard-coded.
+    @DB["main"] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#{ENV['MYSQL_HOST']}")
 
     # Create three databases on the server
     1.upto 3 do |i|
@@ -21,9 +21,9 @@ describe 'IaM Database Collector' do
       @DB["main"].run "CREATE DATABASE IF NOT EXISTS db#{i};"
 
       # Connect to each database individually
-      @DB[i] = Sequel.mysql("db#{i}", :user => 'root',
-                            :password => 'toor',
-                            :host => 'testing-mysql')
+      @DB[i] = Sequel.mysql("db#{i}", :user => ENV['MYSQL_USER'],
+                            :password => ENV['MYSQL_PASSWORD'],
+                            :host => ENV['MYSQL_HOST'])
 
       # Create i*i tables on each database
       (1..(i*i)).each do |j|
@@ -75,7 +75,7 @@ describe 'IaM Database Collector' do
 
   it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db(:mysql, 'testing-mysql', 'root', 'toor')
+    c.collect_db(:mysql, ENV['MYSQL_HOST'], ENV['MYSQL_USER'], ENV['MYSQL_PASSWORD'])
 
     cache = Cache.new(ENV['CACHE_FILE'])
 

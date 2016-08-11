@@ -18,7 +18,7 @@ Invoicing and Metrics (iam) is developed in `docker` using `docker-compose`:
 - `docker` version 1.10.3
 - `docker-compose` version 1.6.2.
 
-**If you are working on a shard workstation:** Set the `COMPOSE_PROJECT_NAME`
+**If you are working on a shared workstation:** Set the `COMPOSE_PROJECT_NAME`
 variable. This name-spaces your containers so multiple users can develop
 independently on the same machine.
 
@@ -162,7 +162,7 @@ $ cd /home/myuser/my-source-dir/iam/
 documentation](https://www.postgresql.org/docs/9.2/static/index.html) and [the MySQL
 documentation](http://dev.mysql.com/doc/refman/5.7/en/windows-installation.html).
 
-If you have problems getting setting up IaM try the following:
+If you have problems setting up IaM try the following:
 
 - Read the `dockerfiles/app` file to see how we setup the docker environments,
   which are known to work. This may require some digging, but should give you a
