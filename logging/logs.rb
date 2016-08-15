@@ -15,5 +15,5 @@ log.level = :debug
 log.add_appenders \
    Logging.appenders.file('log_file.log')
 
-log.debug('Created logger')
-log.info('Program started')
+log.debug 'Created logger'
+log.info 'Program started'
