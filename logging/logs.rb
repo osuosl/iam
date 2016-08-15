@@ -13,7 +13,7 @@ require 'environment.rb'
 log = Logging.logger['logfile']
 log.level = :debug
 log.add_appenders \
-   Logging.appenders.file('log_file.log')
+   Logging.appenders.file('logging/log_file.log')
 
 log.debug 'Created logger'
 log.info 'Program started'
