@@ -1,4 +1,5 @@
 require 'sequel'
+require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
@@ -23,6 +24,7 @@ class DiskTemplate < BasePlugin
 
     # Error check for valid data
     if node_info['disk_template'].nil?
+      log.warn "No disk_template information for #{fqdn}"
       raise "No disk_template information for #{fqdn}"
     end
 
@@ -34,7 +36,7 @@ class DiskTemplate < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{node_info}" # Log the error
+    log.error StandardError.new("#{e}: #{node_info}")
   end
 
 end

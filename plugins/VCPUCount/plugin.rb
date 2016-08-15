@@ -1,4 +1,5 @@
 require 'sequel'
+require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
@@ -27,6 +28,7 @@ class VCPUCount < BasePlugin
 
     # Error check for valid data
     if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'
+      log.warn "No num_cpus information for #{fqdn}"
       raise "No num_cpus information for #{fqdn}"
     end
 
@@ -38,6 +40,6 @@ class VCPUCount < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{node_info}" # Log the error
+    log.error StandardError.new("#{e}: #{node_info}")
   end
 end

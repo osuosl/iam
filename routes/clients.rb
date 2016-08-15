@@ -1,5 +1,4 @@
 require 'sinatra/base'
-
 module Sinatra
   module ClientRoutes
     def self.registered(app)
@@ -14,14 +13,20 @@ module Sinatra
       app.get '/clients/:id/?' do
         # view a client
         @client = Client[id: params[:id]]
-        halt 404, 'Client not found' if @client.nil?
+        if @client.nil?
+          log.fatal 'Client not found'
+          halt 404, 'Client not found'
+        end
         erb :'clients/show'
       end
 
       app.get '/clients/:id/edit/?' do
         # get client edit form
         @client = Client[id: params[:id]]
-        halt 404, 'Client not found' if @client.nil?
+        if @client.nil?
+          log.fatal 'Client not found'
+          halt 404, 'Client not found'
+        end
         erb :'clients/edit'
       end
 

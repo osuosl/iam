@@ -3,6 +3,7 @@ require 'uri'
 require 'openssl'
 require 'json'
 require 'erb'
+require 'logging'
 require_relative 'lib/util'
 
 # Collectors class to hold collection methods for specific node management
@@ -41,15 +42,15 @@ class Collectors
           @cache.set(node_name, JSON.parse(@template.result(binding)))
           @cache.set(node_name + ':datetime', Time.new.inspect)
         end
+
         # To retrieve the node information, use cache.get and JSON.parse.
         # This will give you a ruby hash of the node information.
         # info = @cache.get(<node_name>)
         # time = @cache.get(<node_name> + ':datetime')
+
+      rescue SocketError
+        log.fatal "SocketError cannot connect to #{name}"
       end
-    # TODO Raise an error instead?
-    rescue SocketError
-      STDERR.puts "Uh oh, got a SocketError connecting to #{cluster}"
-    end
     @cache.write
   end
 

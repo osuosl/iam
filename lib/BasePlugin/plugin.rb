@@ -1,4 +1,5 @@
 require 'sequel'
+require 'logging'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
 require_relative '../util.rb'
@@ -30,8 +31,15 @@ class BasePlugin
   # Returns Ruby Hash of report data
   def report(resource = {node: '*'}, start_time = Time.now - (30 * SECONDS_IN_DAY),
              end_time = Time.now)
+    log.error StandardError.new(
+      "start_time and end_time should be Time objects"
+    )unless end_time.is_a? Time and start_time.is_a? Time
     raise TypeError.new("start_time and end_time should be Time objects")\
       unless end_time.is_a? Time and start_time.is_a? Time
+
+    log.error StandardError.new(
+      "start_time > end_time"
+    )unless start_time < end_time
     raise ArgumentError.new("start_time > end_time")\
       unless start_time < end_time
 

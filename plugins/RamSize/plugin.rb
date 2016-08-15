@@ -1,4 +1,5 @@
 require 'sequel'
+require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
@@ -23,8 +24,10 @@ class RamSize < BasePlugin
 
     # Error check for valid data
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
+      log.warn "No total_ram information for #{fqdn}"
       raise "No total_ram information for #{fqdn}"
     elsif not node_info['total_ram'].number?
+      log.warn "total_ram information for #{fqdn} malformed (should be number)"
       raise "total_ram information for #{fqdn} malformed (should be number)"
     end
 
@@ -36,6 +39,6 @@ class RamSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{node_info}" # Log the error
+    log.error StandardError.new("#{e}: #{node_info}")
   end
 end
