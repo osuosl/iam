@@ -82,6 +82,7 @@ describe 'IaM Database Collector' do
     c = Collectors.new
     c.collect_db(:mysql, ENV['MYSQL_TESTING_HOST'], ENV['MYSQL_USER'], ENV['MYSQL_PASSWORD'])
 
+    # Reads values in from cache file
     cache = Cache.new(ENV['CACHE_FILE'])
 
     @expected.each do |var|

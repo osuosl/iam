@@ -48,11 +48,10 @@ class Cache
     __ensure_path
     if File.file?(@path)
       @hash = JSON.parse(File.read(@path))
-      return JSON.parse(File.read(@path))
     else
       @hash = {}
-      return {}
     end
+    return @hash
   end
 
   def keys
@@ -63,8 +62,8 @@ class Cache
     return @hash
   end
 
-  def __ensure_path
-    directory = File.dirname(@path)
+  def __ensure_path(fp=@path)
+    directory = File.dirname(fp)
     FileUtils.mkdir_p(directory) unless File.directory?(directory)
   end
 end
