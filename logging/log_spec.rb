@@ -24,4 +24,9 @@ end
     expect(@log_output.readline).to eq("DEBUG  SuperLogger : foo bar\n")
     expect(@log_output.readline).to eq(" WARN  SuperLogger : just a little warning\n")
   end
+
+  # Test existince of log_file.log
+  it 'should check if log_file.log exists' do
+    expect(File).to exist('logging/log_file.log')
+  end
 end
