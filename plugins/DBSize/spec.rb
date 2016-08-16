@@ -20,7 +20,7 @@ describe 'DBSize plugin' do
     after(:each) do
       @cache.del('test_db')
       @cache.write
-      @db_table.where(node: %w(test_db test_db2)).delete
+      @db_table.where(db: %w(test_db test_db2)).delete
     end
 
     it 'does not fail with valid data' do
@@ -28,7 +28,7 @@ describe 'DBSize plugin' do
       expect { DBSize.new.store('test_db') }.to_not raise_error
 
       # Check that store actually stored the node
-      expect(@db_table.where(node: 'test_dbw')).to_not be_empty
+      expect(@db_table.where(node: 'test_db')).to_not be_empty
     end
 
     it 'fails when not passed node name' do

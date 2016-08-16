@@ -7,7 +7,7 @@ require_relative '../../models.rb'
 class DBSize < BasePlugin
   def initialize
     @@name = 'DBSize'
-    @@resource_name = 'node'
+    @@resource_name = 'db'
     @@units = 'bytes'
     @@table = :db_size_measurements
     @@db_column = :db_size_ver
@@ -17,23 +17,23 @@ class DBSize < BasePlugin
     register
   end
 
-  def store(fqdn)
+  def store(db_host)
     # Pull node information from cache as a ruby hash
-    node_info = @cache.get(fqdn)
+    db_info = @cache.get(db_host)
     db_key = 'Data Base Size in Bytes'
     # Check for valid data
-    if node_info[db_key].nil? || node_info[db_key] == ''
-      raise "No DBSize information for #{fqdn}\n"
+    if db_info[db_key].nil? || db_info[db_key] == ''
+      raise "No DBSize information for #{db_host}\n"
     end
 
     # Insert data into disk_size_measurements table
     @@database[@@table].insert(
-      node:          fqdn,
-      value:         node_info[db_key],
+      db:            db_host,
+      value:         db_info[db_key],
       active:        1,
       created:       DateTime.now,
-      node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
+      node_resource: @@database[:node_resources].where(name: db_host).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{node_info}" # Log the error
+    STDERR.puts "#{e}: #{db_info}" # Log the error
   end
 end
