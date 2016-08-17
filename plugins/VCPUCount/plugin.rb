@@ -23,12 +23,15 @@ class VCPUCount < BasePlugin
   end
 
   def store(fqdn)
+    # initialize a log
+    log = Logging.logger['VCPUCount.log']
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'
-      log.warn "No num_cpus information for #{fqdn}"
+      log.warn "VCPUCount: No num_cpus information for #{fqdn}"
       raise "No num_cpus information for #{fqdn}"
     end
 
@@ -40,6 +43,6 @@ class VCPUCount < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    log.error StandardError.new("#{e}: #{node_info}")
+    log.error StandardError.new("VCPUCount:  #{e}: #{node_info}")
   end
 end

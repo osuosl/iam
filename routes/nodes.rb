@@ -15,8 +15,8 @@ module Sinatra
         # view a node
         @node = NodeResource[id: params[:id]]
         if @node.nil?
-          log.fatal 'node not found'
           halt 404, 'node not found'
+          log.fatal 'node not found'
         end
         erb :'nodes/show'
       end
@@ -25,8 +25,8 @@ module Sinatra
         # get node edit form
         @node = NodeResource[id: params[:id]]
         if @node.nil?
-          log.fatal 'node not found'
           halt 404, 'node not found'
+          log.fatal 'node not found'
         end
         erb :'nodes/edit'
       end

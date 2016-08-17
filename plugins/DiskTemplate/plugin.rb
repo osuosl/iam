@@ -19,12 +19,15 @@ class DiskTemplate < BasePlugin
   end
 
   def store(fqdn)
+    # initialize a log
+    log = Logging.logger['DiskTemplate.log']
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['disk_template'].nil?
-      log.warn "No disk_template information for #{fqdn}"
+      log.warn "DiskTemplate: No disk_template information for #{fqdn}"
       raise "No disk_template information for #{fqdn}"
     end
 
@@ -36,7 +39,7 @@ class DiskTemplate < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    log.error StandardError.new("#{e}: #{node_info}")
+    log.error StandardError.new("DiskTemplate:  #{e}: #{node_info}")
   end
 
 end

@@ -19,6 +19,9 @@ class RamSize < BasePlugin
   end
 
   def store(fqdn)
+    # initialize a log
+    log = Logging.logger['RamSize.log']
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
@@ -26,8 +29,8 @@ class RamSize < BasePlugin
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
       log.warn "No total_ram information for #{fqdn}"
       raise "No total_ram information for #{fqdn}"
-    elsif not node_info['total_ram'].number?
-      log.warn "total_ram information for #{fqdn} malformed (should be number)"
+    elsif not node_info['total_ram'].is_number?
+      log.warn "RamSize: total_ram information for #{fqdn} malformed (should be number)"
       raise "total_ram information for #{fqdn} malformed (should be number)"
     end
 
@@ -39,6 +42,6 @@ class RamSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    log.error StandardError.new("#{e}: #{node_info}")
+    log.error StandardError.new("RamSize:  #{e}: #{node_info}")
   end
 end

@@ -1,8 +1,9 @@
-require 'sequel'
 require 'logging'
+require 'sequel'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
+require_relative '../../logging/logs'
 
 # Disk Sizes data plugin
 class DiskSize < BasePlugin
@@ -19,12 +20,15 @@ class DiskSize < BasePlugin
   end
 
   def store(fqdn)
+    # initialize a log
+    log = Logging.logger['DiskSize.log']
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Check for valid data
     if node_info['disk_sizes'].nil? || node_info['disk_sizes'] == 'unknown'
-      log.warn "No disk_sizes information for #{fqdn}"
+      log.warn "DiskSize: No disk_sizes information for #{fqdn}"
       raise "No disk_sizes information for #{fqdn}"
     end
 
@@ -40,6 +44,6 @@ class DiskSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    log.error StandardError.new("#{e}: #{node_info}")
+    log.error StandardError.new("DiskSize:  #{e}: #{node_info}")
   end
 end

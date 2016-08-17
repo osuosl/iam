@@ -14,8 +14,8 @@ module Sinatra
         # view a client
         @client = Client[id: params[:id]]
         if @client.nil?
-          log.fatal 'Client not found'
           halt 404, 'Client not found'
+          log.fatal 'Client not found'
         end
         erb :'clients/show'
       end
@@ -24,8 +24,8 @@ module Sinatra
         # get client edit form
         @client = Client[id: params[:id]]
         if @client.nil?
-          log.fatal 'Client not found'
           halt 404, 'Client not found'
+          log.fatal 'Client not found'
         end
         erb :'clients/edit'
       end
