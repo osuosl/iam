@@ -17,5 +17,4 @@ log.add_appenders \
     ENV['LOG_FILE_PATH'].is_set? ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log'
   )
 
-log.debug 'Created logger'
 log.info 'Program started'
