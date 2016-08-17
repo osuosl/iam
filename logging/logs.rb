@@ -12,9 +12,8 @@ require 'environment.rb'
 #   that appends to log_file.log
 log = Logging.logger['logfile']
 log.level = :debug
-log.add_appenders \
-  Logging.appenders.file(
-    ENV['LOG_FILE_PATH'].is_set? ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log'
-  )
+log.add_appenders(
+  Logging.appenders.file(ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+)
 
 log.info 'Program started'
