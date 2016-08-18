@@ -20,18 +20,24 @@ class RamSize < BasePlugin
 
   def store(fqdn)
     # initialize a log
-    log = Logging.logger['RamSize.log']
-
+    log = Logging.logger['RamSizeLog']
+    log.level = :debug
+    log.add_appenders(
+      Logging.appenders.file(
+      ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+    )
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
-      log.warn "No total_ram information for #{fqdn}"
-      raise "No total_ram information for #{fqdn}"
-    elsif not node_info['total_ram'].is_number?
-      log.warn "RamSize: total_ram information for #{fqdn} malformed (should be number)"
-      raise "total_ram information for #{fqdn} malformed (should be number)"
+      log.error StandardError.new(
+        "No total_ram information for #{fqdn}"
+      )
+    elsif not node_info['total_ram'].number?
+      log.error StandardError.new(
+      "RamSize: total_ram information for #{fqdn} malformed (should be number)"
+      )
     end
 
     # Insert data into disk_size_measurements table

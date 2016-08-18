@@ -3,7 +3,6 @@ require 'sequel'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
-require_relative '../../logging/logs'
 
 # Disk Sizes data plugin
 class DiskSize < BasePlugin
@@ -21,7 +20,12 @@ class DiskSize < BasePlugin
 
   def store(fqdn)
     # initialize a log
-    log = Logging.logger['DiskSize.log']
+    log = Logging.logger['DiskSizeLog']
+    log.level = :debug
+    log.add_appenders(
+      Logging.appenders.file(
+      ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+    )
 
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
@@ -29,7 +33,6 @@ class DiskSize < BasePlugin
     # Check for valid data
     if node_info['disk_sizes'].nil? || node_info['disk_sizes'] == 'unknown'
       log.warn "DiskSize: No disk_sizes information for #{fqdn}"
-      raise "No disk_sizes information for #{fqdn}"
     end
 
     # Insert data into disk_size_measurements table

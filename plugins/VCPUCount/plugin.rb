@@ -24,7 +24,12 @@ class VCPUCount < BasePlugin
 
   def store(fqdn)
     # initialize a log
-    log = Logging.logger['VCPUCount.log']
+    log = Logging.logger['VCPUCountLog']
+    log.level = :debug
+    log.add_appenders(
+      Logging.appenders.file(
+      ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+    )
 
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
@@ -32,7 +37,6 @@ class VCPUCount < BasePlugin
     # Error check for valid data
     if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'
       log.warn "VCPUCount: No num_cpus information for #{fqdn}"
-      raise "No num_cpus information for #{fqdn}"
     end
 
     # Insert data into disk_size_measurements table

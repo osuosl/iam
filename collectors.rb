@@ -9,6 +9,14 @@ require_relative 'lib/util'
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
 class Collectors
+  # initialize a log
+  log = Logging.logger['CollectorsLog']
+  log.level = :debug
+  log.add_appenders(
+    Logging.appenders.file(
+    ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+  )
+
   def initialize
     @cache = Cache.new(ENV['CACHE_FILE'])
     # TODO: Query database for each unique cluster name
@@ -47,7 +55,7 @@ class Collectors
         # This will give you a ruby hash of the node information.
         # info = @cache.get(<node_name>)
         # time = @cache.get(<node_name> + ':datetime')
-
+      end
       rescue SocketError
         log.fatal "SocketError cannot connect to #{name}"
       end
@@ -62,7 +70,7 @@ class Collectors
     when :postgres
       collect_postgres(host, user, password)
     else
-      STDERR.puts "db_type `#{db_type}` is neither `:mysql` nor `:postgres`."
+      log.error StandardError.new("db_type `#{db_type}` is neither `:mysql` nor `:postgres`.")
     end
   end
 

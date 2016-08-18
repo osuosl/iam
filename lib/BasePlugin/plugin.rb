@@ -31,10 +31,13 @@ class BasePlugin
   # Returns Ruby Hash of report data
   def report(resource = {node: '*'}, start_time = Time.now - (30 * SECONDS_IN_DAY),
              end_time = Time.now)
-
     # initialize a log
-    log = Logging.logger['BasePlugin.log']
-
+    log = Logging.logger['BasePluginLog']
+    log.level = :debug
+    log.add_appenders(
+    Logging.appenders.file(
+      ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+    )
     log.error StandardError.new(
       "BasePlugin: start_time and end_time should be Time objects"
     )unless end_time.is_a? Time and start_time.is_a? Time
