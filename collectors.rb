@@ -5,18 +5,11 @@ require 'json'
 require 'erb'
 require 'logging'
 require_relative 'lib/util'
+require_relative 'logging/logs'
 
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
 class Collectors
-  # initialize a log
-  log = Logging.logger['CollectorsLog']
-  log.level = :debug
-  log.add_appenders(
-    Logging.appenders.file(
-    ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
-  )
-
   def initialize
     @cache = Cache.new(ENV['CACHE_FILE'])
     # TODO: Query database for each unique cluster name
@@ -57,7 +50,7 @@ class Collectors
         # time = @cache.get(<node_name> + ':datetime')
       end
       rescue SocketError
-        log.fatal "SocketError cannot connect to #{name}"
+        MyLog.log.fatal "SocketError cannot connect to #{name}"
       end
     @cache.write
   end
@@ -70,7 +63,7 @@ class Collectors
     when :postgres
       collect_postgres(host, user, password)
     else
-      log.error StandardError.new("db_type `#{db_type}` is neither `:mysql` nor `:postgres`.")
+      MyLog.log.error StandardError.new("db_type `#{db_type}` is neither `:mysql` nor `:postgres`.")
     end
   end
 

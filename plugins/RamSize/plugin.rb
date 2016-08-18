@@ -3,6 +3,7 @@ require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
+require_relative '../../logging/logs'
 
 # Ram Size data plugin
 class RamSize < BasePlugin
@@ -19,24 +20,18 @@ class RamSize < BasePlugin
   end
 
   def store(fqdn)
-    # initialize a log
-    log = Logging.logger['RamSizeLog']
-    log.level = :debug
-    log.add_appenders(
-      Logging.appenders.file(
-      ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
-    )
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
-      log.error StandardError.new(
+      MyLog.log.error StandardError.new(
         "No total_ram information for #{fqdn}"
       )
     elsif not node_info['total_ram'].number?
-      log.error StandardError.new(
-      "RamSize: total_ram information for #{fqdn} malformed (should be number)"
+      MyLog.log.error StandardError.new(
+        "RamSize: total_ram information for #{fqdn} malformed (should be number)"
       )
     end
 
@@ -48,6 +43,6 @@ class RamSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    log.error StandardError.new("RamSize:  #{e}: #{node_info}")
+    MyLog.log.error StandardError.new("RamSize:  #{e}: #{node_info}")
   end
 end

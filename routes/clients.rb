@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require_relative '../logging/logs'
 module Sinatra
   module ClientRoutes
     def self.registered(app)
@@ -14,8 +15,8 @@ module Sinatra
         # view a client
         @client = Client[id: params[:id]]
         if @client.nil?
+          MyLog.log.fatal 'routes/clients: Client not found'
           halt 404, 'Client not found'
-          log.fatal 'Client not found'
         end
         erb :'clients/show'
       end
@@ -24,8 +25,8 @@ module Sinatra
         # get client edit form
         @client = Client[id: params[:id]]
         if @client.nil?
-          halt 404, 'Client not found'
-          log.fatal 'Client not found'
+          MyLog.log.fatal 'routes/clients: Client not found [edit]'
+          halt 404, 'routes/clients: Client not found'
         end
         erb :'clients/edit'
       end

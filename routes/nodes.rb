@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require_relative '../logging/logs'
 module Sinatra
   module NodeRoutes
     def self.registered(app)
@@ -15,8 +16,8 @@ module Sinatra
         # view a node
         @node = NodeResource[id: params[:id]]
         if @node.nil?
+          MyLog.log.fatal 'routes/nodes: Node not found'
           halt 404, 'node not found'
-          log.fatal 'node not found'
         end
         erb :'nodes/show'
       end
@@ -25,8 +26,8 @@ module Sinatra
         # get node edit form
         @node = NodeResource[id: params[:id]]
         if @node.nil?
+          MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
-          log.fatal 'node not found'
         end
         erb :'nodes/edit'
       end

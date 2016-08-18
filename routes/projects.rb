@@ -15,8 +15,8 @@ module Sinatra
         # view a project
         @project = Project[id: params[:id]]
         if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found'
           halt 404, 'Project not found'
-          log.fatal 'Project not found'
         end
         erb :'projects/show'
       end
@@ -25,8 +25,8 @@ module Sinatra
         # get project edit form
         @project = Project[id: params[:id]]
         if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found [edit]'
           halt 404, 'Project not found'
-          log.fatal 'Project not found'
         end
         erb :'projects/edit'
       end
