@@ -10,7 +10,26 @@ s = Rufus::Scheduler.new
 s.every '30m', first_in: 0.4 do
   # Collect ganeti node information every 30 minutes
   collector = Collectors.new
-  collector.collect_ganeti
+
+  # Node (ganeti) collector
+  # TODO: Replace with file-evaluated variable.
+  clusters = ['ganeti']
+  clusters.each do |v|
+    collector.collect_ganeti(v)
+  end
+
+  # Database collector
+  # TODO: Replace with file-evaluated variable.
+  db_creds = [{:type => :mysql,
+               :host => ENV['MYSQL_TESTING_HOST'],
+               :user => ENV['MYSQL_USER'],
+               :password => ENV['MYSQL_PASSWORD'] }]
+  db_creds.each do |var|
+    collector.collect_db(var[:type],
+                         var[:host],
+                         var[:user],
+                         var[:password])
+  end
 end
 
 # Change '15m' on next line to 4 to test
