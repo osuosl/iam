@@ -15,6 +15,7 @@ group :default do
   gem 'dotenv'
   gem 'thin'
   gem 'json'
+  gem 'logging'
   gem 'rubocop', require: false
   gem 'rufus-scheduler'
 end
