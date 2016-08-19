@@ -13,7 +13,7 @@ describe 'DBSize plugin' do
     end
 
     before(:each) do
-      @cache.set('test_db', 'Data Base Size in Bytes': "123456.0", active: true)
+      @cache.set('test_db', {'Data Base Size in Bytes': 123456.0, active: true})
       @cache.write
     end
 
@@ -26,9 +26,20 @@ describe 'DBSize plugin' do
     it 'does not fail with valid data' do
       # Store cached nodes in DB, no error
       expect { DBSize.new.store('test_db') }.to_not raise_error
-      puts @db_table.where(db: 'test_db')
       # Check that store actually stored the node
       expect(@db_table.where(db: 'test_db')).to_not be_empty
+    end
+
+    it 'does fail with invalid data' do
+      # Store cached nodes in DB, no error
+      @cache.set('bad_test_db', {'Data Base Size in Bytes': 'ABCD', active: true})
+      @cache.write
+
+      expect { DBSize.new.store('bad_test_db') }.to raise_error
+
+      @cache.del('bad_test_db')
+      @cache.write
+
     end
 
     it 'fails when not passed node name' do

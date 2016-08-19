@@ -21,9 +21,13 @@ class DBSize < BasePlugin
     # Pull node information from cache as a ruby hash
     db_info = @cache.get(db_host)
     db_key = 'Data Base Size in Bytes'
+
     # Check for valid data
-    if db_info[db_key].nil? || db_info[db_key] == ''
-      raise "No DBSize information for #{db_host}\n"
+    if db_info[db_key].nil? ||
+      db_info[db_key] == '' ||
+      db_info[db_key].is_a?(Numeric) == false
+        puts "error raised"
+        raise "No DBSize information for #{db_host}\n"
     end
 
     # Insert data into disk_size_measurements table
