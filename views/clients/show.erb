@@ -6,7 +6,8 @@
         <p>
           Name: <%= @client.contact_name %> <br>
           Email: <%= @client.contact_email %> <br>
-          Description: <%= @client.description %>
+          Description: <%= @client.description %> <br>
+          Active: <%= @client.active %>
         </p>
 
         <table class="table">
@@ -16,10 +17,12 @@
               <th>project Name</th>
               <th>Resources</th>
               <th>Description</th>
+              <th>Active</th>
             </tr>
           </thead>
           <tbody>
 						<% for @project in @projects %>
+            <% if @project.active %>
             <tr>
               <th scope="row"><%= @project.id %></th>
 							<td>
@@ -33,8 +36,12 @@
 							<td>
 								<%= @project.description %>
 							</td>
+              <td>
+                <%= @project.active %>
+              </td>
             </tr>
 						<% end %>
+            <% end %>
           </tbody>
         </table>
       </div>

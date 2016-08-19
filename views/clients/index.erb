@@ -18,6 +18,7 @@
           </thead>
           <tbody>
 						<% for @client in @clients %>
+            <% if @client.active %>
             <tr>
               <th scope="row"><%= @client.id %></th>
 							<td>
@@ -40,6 +41,7 @@
 								</a>
 							</td>
             </tr>
+            <% end %>
 						<% end %>
           </tbody>
         </table>

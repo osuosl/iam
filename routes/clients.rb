@@ -56,13 +56,15 @@ module Sinatra
         params[:contact_name] = nil if params[:contact_name] == ''
         params[:contact_email] = nil if params[:contact_email] == ''
         params[:description] = nil if params[:description] == ''
+        params[:active] = nil if params[:description] == ''
 
         # recieve an updated client
         client = Client[id: params[:id]]
         client.update(name: params[:name] || client.name,
                       description: params[:description] || client.description,
                       contact_email: params[:contact_email] || client.contact_email,
-                      contact_name: params[:contact_name] || client.contact_name)
+                      contact_name: params[:contact_name] || client.contact_name,
+                      active: params[:active] || client.active)
         redirect "/clients/#{params[:id]}"
       end
 
