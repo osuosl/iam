@@ -14,6 +14,13 @@ class Iam < Sinatra::Base
 
   require 'bundler'
 
+  # sinatra configs
+  enable :method_override
+  set :port, 4567
+  set :bind, '0.0.0.0'
+  set :root, File.dirname(__FILE__)
+  set :public_folder, proc { File.join(root, 'static') }
+
   # basic Ruby stuff
   require 'rubygems'
   require 'bundler/setup'
@@ -28,7 +35,7 @@ class Iam < Sinatra::Base
   require 'uri'
   require 'openssl'
   require 'json'
-  require_relative 'lib/cache.rb'
+  require_relative 'lib/util.rb'
 
   # Test stuff
   if env == 'development' || env == 'test'

@@ -1,0 +1,96 @@
+.. _2016_06_30:
+
+Thursday, June 23, 2016
+=======================
+
+This meeting spec'd out the project's goals for the next week through Thursday,
+July 7th.
+
+Developers
+----------
+
+Recently a few OSL devs decided to start working on IaM. They are:
+
+- `athai`_ Spent about 10 hours on IaM this last week and is dedicating another
+  10 hours for the coming week.
+- `alxngyn`_ Spent about 16 hours on IaM this week and is dedicating 16 of his
+  20 hours for the coming week.
+- `elijahcaine`_ is going to donate about 10 hours to IaM before he leaves on a
+  three week trip on July 5th through the 26th.
+- `kennric`_ will be working on IaM for about 10 hrs this sprint.
+
+.. note:: all names are Github user names and link to GH user pages.
+
+.. _alxngyn: https://github.com/alxngyn
+.. _elijahcaine: https://github.com/elijahcaine
+.. _athai: https://github.com/athai
+.. _kennric: https://github.com/kennric
+
+Progress
+--------
+
+- The ``RamSize`` plugin is completed.
+- Progress has been made on the testing-re-factor.
+- Some progress has been made on the views, they look good!
+- Ken is 99% of the way to getting the code running on production, there were a
+  few problems with chef and chef environments, further mentioned below.
+
+For the test-refactor we talked a bit about eventually increasing test coverage
+and hopefully testing our plugins' use of the BasePlugin (in addition to
+testing the BasePlugin itself).
+
+For the views discussion we talked a bit about how to automatically test the
+views. Rails provides some rspec libraries that make view testing easy, sinatra
+does not come with those tools out of the box. Testing is not a *huge*
+priority, but it will definitely be something we look into.
+
+Tasks
+-----
+
+Our main focus of this sprint are:
+
+- Get an instance of IaM in production so we can start collecting data ASAP.
+- Work toward getting functioning views.
+- Finish reviewing pending pull requests.
+- Keep working on fixing our tests.
+
+Our specific problems are related to getting our chef configuration up, the
+ansible playbook merged, both of which seem to be environment problems and not
+code problems.
+
+----
+
+Meeting Outline
+---------------
+
+Cleanup (Ready Pull Requests)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`Pull Requests<https://github.com/osuosl/iam/pulls>`_ | *Ordered Oldest to Newest*
+
+- `Node resource CRUD<https://github.com/osuosl/iam/pull/85>`_
+- `updated app.rb for method_override, port and host<https://github.com/osuosl/iam/pull/87>`_
+- `RamSize plugin<https://github.com/osuosl/iam/pull/98>`_
+- `Add partials views and client views<https://github.com/osuosl/iam/pull/103>`_ **BLOCKED**
+
+Future Work (Pending Issues)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`Issues<https://github.com/osuosl/iam/issues>`_ | Ordered by Topic
+
+- Views
+  - `Report view<https://github.com/osuosl/iam/issues/71>`_
+  - `Project CRUD<https://github.com/osuosl/iam/issues/80>`_
+  - `Client, project and node views<https://github.com/osuosl/iam/issues/102>`
+  - `implement a statics/ directory<https://github.com/osuosl/iam/issues/105>`_
+- Plgins
+  - `REFACTOR: DiskSize for Disk Number<https://github.com/osuosl/iam/issues/81>`_
+- Oter
+  - `Review spec tests for correctness<https://github.com/osuosl/iam/issues/99>`_
+  - `RDocs implementation<https://github.com/osuosl/iam/issues/79>`_
+  - `Logging implementation<https://github.com/osuosl/iam/issues/77>`_
+
+- OSL Academy, what's the haps?
+  - Make issues for them to tackle.
+  - Something about spec testing our utilities?
+- Deploying, are there any blockers before we merge the Ansible Playbooks?

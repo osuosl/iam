@@ -49,7 +49,7 @@ describe 'The Project Model and table' do
     project = Project.create(name: 'Delete Me')
     expect(project).to exist
     expect { project.delete }.to_not raise_error
-    expect(project).to_not exist
+    expect(project.exists?).to be false
   end
 
   it 'can update a project' do
@@ -79,5 +79,21 @@ describe 'The Project Model and table' do
     # so refresh the model and see what it has stored
     project2.refresh
     expect(project2.name).to eq('Testo 2')
+  end
+
+  it 'has an active flag' do
+    project = Project.create(name: 'testo')
+
+    expect(project).to exist
+    expect(project.active).to eq(true)
+  end
+
+  it 'changing the active flag does not result in an error' do
+    project = Project.create(name: 'testo')
+
+    expect(project).to exist
+    expect(project.active).to eq(true)
+    expect { project.update(active: false) }.to_not raise_error
+    expect { project.update(active: true) }.to_not raise_error
   end
 end

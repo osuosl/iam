@@ -19,6 +19,11 @@ FactoryGirl.define do
     "Project number #{n}"
   end
 
+  # NodeResource
+  sequence :node_name do |n|
+    "Node number #{n}"
+  end
+
   factory :client, class: Client do
     # this lets factory girl save Sequel models
     to_create(&:save)
@@ -33,5 +38,12 @@ FactoryGirl.define do
     name        { generate(:project_name) }
     resources   'node,ftp'
     description 'An important project'
+  end
+
+  factory :node, class: NodeResource do
+    to_create(&:save)
+    name        { generate(:node_name) }
+    type        'VM'
+    cluster     'Ganetti'
   end
 end

@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require_relative 'environment'
+require_relative 'scheduler'
 
 # IAM - a resource usage metric collection and reporting system
 class Iam < Sinatra::Base
@@ -14,6 +15,7 @@ class Iam < Sinatra::Base
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
+  register Sinatra::NodeRoutes
 
   run! unless ENV['RACK_ENV'] == 'test'
 end

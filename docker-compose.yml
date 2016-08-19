@@ -12,25 +12,35 @@ services:
     env_file:
       - ./dockerfiles/app.env
     working_dir: /data/code
+    volumes:
+      - .:/data/code
 
   ###
   # Dev container extends the base application.
   ###
   dev:
-    command: /data/code/scripts/rake-dev.sh
+    entrypoint: /wait-for-it.sh -q testing-mysql:3306 --
+    command: rake spec
     extends:
       service: app
     links:
-      - postgres
+      - testing-psql
+      - testing-mysql
     ports:
       - "4567:4567"
-    volumes:
-      - .:/data/code
 
   ###
-  # Postgres for databases.
+  # Postgres database for testing.
   ###
-  postgres:
+  testing-psql:
     image: postgres
+    env_file:
+      - ./dockerfiles/app.env
+
+  ###
+  # MYSQL database for testing.
+  ###
+  testing-mysql:
+    image: mysql
     env_file:
       - ./dockerfiles/app.env

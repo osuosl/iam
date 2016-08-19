@@ -1,5 +1,4 @@
 require 'sinatra/base'
-
 module Sinatra
   module ProjectRoutes
     def self.registered(app)
@@ -15,14 +14,20 @@ module Sinatra
       app.get '/projects/:id/?' do
         # view a project
         @project = Project[id: params[:id]]
-        halt 404, 'Project not found' if @project.nil?
+        if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found'
+          halt 404, 'Project not found'
+        end
         erb :'projects/show'
       end
 
       app.get '/projects/:id/edit/?' do
         # get project edit form
         @project = Project[id: params[:id]]
-        halt 404, 'Project not found' if @project.nil?
+        if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found [edit]'
+          halt 404, 'Project not found'
+        end
         erb :'projects/edit'
       end
 

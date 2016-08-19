@@ -12,16 +12,14 @@ describe 'BasePlugin plugin' do
 
     it 'creates a test_plugin_measurements table' do
       # Table shouldn't exist before registration
-      expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_false
-      end
+      expect(Iam.settings.DB.table_exists?(
+        :test_plugin_measurements)).to be false
 
       TestingPlugin.new.register
 
       # Table should exist after registration
-      expect do
-        Iam.settings.DB.table_exists?(:test_plugin_measurements).to be_true
-      end
+      expect(Iam.settings.DB.table_exists?(
+        :test_plugin_measurements)).to be true
     end
   end
 
@@ -63,11 +61,11 @@ describe 'BasePlugin plugin' do
              :value=>29}])
     end
 
-    it 'does not return data on know specific resource out of date range' do
+    it 'does not return data on known specific resource out of date range' do
       expect(TestingPlugin.new.report({:resource=>'good_31'})).to eq([])
     end
 
-    it 'does return data on know specific resource with custom date range' do
+    it 'does return data on known specific resource with custom date range' do
       expect(TestingPlugin.new.report({:resource=>'good_31'},
                                    THIRTY_ONE_DAYS_AGO - 1 * DAYS,
                                    THIRTY_ONE_DAYS_AGO)).to\

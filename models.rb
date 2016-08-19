@@ -8,6 +8,8 @@ Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
 # String    :contact_name
 # String    :contact_email
 # String    :description,   :text => true
+# Boolean     :active, default: true
+
 class Client < Sequel::Model
   one_to_many :projects
   def validate
@@ -21,6 +23,7 @@ end
 # String    :name,        :unique => true
 # String    :resources,   :size => 255
 # String    :description, :text => true
+# Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
   def validate
@@ -34,6 +37,7 @@ end
 # String    :resource_name
 # String    :storage_table
 # String    :units
+# Boolean     :active, default: true
 class Plugin < Sequel::Model
   def validate
     super
@@ -49,6 +53,7 @@ end
 # String    :cluster
 # DateTime  :created
 # DateTime  :modified
+# Boolean     :active, default: true
 class NodeResource < Sequel::Model
   many_to_one :projects
   def validate
