@@ -3,7 +3,9 @@ require 'uri'
 require 'openssl'
 require 'json'
 require 'erb'
+require 'logging'
 require_relative 'lib/util'
+require_relative 'logging/logs'
 
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
@@ -41,15 +43,15 @@ class Collectors
           @cache.set(node_name, JSON.parse(@template.result(binding)))
           @cache.set(node_name + ':datetime', Time.new.inspect)
         end
+
         # To retrieve the node information, use cache.get and JSON.parse.
         # This will give you a ruby hash of the node information.
         # info = @cache.get(<node_name>)
         # time = @cache.get(<node_name> + ':datetime')
       end
-    # TODO Raise an error instead?
-    rescue SocketError
-      STDERR.puts "Uh oh, got a SocketError connecting to #{cluster}"
-    end
+      rescue SocketError
+        MyLog.log.fatal "SocketError cannot connect to #{name}"
+      end
     @cache.write
   end
 
@@ -61,7 +63,7 @@ class Collectors
     when :postgres
       collect_postgres(host, user, password)
     else
-      STDERR.puts "db_type `#{db_type}` is neither `:mysql` nor `:postgres`."
+      MyLog.log.error StandardError.new("db_type `#{db_type}` is neither `:mysql` nor `:postgres`.")
     end
   end
 

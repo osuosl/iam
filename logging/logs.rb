@@ -8,12 +8,17 @@
 require 'logging'
 require 'environment.rb'
 
-# Creates logfile with the level 'debug'
-#   that appends to log_file.log
-log = Logging.logger['logfile']
-log.level = :debug
-log.add_appenders(
-  Logging.appenders.file(ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
-)
-
-log.info 'Program started'
+class MyLog
+  def self.log
+    if @log.nil?
+      # Creates logfile with the level 'debug'
+      #   that appends to log_file.log
+      @log = Logging.logger['logfile']
+      @log.level = :debug
+      @log.add_appenders(
+        Logging.appenders.file(ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+      )
+    end
+    @log
+  end
+end
