@@ -14,11 +14,11 @@ module Sinatra
       app.get '/clients/:id/?' do
         # view a client
         @client = Client[id: params[:id]]
-        @projects = Project.filter(client_id: @client.id)
         if @client.nil?
           MyLog.log.fatal 'routes/clients: Client not found'
           halt 404, 'Client not found'
         end
+        @projects = Project.filter(client_id: @client.id)
         erb :'clients/show'
       end
 
