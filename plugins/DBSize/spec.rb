@@ -35,11 +35,11 @@ describe 'DBSize plugin' do
       @cache.set('bad_test_db', {'Data Base Size in Bytes': 'ABCD', active: true})
       @cache.write
 
-      expect { DBSize.new.store('bad_test_db') }.to raise_error
+      expect { DBSize.new.store('bad_test_db') }.to \
+        output(/malformed/).to_stderr_from_any_process
 
       @cache.del('bad_test_db')
       @cache.write
-
     end
 
     it 'fails when not passed node name' do

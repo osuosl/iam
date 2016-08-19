@@ -3,7 +3,7 @@ require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
 
-# Disk Sizes data plugin
+# DBSizes data plugin
 class DBSize < BasePlugin
   def initialize
     @@name = 'DBSize'
@@ -23,14 +23,13 @@ class DBSize < BasePlugin
     db_key = 'Data Base Size in Bytes'
 
     # Check for valid data
-    if db_info[db_key].nil? ||
-      db_info[db_key] == '' ||
-      db_info[db_key].is_a?(Numeric) == false
-        puts "error raised"
-        raise "No DBSize information for #{db_host}\n"
+    if db_info[db_key].nil? || db_info[db_key] == ''
+      raise "No DBSize information for #{db_host}\n"
+    elsif not db_info[db_key].is_number?
+      raise "DB information for #{db_host} malformed (should be a number)\n"
     end
 
-    # Insert data into disk_size_measurements table
+    # Insert data into db_size_measurements table
     @@database[@@table].insert(
       db:            db_host,
       value:         db_info[db_key],
