@@ -21,26 +21,26 @@
             </tr>
           </thead>
           <tbody>
-						<% for @project in @projects %>
-            <% if @project.active %>
-            <tr>
-              <th scope="row"><%= @project.id %></th>
-							<td>
-								<a href="/projects/<%= @project.id %>" >
-									<%= @project.name %>
-								</a>
-							</td>
-							<td>
-								<%= @project.resources %>
-							</td>
-							<td>
-								<%= @project.description %>
-							</td>
-              <td>
-                <%= @project.active %>
-              </td>
-            </tr>
-						<% end %>
+            <% for @project in @projects %>
+              <% if @project.active %>
+              <tr>
+                <th scope="row"><%= @project.id %></th>
+                <td>
+                  <a href="/projects/<%= @project.id %>" >
+                    <%= @project.name %>
+                  </a>
+                </td>
+                <td>
+                  <%= @project.resources %>
+                </td>
+                <td>
+                  <%= @project.description %>
+                </td>
+                <td>
+                  <%= @project.active %>
+                </td>
+              </tr>
+              <% end %>
             <% end %>
           </tbody>
         </table>
