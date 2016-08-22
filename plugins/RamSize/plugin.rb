@@ -33,6 +33,7 @@ class RamSize < BasePlugin
       MyLog.log.error StandardError.new(
         "RamSize: total_ram information for #{fqdn} malformed (should be number)"
       )
+      raise "RamSize: total_ram information for #{fqdn} malformed (should be number)"
     end
 
     # Insert data into disk_size_measurements table
