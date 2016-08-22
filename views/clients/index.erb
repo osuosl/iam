@@ -21,28 +21,28 @@
             <% if @client.active %>
             <tr>
               <th scope="row"><%= @client.id %></th>
-							<td>
-								<a href="clients/<%= @client.id %>" >
-									<%= @client.name %>
-								</a>
-							</td>
-							<td>
-								<%= @client.contact_name %>
-							</td>
-							<td>
-								<%= @client.contact_email %>
-							</td>
-							<td>
-								<%= @client.description %>
-							</td>
-              <td>
-								<a href="clients/<%= @client.id %>/edit" >
-									Edit
-								</a>
-							</td>
+				<td>
+					<a href="clients/<%= @client.id %>" >
+						<%= @client.name %>
+					</a>
+				</td>
+				<td>
+					<%= @client.contact_name %>
+				</td>
+				<td>
+					<%= @client.contact_email %>
+				</td>
+				<td>
+					<%= @client.description %>
+				</td>
+		        <td>
+					<a href="clients/<%= @client.id %>/edit" >
+						Edit
+					</a>
+				</td>
             </tr>
-            <% end %>
-						<% end %>
+        	<% end %>
+		  <% end %>
           </tbody>
         </table>
       </div>
