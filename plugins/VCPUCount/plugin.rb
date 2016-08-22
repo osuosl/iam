@@ -31,6 +31,7 @@ class VCPUCount < BasePlugin
     # Error check for valid data
     if node_info['num_cpus'].nil? || node_info['num_cpus'] == 'unknown'
       MyLog.log.warn "VCPUCount: No num_cpus information for #{fqdn}"
+      raise "VCPUCount: No num_cpus information for #{fqdn}"
     end
 
     # Insert data into disk_size_measurements table

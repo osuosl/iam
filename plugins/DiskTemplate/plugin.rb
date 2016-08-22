@@ -27,6 +27,7 @@ class DiskTemplate < BasePlugin
     # Error check for valid data
     if node_info['disk_template'].nil?
       MyLog.log.warn "DiskTemplate: No disk_template information for #{fqdn}"
+      raise "DiskTemplate: No disk_template information for #{fqdn}"
     end
 
     # Insert data into disk_size_measurements table
