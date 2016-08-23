@@ -1,7 +1,9 @@
+require 'logging'
 require 'sequel'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
+require_relative '../../logging/logs'
 
 # DBSizes data plugin
 class DBSize < BasePlugin
@@ -24,8 +26,10 @@ class DBSize < BasePlugin
 
     # Check for valid data
     if db_info[db_key].nil? || db_info[db_key] == ''
+      MyLog.log.warn "DBSize: No DBSize information for #{db_host}"
       raise "No DBSize information for #{db_host}\n"
     elsif not db_info[db_key].is_number?
+      MyLog.log.warn "DBSize: DB information for #{db_host} malformed (should be a number)"
       raise "DB information for #{db_host} malformed (should be a number)\n"
     end
 
@@ -37,6 +41,6 @@ class DBSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: db_host).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{db_info}" # Log the error
+    MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")
   end
 end
