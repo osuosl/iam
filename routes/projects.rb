@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require_relative '../logging/logs'
 module Sinatra
   module ProjectRoutes
     def self.registered(app)
@@ -8,7 +9,7 @@ module Sinatra
 
       app.get '/projects/new/?' do
         # get new project form
-        erb :'projects/edit'
+        erb :'projects/create'
       end
 
       app.get '/projects/:id/?' do
@@ -33,7 +34,7 @@ module Sinatra
 
       app.get '/projects/?' do
         # get a list of all projects
-        @projects = Project.each { |x| p x.name }
+        @projects = Project.all
         erb :'projects/index'
       end
 
@@ -55,18 +56,11 @@ module Sinatra
         project.update(name:        params[:name] || project.name,
            client_id:   Iam.settings.DB[:clients]
               .where(name: params[:client_name])
-              .get(:id) || project.client_id,
+               .get(:id), #|| project.client_id,
            resources:   params[:resources] || project.resources,
-           description: params[:description] || project.description)
+           description: params[:description] || project.description,
+           active: params[:active] || project.active)
         redirect "/projects/#{params[:id]}"
-      end
-
-      app.delete '/projects/:id/?' do
-        # delete a project
-        @project = Project[id: params[:id]]
-        @project.delete unless @project.nil?
-        redirect '/projects' unless @project.nil?
-        404
       end
     end
   end
