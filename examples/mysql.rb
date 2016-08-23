@@ -9,21 +9,21 @@ Sequel.extension :migration, :core_extensions
 
 # Make the connection to the database.
 DB = Sequel.mysql('test_db',
-                  :user => 'test_db_user',
-                  :password => 'test_db_pass',
-                  :host => 'testing-mysql')
+                  user: 'test_db_user',
+                  password: 'test_db_pass',
+                  host: 'testing-mysql')
 
 # Run migrations on the database, create `items` table.
 DB.create_table :items do
   primary_key :id
-  String :name, :null=>false, :unique=>true
+  String :name, null: false, unique: true
 end
 
 # Get a dataset from the database and insert an element into the database.
 dataset = DB[:items]
-dataset.insert(:name => 'Fooby')
-dataset.insert(:name => 'Barby')
-dataset.insert(:name => 'Bazby')
+dataset.insert(name: 'Fooby')
+dataset.insert(name: 'Barby')
+dataset.insert(name: 'Bazby')
 
 # Print the contents of the database.
 dataset.each do |e|

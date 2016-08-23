@@ -7,6 +7,7 @@ module Sinatra
       # Errors
       ##
       app.error 404 do
+        MyLog.log.fatal 'routes/main: Not found'
         'Not Found'
       end
 
