@@ -28,7 +28,7 @@ class DBSize < BasePlugin
     if db_info[db_key].nil? || db_info[db_key] == ''
       MyLog.log.warn "DBSize: No DBSize information for #{db_host}"
       raise "No DBSize information for #{db_host}\n"
-    elsif not db_info[db_key].is_number?
+    elsif not db_info[db_key].is_a? Numeric
       MyLog.log.warn "DBSize: DB information for #{db_host} malformed (should be a number)"
       raise "DB information for #{db_host} malformed (should be a number)\n"
     end
@@ -42,5 +42,6 @@ class DBSize < BasePlugin
       node_resource: @@database[:node_resources].where(name: db_host).get(:id))
   rescue => e                        # Don't crash on errors
     MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")
+    STDERR.puts "#{e}: #{db_info}" # Log the error
   end
 end
