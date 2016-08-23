@@ -1,6 +1,85 @@
-<% if @project %>
-  <h3><%= @project.name %></h3>
-<% else %>
-  <h3>New project</h3>
-<% end %>
-  This will eventually be the edit project form.
+<div class="container">
+  <form action='/projects' method='post'>
+    <input type="hidden" name="_method" value="patch">
+    <input type="hidden" name="id" value="<%= @project.id %>">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Old</th>
+          <th>New</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td>
+            <% if @project %>
+            <%= @project.name %>
+            <% else %>
+            N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="name" placeholder="New name">
+          </td>
+        </tr>
+        <tr>
+          <td>project id</td>
+          <td>
+            <% if @project %>
+            <%= @project.id %>
+            <% else %>
+            N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="client id" placeholder="New id">
+          </td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td>
+            <% if @project %>
+            <%= @project.resources %>
+            <% else %>
+            N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="resource" placeholder="New resource">
+          </td>
+        </tr>
+        <tr>
+          <td>description</td>
+          <td>
+            <% if @project %>
+            <%= @project.description %>
+            <% else %>
+            N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="description" placeholder="New description">
+          </td>
+        </tr>
+        <tr>
+          <td>Active state</td>
+          <td>
+            <% if @project %>
+            <%= @project.active %>
+            <% else %>
+            N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="radio" name="active" value="True"> True
+            <input type="radio" name="active" value="False"> False
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <input type="submit" value="Update" class="btn btn-primary">
+  </form>
+</div>
+<br>
