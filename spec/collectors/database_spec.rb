@@ -8,31 +8,37 @@ describe 'IaM Database Collector' do
 
   before :all do
     # Holds the set of all database connections
+    # rubocop:disable VariableName
     @DB = {}
+    # rubocop:enable VariableName
 
     # Grant complete privileges to our special user
     # TODO: make this conditional, do not run if running in CI, this kind of
     # thing gets run in a pre-testing script in that situation
     # Establishes the main database connection using the given credentials.
-    @DB[:root] = Sequel.connect("mysql://root:#{ENV['MYSQL_ROOT_PASSWORD']}@#{ENV['MYSQL_TESTING_HOST']}")
+    command = "mysql://root:#{ENV['MYSQL_ROOT_PASSWORD']}" \
+              "@#{ENV['MYSQL_TESTING_HOST']}"
+    @DB[:root] = Sequel.connect(command)
 
     # Create three databases on the server
     1.upto 3 do |i|
       # These two lines run the following raw SQL on the server
       @DB[:root].run("DROP DATABASE IF EXISTS db#{i}")
       @DB[:root].run("CREATE DATABASE IF NOT EXISTS db#{i};")
-      @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.* TO '#{ENV['MYSQL_USER']}'@'%' WITH GRANT OPTION;")
+      @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.*
+                      TO '#{ENV['MYSQL_USER']}'@'%'
+                      WITH GRANT OPTION;")
 
       # Connect to each database individually
-      @DB[i] = Sequel.mysql("db#{i}", :user => ENV['MYSQL_USER'],
-                            :password => ENV['MYSQL_PASSWORD'],
-                            :host => ENV['MYSQL_TESTING_HOST'])
+      @DB[i] = Sequel.mysql("db#{i}", user: ENV['MYSQL_USER'],
+                                      password: ENV['MYSQL_PASSWORD'],
+                                      host: ENV['MYSQL_TESTING_HOST'])
 
       # Create i*i tables on each database
-      (1..(i*i)).each do |j|
+      (1..(i * i)).each do |j|
         @DB[i].create_table "table_#{j}" do
           primary_key :id
-          String :name, :null=>false, :unique=>true
+          String :name, null: false, unique: true
         end
 
         # Note: The table names for creating the dataset need to be symbols,
@@ -40,8 +46,8 @@ describe 'IaM Database Collector' do
         dataset = @DB[i][:"table_#{j}"]
         # Insert i*i records in each of the i*i tables on each of the three
         # databases
-        (1..(i*i)).each do |k|
-          dataset.insert(:name => "data-#{k}")
+        (1..(i * i)).each do |k|
+          dataset.insert(name: "data-#{k}")
         end
       end
     end
@@ -69,18 +75,19 @@ describe 'IaM Database Collector' do
     # puts @expected
   end
 
-
   after :all do
     # Drop all of the databases so our tests are idempotent
-    [1,2,3].each do |n|
+    [1, 2, 3].each do |n|
       @DB[:root].run("DROP DATABASE IF EXISTS db#{n}")
     end
   end
 
-
   it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db(:mysql, ENV['MYSQL_TESTING_HOST'], ENV['MYSQL_USER'], ENV['MYSQL_PASSWORD'])
+    c.collect_db(:mysql,
+                 ENV['MYSQL_TESTING_HOST'],
+                 ENV['MYSQL_USER'],
+                 ENV['MYSQL_PASSWORD'])
 
     # Reads values in from cache file
     cache = Cache.new(ENV['CACHE_FILE'])
@@ -89,7 +96,6 @@ describe 'IaM Database Collector' do
       expect(cache.dump).to include(var)
     end
   end
-
 
   it '[mysql] raises an error when it is unable to connect to the database.' do
     c = Collectors.new

@@ -20,7 +20,7 @@ services:
   ###
   dev:
     entrypoint: /wait-for-it.sh -q testing-mysql:3306 --
-    command: rake spec
+    command: ./run-tests.sh
     extends:
       service: app
     links:

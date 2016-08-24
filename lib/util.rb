@@ -10,8 +10,8 @@ require 'time'
 # A thin vineer above a cache layer.
 class Cache
   # Initialize the cache
-  def initialize(file_path=ENV['CACHE_FILE'])
-    @path = if file_path.to_s.empty? then '/tmp/iam-cache' else file_path end
+  def initialize(file_path = ENV['CACHE_FILE'])
+    @path = file_path.to_s.empty? ? '/tmp/iam-cache' : file_path
     @hash = read
   end
 
@@ -46,31 +46,32 @@ class Cache
   # Return an empty hash if the file does note exist.
   def read
     __ensure_path
-    if File.file?(@path)
-      @hash = JSON.parse(File.read(@path))
-    else
-      @hash = {}
-    end
-    return @hash
+    @hash = if File.file?(@path)
+              JSON.parse(File.read(@path))
+            else
+              {}
+            end
+    @hash
   end
 
   def keys
-    return @hash.keys
+    @hash.keys
   end
 
   def dump
-    return @hash
+    @hash
   end
 
-  def __ensure_path(fp=@path)
+  def __ensure_path(fp = @path)
     directory = File.dirname(fp)
     FileUtils.mkdir_p(directory) unless File.directory?(directory)
   end
 end
 
+# helper function to determine if the object is a number or string
 class Object
   def number?
-    self.to_f.to_s == self.to_s || self.to_i.to_s == self.to_s
+    to_f.to_s == to_s || to_i.to_s == to_s
   end
 end
 
@@ -95,6 +96,7 @@ class DataUtil
   end
 
   # Return the number of days in a range of hashes
+  # rubocop:disable MethodLength, AbcSize
   def self.days_in_range(data)
     # an empty range is 0 days
     return 0 if data.empty?

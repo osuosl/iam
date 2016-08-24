@@ -8,15 +8,24 @@
 require 'logging'
 require 'environment.rb'
 
+# logging class
 class MyLog
+  # rubocop:disable MethodLength
   def self.log
     if @log.nil?
       # Creates logfile with the level 'debug'
       #   that appends to log_file.log
       @log = Logging.logger['logfile']
       @log.level = :debug
+
+      file_path = if ENV['LOG_FILE_PATH']
+                    ENV['LOG_FILE_PATH']
+                  else
+                    'logging/log_file.log'
+                  end
+
       @log.add_appenders(
-        Logging.appenders.file(ENV['LOG_FILE_PATH'] ? ENV['LOG_FILE_PATH'] : 'logging/log_file.log')
+        Logging.appenders.file(file_path)
       )
     end
     @log

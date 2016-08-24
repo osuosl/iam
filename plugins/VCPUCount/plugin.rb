@@ -11,20 +11,19 @@ require_relative '../../logging/logs'
 #       differently.
 class VCPUCount < BasePlugin
   def initialize
-    @@name = 'VCPUCount'
-    @@resource_name = 'node'
-    @@units = 'vcpu'
-    @@table = :vcpu_count_measurements
-    @@db_column = :vcpu_count_ver
-    @@migrations_dir= File.dirname(__FILE__) + '/migrations'
-    @@database = Iam.settings.DB
-    @@table = :vcpu_count_measurements
-    @cache = Cache.new(ENV['CACHE_FILE'])
+    name = 'VCPUCount'
+    resource_name = 'node'
+    units = 'vcpu'
+    table = :vcpu_count_measurements
+    db_column = :vcpu_count_ver
+    migrations_dir = File.dirname(__FILE__) + '/migrations'
+
+    super(name, resource_name, units, table, db_column, migrations_dir)
     register
   end
 
+  # rubocop: disable MethodLength, AbcSize
   def store(fqdn)
-
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
@@ -35,13 +34,14 @@ class VCPUCount < BasePlugin
     end
 
     # Insert data into disk_size_measurements table
-    @@database[@@table].insert(
+    @database[@table].insert(
       node:          fqdn,
       value:         node_info['num_cpus'].to_i,
       active:        node_info['active'],
       created:       DateTime.now,
-      node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
-  rescue => e                        # Don't crash on errors
+      node_resource: @database[:node_resources].where(name: fqdn).get(:id)
+    )
+  rescue => e # Don't crash on errors
     MyLog.log.error StandardError.new("VCPUCount:  #{e}: #{node_info}")
   end
 end

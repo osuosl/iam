@@ -1,7 +1,11 @@
 require 'sinatra/base'
 require_relative '../logging/logs'
+
+# IAM
 module Sinatra
+  # Projects routing
   module ProjectRoutes
+    # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
       ##
       # Projects
@@ -43,12 +47,11 @@ module Sinatra
       # This could also be PUT
       app.post '/projects/?' do
         # recieve new project
-          project = Project.create(name: params[:name],
-                                   client_id:   params[:client_id] || '',
-                                   resources:   params[:resources] || '',
-                                   description: params[:description] || ''
-          )
-          redirect "/projects/#{ project.id }"
+        project = Project.create(name: params[:name],
+                                 client_id:   params[:client_id] || '',
+                                 resources:   params[:resources] || '',
+                                 description: params[:description] || '')
+        redirect "/projects/#{project.id}"
       end
 
       app.patch '/projects/?' do

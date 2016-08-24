@@ -1,2 +1,2 @@
 chown --reference=/data/code -R .
-rm /data/code/Gemfile.lock
+# rm /data/code/Gemfile.lock

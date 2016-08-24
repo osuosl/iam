@@ -3,7 +3,6 @@ build/
 .v/
 .venv/
 .viminfo
-Gemfile.lock
 v/
 venv/
 dockerfiles/app.env

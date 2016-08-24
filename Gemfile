@@ -1,6 +1,6 @@
 # bundle Gemfile
 source 'https://rubygems.org'
-ruby '2.3.0'
+ruby '>= 2.2.2'
 
 # Default
 group :default do
@@ -36,8 +36,10 @@ end
 group :test, :development do
   gem 'sqlite3', '1.3.11'
   gem 'rspec', '3.5.0'
+  gem 'bacon', '1.2.0'
   gem 'rack-test', '0.6.3'
   gem 'factory_girl', '4.7.0'
   gem 'pg', '0.18.4'
   gem 'mysql', '2.9.1'
 end
+

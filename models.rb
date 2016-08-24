@@ -9,7 +9,6 @@ Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
 # String    :contact_email
 # String    :description,   :text => true
 # Boolean     :active, default: true
-
 class Client < Sequel::Model
   one_to_many :projects
   def validate
