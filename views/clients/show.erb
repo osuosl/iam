@@ -1,4 +1,47 @@
-<h3><%= @client.name %></h3>
+        <div class="container">
 
-<%= @client.description %><br>
-<%= @client.contact_name %><br>
+        <h2>Client: <%= @client.name %> -
+        <a href="/clients/<%= @client.id %>/edit">edit</a>
+        </h2>
+        <p>
+          Name: <%= @client.contact_name %> <br>
+          Email: <%= @client.contact_email %> <br>
+          Description: <%= @client.description %> <br>
+          Active: <%= @client.active %>
+        </p>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>Project Name</th>
+              <th>Resources</th>
+              <th>Description</th>
+              <th>Active</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for @project in @projects %>
+              <% if @project.active %>
+              <tr>
+                <th scope="row"><%= @project.id %></th>
+                <td>
+                  <a href="/projects/<%= @project.id %>" >
+                    <%= @project.name %>
+                  </a>
+                </td>
+                <td>
+                  <%= @project.resources %>
+                </td>
+                <td>
+                  <%= @project.description %>
+                </td>
+                <td>
+                  <%= @project.active %>
+                </td>
+              </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>

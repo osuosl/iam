@@ -1,7 +1,9 @@
 require 'sequel'
+require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
 require_relative '../../environment.rb'
 require_relative '../../models.rb'
+require_relative '../../logging/logs'
 
 # Ram Size data plugin
 class RamSize < BasePlugin
@@ -18,14 +20,20 @@ class RamSize < BasePlugin
   end
 
   def store(fqdn)
+
     # Pull node information from cache as a ruby hash
     node_info = @cache.get(fqdn)
 
     # Error check for valid data
     if node_info['total_ram'].nil? || node_info['total_ram'] == 'unknown'
-      raise "No total_ram information for #{fqdn}"
-    elsif not node_info['total_ram'].is_number?
-      raise "total_ram information for #{fqdn} malformed (should be number)"
+      MyLog.log.error StandardError.new(
+        "No total_ram information for #{fqdn}"
+      )
+    elsif not node_info['total_ram'].number?
+      MyLog.log.error StandardError.new(
+        "RamSize: total_ram information for #{fqdn} malformed (should be number)"
+      )
+      raise "RamSize: total_ram information for #{fqdn} malformed (should be number)"
     end
 
     # Insert data into disk_size_measurements table
@@ -36,6 +44,6 @@ class RamSize < BasePlugin
       created:       DateTime.now,
       node_resource: @@database[:node_resources].where(name: fqdn).get(:id))
   rescue => e                        # Don't crash on errors
-    STDERR.puts "#{e}: #{node_info}" # Log the error
+    MyLog.log.error StandardError.new("RamSize:  #{e}: #{node_info}")
   end
 end

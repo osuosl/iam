@@ -80,4 +80,20 @@ describe 'The NodeResource Model and table' do
     node2.refresh
     expect(node2.name).to eq('Testo 2')
   end
+
+  it 'has an active flag' do
+    node = NodeResource.create(name: 'testo')
+
+    expect(node).to exist
+    expect(node.active).to eq(true)
+  end
+
+  it 'changing the active flag does not result in an error' do
+    node = NodeResource.create(name: 'testo')
+
+    expect(node).to exist
+    expect(node.active).to eq(true)
+    expect { node.update(active: false) }.to_not raise_error
+    expect { node.update(active: true) }.to_not raise_error
+  end
 end
