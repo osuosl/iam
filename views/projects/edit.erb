@@ -1,7 +1,7 @@
 <div class="container">
   <form action='/projects' method='post'>
     <input type="hidden" name="_method" value="patch">
-    <input type="hidden" name="id" value="<%= @project.client_id %>">
+    <input type="hidden" name="id" value="<%= @project.id %>">
     <table class="table">
       <thead>
         <tr>
@@ -15,9 +15,9 @@
           <td>name</td>
           <td>
             <% if @project %>
-            <%= @project.name %>
+              <%= @project.name %>
             <% else %>
-            N/A
+              N/A
             <% end %>
           </td>
           <td>
@@ -25,38 +25,25 @@
           </td>
         </tr>
         <tr>
-          <td>project id</td>
-          <td>
-            <% if @project %>
-            <%= @project.id %>
-            <% else %>
-            N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="client id" placeholder="New id">
-          </td>
-        </tr>
-        <tr>
           <td>resources</td>
           <td>
             <% if @project %>
-            <%= @project.resources %>
+              <%= @project.resources %>
             <% else %>
-            N/A
+              N/A
             <% end %>
           </td>
           <td>
-            <input type="text" name="resource" placeholder="New resource">
+            <input type="text" name="resources" placeholder="New resource">
           </td>
         </tr>
         <tr>
           <td>description</td>
           <td>
             <% if @project %>
-            <%= @project.description %>
+              <%= @project.description %>
             <% else %>
-            N/A
+              N/A
             <% end %>
           </td>
           <td>
@@ -67,9 +54,9 @@
           <td>Active state</td>
           <td>
             <% if @project %>
-            <%= @project.active %>
+              <%= @project.active %>
             <% else %>
-            N/A
+              N/A
             <% end %>
           </td>
           <td>
@@ -82,4 +69,3 @@
     <input type="submit" value="Update" class="btn btn-primary">
   </form>
 </div>
-<br>
