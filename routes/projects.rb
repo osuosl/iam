@@ -70,8 +70,8 @@ module Sinatra
         redirect "/projects/#{params[:id]}"
       end
 
-      app.delete '/clients/:id/?' do
-        # delete a client
+      app.delete '/projects/:id/?' do
+        # delete a project
         project = Project[id: params[:id]]
         project.delete unless project.nil?
         redirect '/projects' unless project.nil?
