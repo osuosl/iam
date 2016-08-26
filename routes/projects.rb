@@ -45,9 +45,7 @@ module Sinatra
       app.post '/projects/?' do
         # recieve new project
         project = Project.create(name: params[:name],
-                                 client_id:   Iam.settings.DB[:clients]
-                                            .where(name: params[:client_name])
-                                            .get(:id) || '',
+                                 client_id:   params[:client_id] || '',
                                  resources:   params[:resources] || '',
                                  description: params[:description] || ''
                                  )
