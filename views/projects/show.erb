@@ -1,5 +1,4 @@
 <div class="container">
-
   <h2>Project: <%= @project.name %> -
     <a href="/projects/<%= @project.id %>/edit">edit</a>
   </h2>
@@ -9,36 +8,34 @@
     Description: <%= @project.description %> <br>
     Active: <%= @project.active %>
   </p>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Client Id</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Description</th>
-        <th>Active</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for @client in @clients %>
-        <% if @client.active %>
+
+  <% for @client in @clients %>
+  <% if @client.active %>
+  <button data-toggle="collapse" data-target="#clientpanel" class="btn btn-primary"><%= @client.name %></button>
+  <div id="clientpanel" class="collapse">
+    <table class="table">
+      <thead>
         <tr>
-          <th scope="row"><%= @client.id %></th>
-        <td>
-          <a href="/clients/<%= @client.id %>" >
-            <%= @client.name %>
-          </a>
-        </td>
-        <td>
-          <%= @client.contact_email %>
-        </td>
-        <td>
-          <%= @client.description %>
-        </td>
-        <td>
-          <%= @client.active %>
-        </td>
-      </tr>
+          <th>Client Id</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Description</th>
+          <th>Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><%= @client.id %></td>
+          <td>
+            <a href="/clients/<%= @client.id %>">
+              <%= @client.name %>
+            </a>
+          </td>
+          <td><%= @client.contact_email %></td>
+          <td><%= @client.description %></td>
+          <td><%= @client.active %></td>
+        </tr>
+      </div>
       <% end %>
       <% end %>
     </tbody>
