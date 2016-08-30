@@ -19,8 +19,6 @@ module Sinatra
           MyLog.log.fatal 'routes/projects: Project not found'
           halt 404, 'Project not found'
         end
-        puts "hihhiih"
-        puts @project.client_id
         @clients = Client.filter(id: @project.client_id).all
         erb :'projects/show'
       end
