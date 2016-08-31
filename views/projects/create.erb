@@ -16,9 +16,16 @@
       </tr>
       <tr>
         <td>Client Id</td>
-          <td>
-            <input type="text" name="client_id" placeholder="Client id">
-          </td>
+        <td>
+          <select  name="client_id">
+          <% for @client in @clients %>
+          <% if @client.active %>
+              <option value="<%= @client.id %>"><%= @client.id %></option>
+          <% end %>
+          <% end %>
+          </select>
+        </td>
+      </tr>
       </tr>
       <tr>
         <td>Resources</td>
@@ -36,7 +43,6 @@
     <input type="submit" value="Create Project" class="btn btn-primary">
   </form>
 </div>
-<br>
 
 <script>
 function validateForm() {

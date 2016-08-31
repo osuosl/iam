@@ -9,6 +9,7 @@ module Sinatra
 
       app.get '/projects/new/?' do
         # get new project form
+        @clients = Client.all
         erb :'projects/create'
       end
 
@@ -42,18 +43,12 @@ module Sinatra
       # This could also be PUT
       app.post '/projects/?' do
         # recieve new project
-        @client = Client[id: params[:client_id]]
-        if @client.nil?
-          params[:client_id] = 0 #random number to cause error alert in create.erb
-          MyLog.log.fatal 'routes/projects: Client does not exist'
-          redirect '/projects/new'
-        end
-        project = Project.create(name: params[:name],
-                                 client_id:   params[:client_id] || '',
-                                 resources:   params[:resources] || '',
-                                 description: params[:description] || ''
-                                 )
-        redirect "/projects/#{ project.id }"
+          project = Project.create(name: params[:name],
+                                   client_id:   params[:client_id] || '',
+                                   resources:   params[:resources] || '',
+                                   description: params[:description] || ''
+          )
+          redirect "/projects/#{ project.id }"
       end
 
       app.patch '/projects/?' do
