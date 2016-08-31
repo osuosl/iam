@@ -16,9 +16,9 @@
       </tr>
       <tr>
         <td>Client Id</td>
-        <td>
-           <input type="text" name="client_id" placeholder="Client id">
-        </td>
+          <td>
+            <input type="text" name="client_id" placeholder="Client id">
+          </td>
       </tr>
       <tr>
         <td>Resources</td>
@@ -43,6 +43,11 @@ function validateForm() {
   var x = document.forms["createProject"]["name"].value;
   if (x == null || x == "") {
     alert("Name must be filled out");
+    return false;
+  }
+  var y = document.forms["createProject"]["client_id"].value;
+  if (y == 0) {
+    alert("Client does not exist");
     return false;
   }
 }
