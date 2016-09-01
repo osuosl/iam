@@ -7,7 +7,7 @@ describe 'The NodeResource Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has no clients' do
+  it 'initially has no nodes' do
     expect(NodeResource.all).to be_empty
   end
 

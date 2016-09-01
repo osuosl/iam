@@ -1,8 +1,8 @@
 #
 # this file will import the csv data to the DB from the CSV only ONCE
 #
-require 'environment.rb'
-require 'models.rb'
+require_relative '../environment.rb'
+require_relative '../models.rb'
 
 # if clients table is empty, import data
 clients_exist = Iam.settings.DB[:clients].first
