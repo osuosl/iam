@@ -19,9 +19,9 @@
         <td>
           <select  name="client_id">
           <% for @client in @clients %>
-          <% if @client.active %>
-              <option value="<%= @client.id %>"><%= @client.id %></option>
-          <% end %>
+             <% if @client.active %>
+                <option value="<%= @client.id %>"><%= @client.id %></option>
+            <% end %>
           <% end %>
           </select>
         </td>
@@ -49,11 +49,6 @@ function validateForm() {
   var x = document.forms["createProject"]["name"].value;
   if (x == null || x == "") {
     alert("Name must be filled out");
-    return false;
-  }
-  var y = document.forms["createProject"]["client_id"].value;
-  if (y == 0) {
-    alert("Client does not exist");
     return false;
   }
 }
