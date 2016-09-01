@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require_relative 'environment'
-require_relative 'import/first_run_import'
 require_relative 'scheduler'
 
 # IAM - a resource usage metric collection and reporting system
