@@ -1,8 +1,44 @@
-
-<table>
-  <% for @project in @projects %>
-    <tr>
-      <td><%= @project.name %><td>
-    </tr>
-  <% end %>
-</table>
+<div class="container">
+  <br>
+  <div class="title">
+    <h2>Project List</h2>
+    <a href="/projects/new">Create</a>
+  </div>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Project Name</th>
+        <th>Resources</th>
+        <th>Description</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% for @project in @projects %>
+      <% if @project.active %>
+      <tr>
+        <th scope="row"><%= @project.id %></th>
+          <td>
+            <a href="/projects/<%= @project.id %>">
+              <%= @project.name %>
+            </a>
+          </td>
+          <td>
+            <%= @project.resources %>
+          </td>
+          <td>
+            <%= @project.description %>
+          </td>
+          <td>
+            <a href="/projects/<%= @project.id %>/edit" >
+              Edit
+            </a>
+          </td>
+      </tr>
+      <% end %>
+    <% end %>
+    </tbody>
+  </table>
+</div>

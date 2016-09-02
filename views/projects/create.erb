@@ -1,0 +1,55 @@
+<div class="container">
+  <form action='/projects' name="createProject" method='post' onsubmit="return validateForm()">
+    <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>New Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Project name</td>
+        <td>
+           <input type="text" name="name" placeholder="New project">
+        </td>
+      </tr>
+      <tr>
+        <td>Client id</td>
+        <td>
+          <select  name="client_id">
+          <% for @client in @clients %>
+             <% if @client.active %>
+                <option value="<%= @client.id %>"><%= @client.name %></option>
+            <% end %>
+          <% end %>
+          </select>
+        </td>
+      </tr>
+      </tr>
+      <tr>
+        <td>Resources</td>
+        <td>
+          <input type="text" name="resources" placeholder="New resource">
+        </td>
+      </tr>
+      <tr>
+        <td>Description</td>
+        <td>
+          <input type="text" name="description" placeholder="New description">
+        </td>
+      </tr>
+    </table>
+    <input type="submit" value="Create Project" class="btn btn-primary">
+  </form>
+</div>
+
+<script>
+function validateForm() {
+  var x = document.forms["createProject"]["name"].value;
+  if (x == null || x == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+}
+</script>
