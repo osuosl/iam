@@ -15,12 +15,12 @@
         </td>
       </tr>
       <tr>
-        <td>Client Id</td>
+        <td>Client Name</td>
         <td>
           <select  name="client_id">
           <% for @client in @clients %>
              <% if @client.active %>
-                <option value="<%= @client.id %>"><%= @client.id %></option>
+                <option value="<%= @client.id %>"><%= @client.name %></option>
             <% end %>
           <% end %>
           </select>
