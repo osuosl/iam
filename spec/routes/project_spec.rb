@@ -60,7 +60,7 @@ describe 'The Projects endpoint' do
   it 'allows us to create a new project, then redirects to the list' do
     post '/projects', name: 'im new'
 
-    project = Project[name: "im new"]
+    project = Project[name: 'im new']
     expect(project).to exist
     expect(last_response.status).to eq(302)
     follow_redirect!

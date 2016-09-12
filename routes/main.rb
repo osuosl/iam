@@ -1,6 +1,8 @@
 require 'sinatra/base'
 
+# Our app
 module Sinatra
+  # this is our routes for the main app and non-related to models
   module MainRoutes
     def self.registered(app)
       ##

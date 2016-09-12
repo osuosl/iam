@@ -20,7 +20,7 @@ class Iam < Sinatra::Base
   get '/report/?' do
     # get new client form
     @clients = Client.all
-    erb :'report'
+    erb :report
   end
 
   run! unless ENV['RACK_ENV'] == 'test'

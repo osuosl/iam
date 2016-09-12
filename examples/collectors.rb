@@ -12,10 +12,10 @@ clusters.each do |var|
 end
 
 # TODO: Replace with file-evaluated variable.
-db_creds = [{:type => :mysql,
-             :host => ENV['MYSQL_TESTING_HOST'],
-             :user => ENV['MYSQL_USER'],
-             :password => ENV['MYSQL_PASSWORD'] }]
+db_creds = [{ type: :mysql,
+              host: ENV['MYSQL_TESTING_HOST'],
+              user: ENV['MYSQL_USER'],
+              password: ENV['MYSQL_PASSWORD'] }]
 
 puts 'Running database collector'
 # Run the database collector

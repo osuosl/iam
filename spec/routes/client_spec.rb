@@ -135,7 +135,9 @@ describe 'The Clients endpoint' do
     get '/clients/1/edit'
     if last_response.status == 200
       # id found
-      expect(last_response.body).to include('<input type="hidden" name="_method" value="patch">')
+      expect(last_response.body).to include(
+        '<input type="hidden" name="_method" value="patch">'
+      )
     else
       # id not found
       expect(last_response.status).to eq(404)

@@ -1,7 +1,11 @@
 require 'sinatra/base'
 require_relative '../logging/logs'
+
+# IAM
 module Sinatra
+  # Client routing
   module ClientRoutes
+    # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
       ##
       # Clients

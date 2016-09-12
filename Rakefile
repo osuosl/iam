@@ -27,10 +27,6 @@ task :rubocop do
   # run rubocop recursively through all the files
   RuboCop::RakeTask.new(:rubocop) do |task|
     task.patterns = ['**/*.rb']
-    # only show the files with failures
-    task.formatters = ['files']
-    # don't abort rake on failure
-    task.fail_on_error = false
   end
 end
 

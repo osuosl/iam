@@ -11,7 +11,8 @@ Sequel.extension :migration, :core_extensions
 db_ = []
 
 # Just connect to the database server, not a particular db_ on the server
-db_[0] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@#{ENV['MYSQL_TESTING_HOST']}")
+db_[0] = Sequel.connect("mysql://#{ENV['MYSQL_USER']}:#{ENV['MYSQL_PASSWORD']}@\
+  #{ENV['MYSQL_TESTING_HOST']}")
 
 # Create tables db1, db2, db3, db4, and db5 on the server
 [1, 2, 3, 4, 5].each do |n|
