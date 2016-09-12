@@ -10,6 +10,8 @@ describe 'The IAM Application' do
   it 'says hello' do
     get '/'
     expect(last_response).to be_ok
-    expect(last_response.body).to eq('Hello')
+    # This will be a more thorough test when we know what the home page will
+    # *really* look like.
+    expect(last_response.body).to include('<!-- HOMEPAGE -->')
   end
 end
