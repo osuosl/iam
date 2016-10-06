@@ -30,6 +30,7 @@ end
 group :production do
   gem 'pg', '0.18.4'
   gem 'mysql', '2.9.1'
+  gem 'unicorn'
 end
 
 # Testing
