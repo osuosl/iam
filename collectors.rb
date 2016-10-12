@@ -51,7 +51,7 @@ class Collectors
           # time = @cache.get(<node_name> + ':datetime')
         end
       rescue SocketError
-        MyLog.log.fatal "SocketError cannot connect to #{name}"
+        MyLog.log.fatal "SocketError cannot connect to #{cluster}"
       end
     @cache.write
   end
