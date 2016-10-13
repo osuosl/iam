@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require_relative '../logging/logs'
 
 # Our app
 module Sinatra
@@ -17,7 +18,7 @@ module Sinatra
       # static Pages
       ##
       app.get '/' do
-        'Hello'
+        erb :index
       end
     end
   end
