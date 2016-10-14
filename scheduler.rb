@@ -3,6 +3,7 @@ require_relative 'collectors.rb'
 require_relative 'environment.rb'
 require_relative 'lib/util.rb'
 
+<<<<<<< HEAD
 # schedule class will only start a scheduler if one is not already running
 # TODO: make this simpler for Rubocop's sake
 class Scheduler
@@ -21,6 +22,10 @@ class Scheduler
         # Write the current PID to the file
         (File.new(pid_file, 'w') << $PID).close
         puts "scheduler process is: #{$PID}"
+=======
+cache = Cache.new(ENV['CACHE_FILE'])
+db_cache = Cache.new(ENV['DB_CACHE_FILE'])
+>>>>>>> first draft of segregating the db_cache
 
         # Execute the scheduler
         new.setup_jobs
@@ -58,6 +63,7 @@ class Scheduler
     @cache = Cache.new(Iam.settings.cache_file)
   end
 
+<<<<<<< HEAD
   def setup_jobs
     @rufus_scheduler.every '30m', first_in: 0.4 do
       db_collector_job
@@ -72,6 +78,29 @@ class Scheduler
     @rufus_scheduler.every '30m', first_in: '15m' do
       `rake plugins`
       plugins_job
+=======
+# Change '15m' on next line to 4 to test
+s.every '30m', first_in: '15m' do
+  `rake plugins`
+  # For each entry in the plugins table
+  Iam.settings.DB[:plugins].each do |p|
+    # Require the plugin based on the name in the table
+    require_relative "plugins/#{p[:name]}/plugin.rb"
+
+    # if DBSIZE plugin, use the db_cache, otherwise use the regular cache
+    if p[:name] == 'DBSize'
+      db_cache.keys.each do |key|
+        Object.const_get(p[:name]).new.store key unless key.end_with?('datetime')
+      end
+    else
+      # For each key in cache
+      cache.keys.each do |key|
+        # Store the node information in the proper table with the plugin's store
+        # method. The plugin object is retrieved from the name string using
+        # Object.const_get. Do not try to store keys that store a datetime object.
+        Object.const_get(p[:name]).new.store key unless key.end_with?('datetime')
+      end
+>>>>>>> first draft of segregating the db_cache
     end
   end
 
