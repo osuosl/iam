@@ -3,7 +3,7 @@ require_relative 'collectors.rb'
 require_relative 'environment.rb'
 require_relative 'lib/util.rb'
 
-cache = Cache.new(ENV['CACHE_FILE'])
+cache = Cache.new(Iam.settings.cache_file)
 
 s = Rufus::Scheduler.new
 
@@ -21,9 +21,9 @@ s.every '30m', first_in: 0.4 do
   # Database collector
   # TODO: Replace with file-evaluated variable.
   db_creds = [{ type: :mysql,
-                host: ENV['MYSQL_TESTING_HOST'],
-                user: ENV['MYSQL_USER'],
-                password: ENV['MYSQL_PASSWORD'] }]
+                host: Iam.settings.db_collector_mysql_host,
+                user: Iam.settings.db_collector_mysql_user,
+                password: Iam.settings.db_collector_mysql_pw }]
   db_creds.each do |var|
     collector.collect_db(var[:type],
                          var[:host],

@@ -18,11 +18,7 @@ class MyLog
       @log = Logging.logger['logfile']
       @log.level = :debug
 
-      file_path = if ENV['LOG_FILE_PATH']
-                    ENV['LOG_FILE_PATH']
-                  else
-                    'logging/log_file.log'
-                  end
+      file_path = Iam.settings.log_file_path
 
       @log.add_appenders(
         Logging.appenders.file(file_path)
