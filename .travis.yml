@@ -1,7 +1,7 @@
 langauge: ruby
 
 rvm:
-  - '2.2.2'
+  - '2.3.0'
 
 cache: bundler
 
@@ -12,11 +12,11 @@ install:
   - bundle install
 
 env:
-  - MYSQL_DATABASE='test_db' \
-    MYSQL_PASSWORD='' \
-    MYSQL_ROOT_PASSWORD='' \
-    MYSQL_TESTING_HOST='localhost' \
-    MYSQL_USER='root'
+  - TEST_MYSQL_DB='test_db' \
+    TEST_MYSQL_PASS='' \
+    TEST_MYSQL_ROOT_PASS='' \
+    TEST_MYSQL_HOST='localhost' \
+    TEST_MYSQL_USER='root'
 
 script:
   - ./run-tests.sh

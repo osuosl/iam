@@ -19,7 +19,6 @@ s.every '30m', first_in: 0.4 do
   end
 
   # Database collector
-  # TODO: Replace with file-evaluated variable.
   db_creds = [{ type: :mysql,
                 host: Iam.settings.db_collector_mysql_host,
                 user: Iam.settings.db_collector_mysql_user,

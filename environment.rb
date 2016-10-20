@@ -35,6 +35,7 @@ class Iam < Sinatra::Base
   require 'uri'
   require 'openssl'
   require 'json'
+  require 'yaml'
   require_relative 'lib/util.rb'
 
   # Test stuff
@@ -51,20 +52,13 @@ class Iam < Sinatra::Base
   Bundler.require(:default, Sinatra::Application.environment)
 
   # TODO: replace the settings file with a more robust yml solution
-  env_file = 'env'
+  env_file = 'env.yml'
   config = {}
-
   if File.file?(env_file)
-    File.open(env_file, 'r') do |f|
-      f.each_line do |line|
-        puts line
-        option = line.split(' ')
-        puts option
-        config[option[0]] = option[1].strip
-      end
-    end
+    config_opts = YAML.load_file(env_file)
+    config_opts["config"].each { |key, value| config[key] = value }
   else
-    puts "Configuration file './env' not found"
+    puts "Configuration file #{env_file} not found"
     no_conf_file = true
   end
 
@@ -90,7 +84,7 @@ class Iam < Sinatra::Base
   if ENV['GANETI_CLUSTERS']
     ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
   else
-    ganeti_clusters = config['ganeti_clusters'].split(',')
+    ganeti_clusters = config['ganeti_clusters']
   end
 
   set :ganeti_collector_clusters, ganeti_clusters
@@ -103,10 +97,26 @@ class Iam < Sinatra::Base
     config['db_collector_pg_pw']
   set :db_collector_pg_host, ENV['DB_COLLECTOR_PG_HOST'] ||=
     config['db_collector_pg_host']
-  set :db_collector_mysql_user, ENV['DB_COLLECTOR_MYSQL_USER'] ||=
-    config['db_collector_mysql_user']
-  set :db_collector_mysql_pw, ENV['DB_COLLECTOR_MYSQL_PW'] ||=
-    config['db_collector_mysql_pw']
-  set :db_collector_mysql_host, ENV['DB_COLLECTOR_MYSQL_HOST'] ||=
-    config['db_collector_mysql_host']
+
+  # if this is set in the environemt, split out the tring into an
+  # array of hashes
+  # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
+  if ENV['DB_COLLECTOR_MYSQL_DBS']
+    db_collector_mysql_dbs = []
+    ENV['DB_COLLECTOR_MYSQL_DBS'].split(',').each |db|
+      db.split(':').each { |key, value| db_hash[key] = value }
+      db_collector_mysql_dbs.append(db_hash)
+  else
+    db_collector_mysql_dbs = config['db_collector_mysql_dbs']
+  end
+
+  set :db_collector_mysql_dbs, db_collector_mysql_dbs
+
+  # Testing variables (see also .travis.yml)
+  set :test_mysql_db, ENV['TEST_MYSQL_DB'] ||= config['test_mysql_db']
+  set :test_mysql_pass, ENV['TESTING_MYSQL_PASS'] ||= config['test_mysql_db']
+  set :test_mysql_root_pass, ENV['TEST_MYSQL_ROOT_PASS'] ||=
+    config['test_mysql_root_pass']
+  set :test_mysql_host, ENV['TEST_MYSQL_HOST'] ||= config['test_mysql_host']
+  set :test_mysql_user, ENV['TEST_MYSQL_USER'] ||= config['test_mysql_user']
 end

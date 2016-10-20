@@ -16,7 +16,7 @@ describe 'IaM Database Collector' do
     # TODO: make this conditional, do not run if running in CI, this kind of
     # thing gets run in a pre-testing script in that situation
     # Establishes the main database connection using the given credentials.
-    command = "mysql://root:#{ENV['MYSQL_ROOT_PASSWORD']}" \
+    command = "mysql://#{(Iam.settings.test_mysql_user}:#{Iam.settings.test_mysql_pass}" \
               "@#{ENV['MYSQL_TESTING_HOST']}"
     @DB[:root] = Sequel.connect(command)
 
