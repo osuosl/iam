@@ -101,11 +101,11 @@ class Iam < Sinatra::Base
   set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
 
   # Ganeti Collector settings
-  if ENV['GANETI_CLUSTERS']
-    ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
-  else
-    ganeti_clusters = config['ganeti_clusters']
-  end
+  ganeti_clusters = if ENV['GANETI_CLUSTERS']
+                      ENV['GANETI_CLUSTERS'].split(',')
+                    else
+                      config['ganeti_clusters']
+                    end
 
   set :ganeti_collector_clusters, ganeti_clusters
 
