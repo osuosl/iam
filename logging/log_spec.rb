@@ -28,6 +28,6 @@ describe 'The Logging application' do
 
   # Test existince of log_file.log
   it 'should check if log_file.log exists' do
-    expect(File).to exist('logging/log_file.log')
+    expect(File).to exist(Iam.settings.log_file_path)
   end
 end

@@ -12,12 +12,12 @@ describe 'IaM Database Collector' do
     @DB = {}
     # rubocop:enable VariableName
 
+    # skip this test if a mysql test server is not available
+    skip("no testing db set up") unless ENV['TEST_MYSQL_DB']
+
     # Grant complete privileges to our special user
-    # TODO: make this conditional, do not run if running in CI, this kind of
-    # thing gets run in a pre-testing script in that situation
-    # Establishes the main database connection using the given credentials.
-    command = "mysql://#{(Iam.settings.test_mysql_user}:#{Iam.settings.test_mysql_pass}" \
-              "@#{ENV['MYSQL_TESTING_HOST']}"
+    command = "mysql://root:#{ENV['TEST_MYSQL_ROOT_PASS']}" \
+              "@#{ENV['TEST_MYSQL_HOST']}"
     @DB[:root] = Sequel.connect(command)
 
     # Create three databases on the server
@@ -26,13 +26,13 @@ describe 'IaM Database Collector' do
       @DB[:root].run("DROP DATABASE IF EXISTS db#{i}")
       @DB[:root].run("CREATE DATABASE IF NOT EXISTS db#{i};")
       @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.*
-                      TO '#{ENV['MYSQL_USER']}'@'%'
+                      TO '#{ENV['TEST_MYSQL_USER']}'@'%'
                       WITH GRANT OPTION;")
 
       # Connect to each database individually
-      @DB[i] = Sequel.mysql("db#{i}", user: ENV['MYSQL_USER'],
-                                      password: ENV['MYSQL_PASSWORD'],
-                                      host: ENV['MYSQL_TESTING_HOST'])
+      @DB[i] = Sequel.mysql("db#{i}", user: ENV['TEST_MYSQL_USER'],
+                                      password: ENV['TEST_MYSQL_PASS'],
+                                      host: ENV['TEST_MYSQL_HOST'])
 
       # Create i*i tables on each database
       (1..(i * i)).each do |j|
@@ -76,9 +76,11 @@ describe 'IaM Database Collector' do
   end
 
   after :all do
-    # Drop all of the databases so our tests are idempotent
-    [1, 2, 3].each do |n|
-      @DB[:root].run("DROP DATABASE IF EXISTS db#{n}")
+    if  ENV['TEST_MYSQL_DB']
+      # Drop all of the databases so our tests are idempotent
+      [1, 2, 3].each do |n|
+        @DB[:root].run("DROP DATABASE IF EXISTS db#{n}")
+      end
     end
   end
 

@@ -20,7 +20,7 @@ s.every '30m', first_in: 0.4 do
 
   dbs = Iam.settings.db_collector_dbs
 
-  db_creds.each do |var|
+  dbs.each do |var|
     collector.collect_db(var[:type],
                          var[:host],
                          var[:user],
