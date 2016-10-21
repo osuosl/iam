@@ -37,7 +37,7 @@ class Iam < Sinatra::Base
   require_relative 'lib/util.rb'
 
   # Test stuff
-  if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'testing'
+  if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
     require 'sqlite3'
     # testing stuff
     require 'rspec'
@@ -45,70 +45,83 @@ class Iam < Sinatra::Base
     require 'factory_girl'
   end
 
+  # if we're testing, set up all the settings we need for that
+  # TODO: should these be set in each spec test? Probably, and we should
+  # clean up those test files after, but this will be ok for now
+  if ENV['RACK_ENV'] == 'test'
+    test_db = 'test.sqlite'
+    cachefile = 'testcache'
+    logfile = 'testlog'
+    if File.file?(test_db)
+      File.delete(test_db)
+    end
+    if File.file?(cachefile)
+      File.delete(cachefile)
+    end
+    if File.file?(logfile)
+      File.delete(logfile)
+    end
+    ENV['DB_URL'] = "sqlite://#{test_db}"
+    ENV['CACHE_FILE'] = cachefile
+    ENV['LOG_FILE_PATH'] = logfile
+    ENV['GANETI_CLUSTERS'] = 'ganeti'
+  end
+
   # Bundler.require(...) requires all gems necessary regardless of
   # environment (:default) in addition to all environment-specific gems.
   Bundler.require(:default, Sinatra::Application.environment)
 
-  # get all the settings, but only if we're not in testing
-  if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'production'
-    env_file = 'env.yml'
-    config = {}
-    if File.file?(env_file)
-      config_opts = YAML.load_file(env_file)
-      config_opts['config'].each { |key, value| config[key] = value }
-    else
-      puts "Configuration file #{env_file} not found"
-      no_conf_file = true
-    end
-
-    # Application Dataase settings
-    if ENV['DB_URL']
-      set :database, ENV['DB_URI']
-    else
-      if no_conf_file
-        abort('No conf file and not all settings are in env variables, dying')
-      end
-      set :database, config['db_url']
-    end
-
-    set :DB, Sequel.connect(settings.database) if defined? settings.database
-
-    # CACHE settings
-    set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
-
-    # Logging
-    set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
-
-    # Ganeti Collector settings
-    if ENV['GANETI_CLUSTERS']
-      ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
-    else
-      ganeti_clusters = config['ganeti_clusters']
-    end
-
-    set :ganeti_collector_clusters, ganeti_clusters
-
-    # Database collector settings
-    # if this is set in the environemt, split out the tring into an
-    # array of hashes (hackarific)
-    # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
-    if ENV['DB_COLLECTOR__DBS']
-      db_collector_mysql_dbs = []
-      ENV['DB_COLLECTOR_DBS'].split(',').each | db |
-        db.split(':').each { |key, value| db_hash[key] = value }
-      db_collector_mysql_dbs.append(db_hash)
-    else
-      db_collector_mysql_dbs = config['db_collector_dbs']
-    end
-
-    set :db_collector_mysql_dbs, db_collector_mysql_dbs
-
-    # Testing variables (see also .travis.yml)
-    set :test_mysql_db, ENV['TEST_MYSQL_DB'] ||= config['test_mysql_db']
-    set :test_mysql_pass, ENV['TESTING_MYSQL_PASS'] ||= config['test_mysql_db']
-    set :test_mysql_root_pass, ENV['TEST_MYSQL_ROOT_PASS'] ||=
-      config['test_mysql_root_pass']
-    set :test_mysql_host, ENV['TEST_MYSQL_HOST'] ||= config['test_mysql_host']
-    set :test_mysql_user, ENV['TEST_MYSQL_USER'] ||= config['test_mysql_user']
+  # Get all the settings. If they are set in the environment, use that, if not
+  # see if there is an env.yml file. If neither are set, die.
+  env_file = 'env.yml'
+  config = {}
+  if File.file?(env_file)
+    config_opts = YAML.load_file(env_file)
+    config_opts['config'].each { |key, value| config[key] = value }
+  else
+    puts "Configuration file #{env_file} not found"
+    no_conf_file = true
   end
+
+  # Application Dataase settings
+  if ENV['DB_URL']
+    set :database, ENV['DB_URL']
+  else
+    if no_conf_file
+      abort('No conf file and not all settings are in env variables, dying')
+    end
+    set :database, config['db_url']
+  end
+
+  set :DB, Sequel.connect(settings.database) if defined? settings.database
+
+  # CACHE settings
+  set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
+
+  # Logging
+  set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
+
+  # Ganeti Collector settings
+  if ENV['GANETI_CLUSTERS']
+    ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
+  else
+    ganeti_clusters = config['ganeti_clusters']
+  end
+
+  set :ganeti_collector_clusters, ganeti_clusters
+
+  # Database collector settings
+  # if this is set in the environemt, split out the tring into an
+  # array of hashes (hackarific)
+  # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
+  if ENV['DB_COLLECTOR__DBS']
+    db_collector_mysql_dbs = []
+    ENV['DB_COLLECTOR_DBS'].split(',').each | db |
+      db.split(':').each { |key, value| db_hash[key] = value }
+    db_collector_dbs.append(db_hash)
+  else
+    db_collector_dbs = config['db_collector_dbs']
+  end
+
+  set :db_collector_dbs, db_collector_dbs
 end
