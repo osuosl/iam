@@ -10,7 +10,6 @@ require 'environment.rb'
 
 # logging class
 class MyLog
-  # rubocop:disable MethodLength
   def self.log
     if @log.nil?
       # Creates logfile with the level 'debug'

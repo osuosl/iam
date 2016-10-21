@@ -13,7 +13,7 @@ describe 'IaM Database Collector' do
     # rubocop:enable VariableName
 
     # skip this test if a mysql test server is not available
-    skip("no testing db set up") unless ENV['TEST_MYSQL_DB']
+    skip('no testing db available') unless ENV['TEST_MYSQL_DB']
 
     # Grant complete privileges to our special user
     command = "mysql://root:#{ENV['TEST_MYSQL_ROOT_PASS']}" \

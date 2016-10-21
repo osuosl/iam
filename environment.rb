@@ -52,15 +52,10 @@ class Iam < Sinatra::Base
     test_db = 'test.sqlite'
     cachefile = 'testcache'
     logfile = 'testlog'
-    if File.file?(test_db)
-      File.delete(test_db)
-    end
-    if File.file?(cachefile)
-      File.delete(cachefile)
-    end
-    if File.file?(logfile)
-      File.delete(logfile)
-    end
+    File.delete(test_db) if File.file?(test_db)
+    File.delete(cachefile) if File.file?(cachefile)
+    File.delete(logfile) if File.file?(logfile)
+
     ENV['DB_URL'] = "sqlite://#{test_db}"
     ENV['CACHE_FILE'] = cachefile
     ENV['LOG_FILE_PATH'] = logfile
@@ -115,7 +110,7 @@ class Iam < Sinatra::Base
   # array of hashes (hackarific)
   # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
   if ENV['DB_COLLECTOR__DBS']
-    db_collector_mysql_dbs = []
+    db_collector_dbs = []
     ENV['DB_COLLECTOR_DBS'].split(',').each | db |
       db.split(':').each { |key, value| db_hash[key] = value }
     db_collector_dbs.append(db_hash)
