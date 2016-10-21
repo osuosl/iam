@@ -18,11 +18,8 @@ s.every '30m', first_in: 0.4 do
     collector.collect_ganeti(v)
   end
 
-  # Database collector
-  db_creds = [{ type: :mysql,
-                host: Iam.settings.db_collector_mysql_host,
-                user: Iam.settings.db_collector_mysql_user,
-                password: Iam.settings.db_collector_mysql_pw }]
+  dbs = Iam.settings.db_collector_dbs
+
   db_creds.each do |var|
     collector.collect_db(var[:type],
                          var[:host],

@@ -89,24 +89,16 @@ class Iam < Sinatra::Base
     set :ganeti_collector_clusters, ganeti_clusters
 
     # Database collector settings
-    # TODO: allow multiple pg databases
-    set :db_collector_pg_user, ENV['DB_COLLECTOR_PG_USER'] ||=
-      config['db_collector_pg_user']
-    set :db_collector_pg_pw, ENV['DB_COLLECTOR_PG_PW'] ||=
-      config['db_collector_pg_pw']
-    set :db_collector_pg_host, ENV['DB_COLLECTOR_PG_HOST'] ||=
-      config['db_collector_pg_host']
-
     # if this is set in the environemt, split out the tring into an
     # array of hashes (hackarific)
     # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
-    if ENV['DB_COLLECTOR_MYSQL_DBS']
+    if ENV['DB_COLLECTOR__DBS']
       db_collector_mysql_dbs = []
-      ENV['DB_COLLECTOR_MYSQL_DBS'].split(',').each | db |
+      ENV['DB_COLLECTOR_DBS'].split(',').each | db |
         db.split(':').each { |key, value| db_hash[key] = value }
       db_collector_mysql_dbs.append(db_hash)
     else
-      db_collector_mysql_dbs = config['db_collector_mysql_dbs']
+      db_collector_mysql_dbs = config['db_collector_dbs']
     end
 
     set :db_collector_mysql_dbs, db_collector_mysql_dbs
