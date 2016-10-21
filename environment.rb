@@ -10,8 +10,6 @@ class Iam < Sinatra::Base
   # environment is development unless otherwise set
   ENV['RACK_ENV'] ||= 'development'
 
-  env = ENV['RACK_ENV'].to_sym
-
   require 'bundler'
 
   # sinatra configs
@@ -39,7 +37,7 @@ class Iam < Sinatra::Base
   require_relative 'lib/util.rb'
 
   # Test stuff
-  if env == 'development' || env == 'test'
+  if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'testing'
     require 'sqlite3'
     # testing stuff
     require 'rspec'
@@ -51,72 +49,74 @@ class Iam < Sinatra::Base
   # environment (:default) in addition to all environment-specific gems.
   Bundler.require(:default, Sinatra::Application.environment)
 
-  # TODO: replace the settings file with a more robust yml solution
-  env_file = 'env.yml'
-  config = {}
-  if File.file?(env_file)
-    config_opts = YAML.load_file(env_file)
-    config_opts["config"].each { |key, value| config[key] = value }
-  else
-    puts "Configuration file #{env_file} not found"
-    no_conf_file = true
-  end
-
-  # Application Dataase settings
-  if ENV['DB_URL']
-    set :database, ENV['DB_URI']
-  else
-    if no_conf_file
-      abort('No conf file and not all settings are in env variables, dying')
+  # get all the settings, but only if we're not in testing
+  if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'production'
+    env_file = 'env.yml'
+    config = {}
+    if File.file?(env_file)
+      config_opts = YAML.load_file(env_file)
+      config_opts['config'].each { |key, value| config[key] = value }
+    else
+      puts "Configuration file #{env_file} not found"
+      no_conf_file = true
     end
-    set :database, config['db_url']
-  end
 
-  set :DB, Sequel.connect(settings.database) if defined? settings.database
+    # Application Dataase settings
+    if ENV['DB_URL']
+      set :database, ENV['DB_URI']
+    else
+      if no_conf_file
+        abort('No conf file and not all settings are in env variables, dying')
+      end
+      set :database, config['db_url']
+    end
 
-  # CACHE settings
-  set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
+    set :DB, Sequel.connect(settings.database) if defined? settings.database
 
-  # Logging
-  set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
+    # CACHE settings
+    set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
 
-  # Ganeti Collector settings
-  if ENV['GANETI_CLUSTERS']
-    ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
-  else
-    ganeti_clusters = config['ganeti_clusters']
-  end
+    # Logging
+    set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
 
-  set :ganeti_collector_clusters, ganeti_clusters
+    # Ganeti Collector settings
+    if ENV['GANETI_CLUSTERS']
+      ganeti_clusters = ENV['GANETI_CLUSTERS'].split(',')
+    else
+      ganeti_clusters = config['ganeti_clusters']
+    end
 
-  # Database collector settings
-  # TODO: allow multiple mysql and pg databases
-  set :db_collector_pg_user, ENV['DB_COLLECTOR_PG_USER'] ||=
-    config['db_collector_pg_user']
-  set :db_collector_pg_pw, ENV['DB_COLLECTOR_PG_PW'] ||=
-    config['db_collector_pg_pw']
-  set :db_collector_pg_host, ENV['DB_COLLECTOR_PG_HOST'] ||=
-    config['db_collector_pg_host']
+    set :ganeti_collector_clusters, ganeti_clusters
 
-  # if this is set in the environemt, split out the tring into an
-  # array of hashes
-  # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
-  if ENV['DB_COLLECTOR_MYSQL_DBS']
-    db_collector_mysql_dbs = []
-    ENV['DB_COLLECTOR_MYSQL_DBS'].split(',').each |db|
-      db.split(':').each { |key, value| db_hash[key] = value }
+    # Database collector settings
+    # TODO: allow multiple pg databases
+    set :db_collector_pg_user, ENV['DB_COLLECTOR_PG_USER'] ||=
+      config['db_collector_pg_user']
+    set :db_collector_pg_pw, ENV['DB_COLLECTOR_PG_PW'] ||=
+      config['db_collector_pg_pw']
+    set :db_collector_pg_host, ENV['DB_COLLECTOR_PG_HOST'] ||=
+      config['db_collector_pg_host']
+
+    # if this is set in the environemt, split out the tring into an
+    # array of hashes (hackarific)
+    # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
+    if ENV['DB_COLLECTOR_MYSQL_DBS']
+      db_collector_mysql_dbs = []
+      ENV['DB_COLLECTOR_MYSQL_DBS'].split(',').each | db |
+        db.split(':').each { |key, value| db_hash[key] = value }
       db_collector_mysql_dbs.append(db_hash)
-  else
-    db_collector_mysql_dbs = config['db_collector_mysql_dbs']
+    else
+      db_collector_mysql_dbs = config['db_collector_mysql_dbs']
+    end
+
+    set :db_collector_mysql_dbs, db_collector_mysql_dbs
+
+    # Testing variables (see also .travis.yml)
+    set :test_mysql_db, ENV['TEST_MYSQL_DB'] ||= config['test_mysql_db']
+    set :test_mysql_pass, ENV['TESTING_MYSQL_PASS'] ||= config['test_mysql_db']
+    set :test_mysql_root_pass, ENV['TEST_MYSQL_ROOT_PASS'] ||=
+      config['test_mysql_root_pass']
+    set :test_mysql_host, ENV['TEST_MYSQL_HOST'] ||= config['test_mysql_host']
+    set :test_mysql_user, ENV['TEST_MYSQL_USER'] ||= config['test_mysql_user']
   end
-
-  set :db_collector_mysql_dbs, db_collector_mysql_dbs
-
-  # Testing variables (see also .travis.yml)
-  set :test_mysql_db, ENV['TEST_MYSQL_DB'] ||= config['test_mysql_db']
-  set :test_mysql_pass, ENV['TESTING_MYSQL_PASS'] ||= config['test_mysql_db']
-  set :test_mysql_root_pass, ENV['TEST_MYSQL_ROOT_PASS'] ||=
-    config['test_mysql_root_pass']
-  set :test_mysql_host, ENV['TEST_MYSQL_HOST'] ||= config['test_mysql_host']
-  set :test_mysql_user, ENV['TEST_MYSQL_USER'] ||= config['test_mysql_user']
 end
