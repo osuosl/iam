@@ -16,7 +16,7 @@ env:
     TEST_MYSQL_PASS='' \
     TEST_MYSQL_ROOT_PASS='' \
     TEST_MYSQL_HOST='localhost' \
-    TEST_MYSQL_USER='root'
+    TEST_MYSQL_USER='listener'
 
 script:
   - ./run-tests.sh
