@@ -10,7 +10,7 @@ require 'time'
 # A thin vineer above a cache layer.
 class Cache
   # Initialize the cache
-  def initialize(file_path = ENV['CACHE_FILE'])
+  def initialize(file_path = Iam.settings.cache_file)
     @path = file_path.to_s.empty? ? '/tmp/iam-cache' : file_path
     @hash = read
   end
