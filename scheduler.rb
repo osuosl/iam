@@ -90,15 +90,20 @@ s.every '30m', first_in: '15m' do
     # if DBSIZE plugin, use the db_cache, otherwise use the regular cache
     if p[:name] == 'DBSize'
       db_cache.keys.each do |key|
-        Object.const_get(p[:name]).new.store key unless key.end_with?('datetime')
+        unless key.end_with?('datetime')
+          Object.const_get(p[:name]).new.store key
+        end
       end
     else
       # For each key in cache
       cache.keys.each do |key|
         # Store the node information in the proper table with the plugin's store
         # method. The plugin object is retrieved from the name string using
-        # Object.const_get. Do not try to store keys that store a datetime object.
-        Object.const_get(p[:name]).new.store key unless key.end_with?('datetime')
+        # Object.const_get. Do not try to store keys that store a datetime
+        # object.
+        unless key.end_with?('datetime')
+          Object.const_get(p[:name]).new.store key
+        end
       end
 >>>>>>> first draft of segregating the db_cache
     end
