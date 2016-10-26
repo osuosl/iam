@@ -7,6 +7,15 @@ class Iam < Sinatra::Base
   # make everything relative to where we are now
   $LOAD_PATH << File.expand_path('../', __FILE__)
 
+  # load db credentials from db_creds.txt to the ENV
+  env_file = 'db_creds.txt'
+  File.open(env_file, 'r') do |f|
+    f.each_line do |line|
+      creds = line.split('=')
+      ENV[creds[0]] = creds[1].delete("\n")
+    end
+  end
+
   # environment is development unless otherwise set
   ENV['RACK_ENV'] ||= 'development'
 
