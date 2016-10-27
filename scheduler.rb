@@ -100,10 +100,10 @@ class Scheduler
     collector = Collectors.new
     dbs = Iam.settings.db_collector_dbs
     dbs.each do |var|
-      collector.collect_db(var[:type],
-                           var[:host],
-                           var[:user],
-                           var[:password])
+      collector.collect_db(var['type'],
+                           var['host'],
+                           var['user'],
+                           var['password'])
     end
   end
 
