@@ -57,15 +57,8 @@ class Scheduler
   def initialize
     @rufus_scheduler = Rufus::Scheduler.new
     # install exception handler to report errors via Airbrake
-    @rufus_scheduler.class_eval do
-      define_method :handle_exception do |job, exception|
-        puts "job #{job.job_id} caught exception '#{exception}'"
-        Airbrake.notify exception
-      end
-    end
   end
 
-#s = Rufus::Scheduler.new
   def setup_jobs
     @rufus_scheduler.every '30m', first_in: 0.4 do
       # Collect ganeti node information every 30 minutes
