@@ -86,7 +86,7 @@ describe 'IaM Database Collector' do
 
   it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db(:mysql,
+    c.collect_db('mysql',
                  ENV['TEST_MYSQL_HOST'],
                  ENV['TEST_MYSQL_USER'],
                  ENV['TEST_MYSQL_PASSWORD'])
@@ -103,7 +103,7 @@ describe 'IaM Database Collector' do
     c = Collectors.new
 
     expect do
-      c.collect_db(:mysql, 'testing-mysql', 'someuser', 'badpass')
+      c.collect_db('mysql', 'testing-mysql', 'someuser', 'badpass')
     end.to raise_error(Sequel::DatabaseConnectionError)
   end
 end
