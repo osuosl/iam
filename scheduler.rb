@@ -6,6 +6,7 @@ require_relative 'lib/util.rb'
 # schedule class will onlky start a schedule if one is not already running
 # TODO: make this simpler for Rubocop's sake
 class Scheduler
+  # rubocop:disable AbcSize, MethodLength
   def self.start_unless_running(pid_file)
     with_lockfile(File.join(File.dirname(pid_file), 'scheduler.lock')) do
       if File.exist?(pid_file)
@@ -25,8 +26,10 @@ class Scheduler
         new.setup_jobs
       end
       true
-    end or puts 'could not start scheduler - lock not acquired'
+    end
+    puts 'could not start scheduler - lock not acquired'
   end
+  # rubocop:enable AbcSize, MethodLength
 
   # true if the process with the given PID exists, false otherwise
   def self.process_running?(pid)
@@ -39,6 +42,7 @@ class Scheduler
   # executes the given block if the lock can be acquired, otherwise nothing is
   # done and false returned.
   # TODO: make this simpler for Rubocop's sake
+  # rubocop:disable MethodLength
   def self.with_lockfile(lock_file)
     lock = File.new(lock_file, 'w')
     begin
