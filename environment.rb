@@ -96,6 +96,7 @@ class Iam < Sinatra::Base
 
   # CACHE settings
   set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
+  set :db_cache_file, ENV['DB_CACHE_FILE'] ||= config['db_cache_file']
 
   # Logging
   set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
