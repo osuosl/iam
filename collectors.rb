@@ -75,7 +75,7 @@ class Collectors
     # Establish a connection to the database
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
-    rescue => e
+    rescue Sequel::DatabaseConnectionError => e
       MyLog.log.error "Can't connect to database: #{e}"
     end
 
