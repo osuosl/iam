@@ -75,8 +75,16 @@ class Collectors
     # Establish a connection to the database
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
-    rescue Sequel::DatabaseConnectionError => e
+    rescue => e
       MyLog.log.error "Can't connect to database: #{e}"
+    end
+
+    if !db.test_connection()
+      begin
+        raise Sequel::DatabaseConnectionError
+      rescue => e
+        MyLog.log.error "Can't connect to database: #{e}"
+      end
     end
 
     # Run the magic statistics gathering query
