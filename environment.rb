@@ -95,8 +95,7 @@ class Iam < Sinatra::Base
   set :DB, Sequel.connect(settings.database) if defined? settings.database
 
   # CACHE settings
-  set :cache_file, ENV['CACHE_FILE'] ||= config['cache_file']
-  set :db_cache_file, ENV['DB_CACHE_FILE'] ||= config['db_cache_file']
+  set :cache_path, ENV['CACHE_PATH'] ||= config['cache_path']
 
   # Logging
   set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
@@ -114,7 +113,7 @@ class Iam < Sinatra::Base
   # if this is set in the environemt, split out the tring into an
   # array of hashes (hackarific)
   # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
-  if ENV['DB_COLLECTOR__DBS']
+  if ENV['DB_COLLECTOR_DBS']
     db_collector_dbs = []
     ENV['DB_COLLECTOR_DBS'].split(',').each | db |
       db.split(':').each { |key, value| db_hash[key] = value }

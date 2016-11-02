@@ -22,7 +22,7 @@ class DBSize < BasePlugin
   # rubocop: disable MethodLength, AbcSize
   def store(db_host)
     # Pull node information from cache as a ruby hash
-    db_info = @db_cache.get(db_host)
+    db_info = @cache.get(db_host)
     db_key = 'Data Base Size in Bytes'
 
     # Check for valid data

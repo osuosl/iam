@@ -13,8 +13,7 @@ class BasePlugin
 
   # rubocop:disable ParameterLists
   def initialize(name, resource, units, table, column, mig_dir)
-    @node_cache = Cache.new(Iam.settings.node_cache_file)
-    @db_cache = Cache.new(Iam.settings.db_cache_file)
+    @cache = Cache.new("#{Iam.settings.cache_path}/#{resource}_cache")
     @database = Iam.settings.DB
     @name = name
     @resource_name = resource

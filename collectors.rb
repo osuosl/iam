@@ -11,8 +11,8 @@ require_relative 'logging/logs'
 # systems, such as ganeti, chef, etc.
 class Collectors
   def initialize
-    @node_cache = Cache.new(Iam.settings.node_cache_file)
-    @db_cache = Cache.new(Iam.settings.db_cache_file)
+    @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
+    @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
     # TODO: Query database for each unique cluster name
     @template = ERB.new File.new('datastruct.erb').read, nil, '%'
