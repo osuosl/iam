@@ -76,14 +76,16 @@ class Collectors
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
     rescue => e
-      MyLog.log.error "Can't connect to database: #{e}"
+      MyLog.log.error "#{e}"
     end
 
+    # sequel connect method doesn't actually connect, so it doesn't raise errors
+    # if given bad data. test_connection actually connects.
     if !db.test_connection()
       begin
         raise Sequel::DatabaseConnectionError
-      rescue => e
-        MyLog.log.error "Can't connect to database: #{e}"
+      rescue
+        MyLog.log.error "Can't connect to database server #{host}"
       end
     end
 
