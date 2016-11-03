@@ -3,7 +3,7 @@ require_relative 'collectors.rb'
 require_relative 'environment.rb'
 require_relative 'lib/util.rb'
 
-# schedule class will onlky start a schedule if one is not already running
+# schedule class will only start a scheduler if one is not already running
 # TODO: make this simpler for Rubocop's sake
 class Scheduler
   # rubocop:disable AbcSize, MethodLength
@@ -12,7 +12,7 @@ class Scheduler
       if File.exist?(pid_file)
         pid = IO.read(pid_file).to_i
         if pid > 0 && process_running?(pid)
-          puts "not starting: scheduler is already is running with pid #{pid}"
+          puts "not starting: scheduler is already running with pid #{pid}"
         else
           puts "Process #{$PID} removes stale pid file"
           File.delete pid_file
@@ -42,7 +42,6 @@ class Scheduler
   # executes the given block if the lock can be acquired, otherwise nothing is
   # done and false returned.
   # TODO: make this simpler for Rubocop's sake
-
   def self.with_lockfile(lock_file)
     lock = File.new(lock_file, 'w')
     begin
@@ -67,13 +66,17 @@ class Scheduler
     @rufus_scheduler.every '30m', first_in: 0.4 do
       ganeti_collector_job
     end
-    # Change '15m' on next line to 4 to test
+
+    # offset schedule for plugins - run the store methods 15 minutes after
+    # the collector methods run
     @rufus_scheduler.every '30m', first_in: '15m' do
       `rake plugins`
       plugins_job
     end
   end
 
+  # Run the store method of every registered plugin on all the collected data
+  # in the cache
   def plugins_job
     # For each entry in the plugins table
     Iam.settings.DB[:plugins].each do |p|
@@ -82,9 +85,8 @@ class Scheduler
       # For each key in cache
       @cache.keys.each do |key|
         # Store the node information in the proper table with the plugin's
-        # store
-        # method. The plugin object is retrieved from the name string using
-        # Object.const_get. Do not try to store keys that store a datetime
+        # store method. The plugin object is retrieved from the name string
+        # using Object.const_get. Do not try to store keys that store a datetime
         # object.
         unless key.end_with?('datetime')
           Object.const_get(p[:name]).new.store key
