@@ -71,7 +71,6 @@ class Collectors
   end
 
   def collect_mysql(host, user, password)
-    # TODO: Raise an error / print to stderr if something breaks?
     # Establish a connection to the database
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
@@ -81,7 +80,7 @@ class Collectors
 
     # sequel connect method doesn't actually connect, so it doesn't raise errors
     # if given bad data. test_connection actually connects.
-    if !db.test_connection()
+    unless db.test_connection
       begin
         raise Sequel::DatabaseConnectionError
       rescue
@@ -101,7 +100,7 @@ class Collectors
         @cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
       end
     rescue => e
-      MyLog.log.error "Can't execute query #{e}"
+      MyLog.log.error "Can't execute query" + e.to_s
     end
 
     @cache.write

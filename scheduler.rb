@@ -25,7 +25,7 @@ class Scheduler
         # Execute the scheduler
         new.setup_jobs
       end
-      true
+      return true
     end
     puts 'could not start scheduler - lock not acquired'
   end
@@ -42,15 +42,12 @@ class Scheduler
   # executes the given block if the lock can be acquired, otherwise nothing is
   # done and false returned.
   # TODO: make this simpler for Rubocop's sake
-  # rubocop:disable MethodLength
+
   def self.with_lockfile(lock_file)
     lock = File.new(lock_file, 'w')
     begin
-      if lock.flock(File::LOCK_EX | File::LOCK_NB)
-        yield
-      else
-        return false
-      end
+      return false unless lock.flock(File::LOCK_EX | File::LOCK_NB)
+      yield
     ensure
       lock.flock(File::LOCK_UN)
       File.delete lock
@@ -89,8 +86,9 @@ class Scheduler
         # method. The plugin object is retrieved from the name string using
         # Object.const_get. Do not try to store keys that store a datetime
         # object.
-        Object.const_get(
-          p[:name]).new.store key unless key.end_with?('datetime')
+        unless key.end_with?('datetime')
+          Object.const_get(p[:name]).new.store key
+        end
       end
     end
   end
