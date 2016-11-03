@@ -75,7 +75,7 @@ class Collectors
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
     rescue => e
-      MyLog.log.error "#{e}"
+      MyLog.log.error e.to_s
     end
 
     # sequel connect method doesn't actually connect, so it doesn't raise errors
