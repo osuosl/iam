@@ -96,7 +96,8 @@ class Iam < Sinatra::Base
 
   # CACHE settings
   set :cache_path, ENV['CACHE_PATH'] ||=
-                     "#{File.dirname(__FILE__)}/#{config['cache_path']}"
+                     "#{File.dirname(__FILE__)}/#{config['cache_path']}" ||=
+                     "./temp"
 
   # Logging
   set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']
