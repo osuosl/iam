@@ -86,13 +86,14 @@ describe 'IaM Database Collector' do
 
   it '[mysql] collects the correct data and stores it in the right way.' do
     c = Collectors.new
-    c.collect_db(:mysql,
-                 ENV['MYSQL_TESTING_HOST'],
-                 ENV['MYSQL_USER'],
-                 ENV['MYSQL_PASSWORD'])
+    c.collect_db('mysql',
+                 ENV['TEST_MYSQL_HOST'],
+                 ENV['TEST_MYSQL_USER'],
+                 ENV['TEST_MYSQL_PASSWORD'])
 
     # Reads values in from cache file
-    cache = Cache.new(ENV['CACHE_FILE'])
+    # cache = Cache.new(ENV['TEST_CACHE_FILE'])
+    cache = Cache.new(Iam.settings.cache_file)
 
     @expected.each do |var|
       expect(cache.dump).to include(var)
@@ -103,7 +104,7 @@ describe 'IaM Database Collector' do
     c = Collectors.new
 
     expect do
-      c.collect_db(:mysql, 'testing-mysql', 'someuser', 'badpass')
+      c.collect_db('mysql', 'testing-mysql', 'someuser', 'badpass')
     end.to raise_error(Sequel::DatabaseConnectionError)
   end
 end

@@ -22,6 +22,4 @@ class Iam < Sinatra::Base
     @clients = Client.all
     erb :report
   end
-
-  run! unless ENV['RACK_ENV'] == 'test'
 end
