@@ -7,7 +7,7 @@ describe 'DiskTemplate plugin' do
   # Store method
   describe '.store method' do
     before(:all) do
-      @cache = Cache.new(Iam.settings.cache_file)
+      @cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
     end
 
     before(:each) do

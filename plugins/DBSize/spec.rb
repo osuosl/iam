@@ -9,7 +9,7 @@ describe 'DBSize plugin' do
   describe '.store method' do
     before(:all) do
       DBSize.new.register
-      @cache = Cache.new(Iam.settings.db_cache_file)
+      @cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
     end
 
     before(:each) do
