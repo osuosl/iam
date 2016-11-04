@@ -95,7 +95,8 @@ class Iam < Sinatra::Base
   set :DB, Sequel.connect(settings.database) if defined? settings.database
 
   # CACHE settings
-  set :cache_path, ENV['CACHE_PATH'] ||= config['cache_path']
+  set :cache_path, ENV['CACHE_PATH'] ||=
+                     "#{File.dirname(__FILE__)}/#{config['cache_path']}"
 
   # Logging
   set :log_file_path, ENV['LOG_FILE_PATH'] ||= config['log_file_path']

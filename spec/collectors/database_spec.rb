@@ -92,7 +92,7 @@ describe 'IaM Database Collector' do
                  ENV['TEST_MYSQL_PASSWORD'])
 
     # Reads values in from cache file
-    cache = Cache.new(Iam.settings.db_cache_file)
+    cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
     @expected.each do |var|
       expect(cache.dump).to include(var)
