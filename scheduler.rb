@@ -74,8 +74,10 @@ class Scheduler
       plugins_job
     end
   end
+
   # Run the store method of every registered plugin on all the collected data
   # in the cache
+  # rubocop:disable AbcSize
   def plugins_job
     Iam.settings.DB[:plugins].each do |p|
       # Require the plugin based on the name in the table
@@ -90,7 +92,9 @@ class Scheduler
         # method. The plugin object is retrieved from the name string using
         # Object.const_get. Do not try to store keys that store a datetime
         # object.
-        Object.const_get(p[:name]).new.store key unless key.end_with?('datetime')
+        unless key.end_with?('datetime')
+          Object.const_get(p[:name]).new.store key
+        end
       end
     end
   end
