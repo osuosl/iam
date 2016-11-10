@@ -55,7 +55,6 @@ class Scheduler
 
   def initialize
     @rufus_scheduler = Rufus::Scheduler.new
-    @node_cache = Cache.new(Iam.settings.node_cache_file)
   end
 
   def setup_jobs

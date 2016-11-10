@@ -43,8 +43,8 @@ class Collectors
             total_ram          = node['beparams']['memory']       || 'unknown'
             active_meas        = node['oper_state']
 
-            @cache.set(node_name, JSON.parse(@template.result(binding)))
-            @cache.set(node_name + ':datetime', Time.new.inspect)
+            @node_cache.set(node_name, JSON.parse(@template.result(binding)))
+            @node_cache.set(node_name + ':datetime', Time.new.inspect)
           end
 
           # To retrieve the node information, use cache.get and JSON.parse.
@@ -55,7 +55,7 @@ class Collectors
       rescue SocketError
         MyLog.log.fatal "SocketError cannot connect to #{cluster}"
       end
-    @cache.write
+    @node_cache.write
   end
 
   # meta-function used to check the databases
