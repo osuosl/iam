@@ -59,9 +59,9 @@ class Collectors
   # meta-function used to check the databases
   def collect_db(db_type, host, user, password)
     case db_type
-    when :mysql
+    when 'mysql'
       collect_mysql(host, user, password)
-    when :postgres
+    when 'postgres'
       collect_postgres(host, user, password)
     else
       MyLog.log.error StandardError.new(
@@ -71,19 +71,38 @@ class Collectors
   end
 
   def collect_mysql(host, user, password)
-    # TODO: Raise an error / print to stderr if something breaks?
     # Establish a connection to the database
-    db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
-    # Run the magic statistics gathering query
-    db.fetch("SELECT table_schema
-                'DB Name',
-              cast(round(sum( data_length + index_length ) , 1) as binary)
-                'Data Base Size in Bytes'
-              FROM information_schema.TABLES
-              GROUP BY table_schema") do |var|
-      @cache.set(var[:"DB Name"], var[:"Data Base Size in Bytes"])
-      @cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
+    begin
+      db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
+    rescue => e
+      MyLog.log.error e.to_s
     end
+
+    # sequel connect method doesn't actually connect, so it doesn't raise errors
+    # if given bad data. test_connection actually connects.
+    unless db.test_connection
+      begin
+        raise Sequel::DatabaseConnectionError
+      rescue
+        MyLog.log.error "Can't connect to database server #{host}"
+      end
+    end
+
+    # Run the magic statistics gathering query
+    begin
+      db.fetch("SELECT table_schema
+                  'DB Name',
+                cast(round(sum( data_length + index_length ) , 1) as binary)
+                  'Data Base Size in Bytes'
+                FROM information_schema.TABLES
+                GROUP BY table_schema") do |var|
+        @cache.set(var[:"DB Name"], var[:"Data Base Size in Bytes"])
+        @cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
+      end
+    rescue => e
+      MyLog.log.error "Can't execute query" + e.to_s
+    end
+
     @cache.write
   end
 
