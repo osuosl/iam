@@ -55,7 +55,6 @@ class Scheduler
 
   def initialize
     @rufus_scheduler = Rufus::Scheduler.new
-    @cache = Cache.new(Iam.settings.cache_file)
   end
 
   def setup_jobs
@@ -77,16 +76,20 @@ class Scheduler
 
   # Run the store method of every registered plugin on all the collected data
   # in the cache
+  # rubocop:disable AbcSize
   def plugins_job
-    # For each entry in the plugins table
     Iam.settings.DB[:plugins].each do |p|
       # Require the plugin based on the name in the table
       require_relative "plugins/#{p[:name]}/plugin.rb"
+
+      # depending on the resource name, we change the cache
+      cache = Cache.new("#{Iam.settings.cache_path}/#{p[:resource_name]}_cache")
+
       # For each key in cache
-      @cache.keys.each do |key|
-        # Store the node information in the proper table with the plugin's
-        # store method. The plugin object is retrieved from the name string
-        # using Object.const_get. Do not try to store keys that store a datetime
+      cache.keys.each do |key|
+        # Store the node information in the proper table with the plugin's store
+        # method. The plugin object is retrieved from the name string using
+        # Object.const_get. Do not try to store keys that store a datetime
         # object.
         unless key.end_with?('datetime')
           Object.const_get(p[:name]).new.store key

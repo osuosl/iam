@@ -11,7 +11,9 @@ require_relative 'logging/logs'
 # systems, such as ganeti, chef, etc.
 class Collectors
   def initialize
-    @cache = Cache.new(Iam.settings.cache_file)
+    @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
+    @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
+
     # TODO: Query database for each unique cluster name
     @template = ERB.new File.new('datastruct.erb').read, nil, '%'
   end
@@ -41,8 +43,8 @@ class Collectors
             total_ram          = node['beparams']['memory']       || 'unknown'
             active_meas        = node['oper_state']
 
-            @cache.set(node_name, JSON.parse(@template.result(binding)))
-            @cache.set(node_name + ':datetime', Time.new.inspect)
+            @node_cache.set(node_name, JSON.parse(@template.result(binding)))
+            @node_cache.set(node_name + ':datetime', Time.new.inspect)
           end
 
           # To retrieve the node information, use cache.get and JSON.parse.
@@ -53,7 +55,7 @@ class Collectors
       rescue SocketError
         MyLog.log.fatal "SocketError cannot connect to #{cluster}"
       end
-    @cache.write
+    @node_cache.write
   end
 
   # meta-function used to check the databases
@@ -89,21 +91,16 @@ class Collectors
     end
 
     # Run the magic statistics gathering query
-    begin
-      db.fetch("SELECT table_schema
-                  'DB Name',
-                cast(round(sum( data_length + index_length ) , 1) as binary)
-                  'Data Base Size in Bytes'
-                FROM information_schema.TABLES
-                GROUP BY table_schema") do |var|
-        @cache.set(var[:"DB Name"], var[:"Data Base Size in Bytes"])
-        @cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
-      end
-    rescue => e
-      MyLog.log.error "Can't execute query" + e.to_s
+    db.fetch("SELECT table_schema
+                'DB Name',
+              cast(round(sum( data_length + index_length ) , 1) as binary)
+                'Data Base Size in Bytes'
+              FROM information_schema.TABLES
+              GROUP BY table_schema") do |var|
+      @db_cache.set(var[:"DB Name"], var[:"Data Base Size in Bytes"])
+      @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
-
-    @cache.write
+    @db_cache.write
   end
 
   def collect_postgres(host, user, password)

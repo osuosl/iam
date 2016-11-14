@@ -45,6 +45,6 @@ class DBSize < BasePlugin
     )
   rescue => e # Don't crash on errors
     MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")
-    STDERR.puts "#{e}: #{db_info}" # Log the error
+    STDERR.puts "DBSize: #{e}: #{db_info}" # Log the error
   end
 end
