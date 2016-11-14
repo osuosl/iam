@@ -35,13 +35,17 @@ class DBSize < BasePlugin
       raise "DB information for #{db_host} malformed (should be a number)\n"
     end
 
+    # check if node resource exist, otherwise set it to default
+    node_resource = @database[:node_resources].where(name: db_host).get(:id)
+    node_resource = NodeResource.find(name: 'default').id unless node_resource
+
     # Insert data into db_size_measurements table
     @database[@table].insert(
       db:            db_host,
       value:         db_info[db_key],
       active:        1,
       created:       DateTime.now,
-      node_resource: @database[:node_resources].where(name: db_host).get(:id)
+      node_resource: node_resource
     )
   rescue => e # Don't crash on errors
     MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")

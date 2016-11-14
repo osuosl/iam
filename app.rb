@@ -12,6 +12,18 @@ class Iam < Sinatra::Base
     require file
   end
 
+  def initialize
+    # initialize the app with some default clients, projects and nodeResrouces
+    # to make sure every record is collected into the hierarchy
+    default_client = Client.find_or_create(name: 'default',
+                                           description: 'The default client')
+    default_project = Project.find_or_create(name: 'default',
+                                             client_id: default_client.id,
+                                             description: 'The default project')
+    NodeResource.find_or_create(project_id: default_project.id,
+                                name: 'default')
+  end
+
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
