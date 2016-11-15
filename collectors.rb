@@ -15,7 +15,8 @@ class Collectors
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
     # TODO: Query database for each unique cluster name
-    @template = ERB.new File.new('datastruct.erb').read, nil, '%'
+    @template = ERB.new(File.new("#{Iam.settings.root}/datastruct.erb").read,
+                        nil, '%')
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
@@ -23,7 +24,7 @@ class Collectors
   # rubocop:disable LineLength, AbcSize, CyclomaticComplexity, PerceivedComplexity, MethodLength
   def collect_ganeti(cluster)
     # for each cluster, append port number, endpoint, and query.
-    uri = URI("https://#{cluster}.osuosl.bak:5080/2/instances?bulk=1")
+    uri = URI("http://#{cluster}.osuosl.bak:5080/2/instances?bulk=1")
     begin
         Net::HTTP.start(uri.host, uri.port,
                         use_ssl:     uri.scheme == 'https',
@@ -52,8 +53,8 @@ class Collectors
           # info = @cache.get(<node_name>)
           # time = @cache.get(<node_name> + ':datetime')
         end
-      rescue SocketError
-        MyLog.log.fatal "SocketError cannot connect to #{cluster}"
+      rescue => e
+        MyLog.log.fatal "SocketError cannot connect to #{cluster}: #{e}"
       end
     @node_cache.write
   end
