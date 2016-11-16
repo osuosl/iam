@@ -44,7 +44,7 @@ Sequel.migration do
       foreign_key :project_id, :projects
       String      :name, unique: true
       String      :type
-      String      :cluster
+      String      :server
       DateTime    :created
       DateTime    :modified
       Boolean     :active, default: true

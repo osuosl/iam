@@ -66,7 +66,7 @@ end
 # Projects may own many Databases
 # String    :name,        :unique => true
 # String    :type
-# String    :cluster
+# String    :server
 # DateTime  :created
 # DateTime  :modified
 # Boolean     :active, default: true
