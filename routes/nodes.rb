@@ -13,7 +13,8 @@ module Sinatra
 
       app.get '/node/new/?' do
         # get new node form
-        erb :'nodes/edit'
+        @projects = Project.all
+        erb :'nodes/create'
       end
 
       app.get '/node/:id/?' do
@@ -23,6 +24,7 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found'
           halt 404, 'node not found'
         end
+        @nodes = Project.filter(id: @node.project_id).all
         erb :'nodes/show'
       end
 
@@ -66,15 +68,16 @@ module Sinatra
                     name:       params[:name] || node.name,
                     type:       params[:type] || node.type,
                     cluster:    params[:cluster] || node.cluster,
-                    modified:   DateTime.now || node.modified)
+                    modified:   DateTime.now || node.modified,
+                    active: params[:active] || node.active)
         redirect "/node/#{params[:id]}"
       end
 
       app.delete '/node/:id/?' do
         # delete a node
-        @node = NodeResource[id: params[:id]]
-        @node.delete unless @node.nil?
-        redirect '/nodes' unless @node.nil?
+        node = NodeResource[id: params[:id]]
+        node.delete unless node.nil?
+        redirect '/nodes' unless node.nil?
         404
       end
     end
