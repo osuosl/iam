@@ -12,8 +12,6 @@ class Iam < Sinatra::Base
     require file
   end
 
-  puts "yo"
-
   # initialize the app with some default clients, projects and nodeResrouces
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
@@ -34,6 +32,4 @@ class Iam < Sinatra::Base
     @clients = Client.all
     erb :report
   end
-
-  run!
 end
