@@ -47,7 +47,7 @@ module Sinatra
       # This could also be PUT
       app.post '/nodes/?' do
         # recieve new node
-        node = NodeResource.create(project_id:  params[:project_id]|| '',
+        node = NodeResource.create(project_id:  params[:project_id] || '',
                                    name:       params[:name],
                                    type:       params[:type] || '',
                                    cluster:    params[:cluster] || '',
@@ -57,6 +57,13 @@ module Sinatra
       end
 
       app.patch '/nodes/?' do
+        # set blanks to nil
+        params[:name] = nil if params[:name] == ''
+        params[:type] = nil if params[:type] == ''
+        params[:cluster] = nil if params[:cluster] == ''
+        params[:active] = nil if params[:description] == ''
+
+
         # recieve an updated node
         node = NodeResource[id: params[:id]]
 
@@ -73,7 +80,7 @@ module Sinatra
         # delete a node
         node = NodeResource[id: params[:id]]
         node.delete unless node.nil?
-        redirect '/nodes' unless node.nil?
+        redirect '/nodes/?' unless node.nil?
         404
       end
     end
