@@ -24,8 +24,6 @@ class DBSize < BasePlugin
     # Pull node information from cache as a ruby hash
     db_info = @cache.get(db_host)
 
-    puts db_info
-
     # Check for valid data
     if db_info.nil? || db_info == ''
       MyLog.log.warn "DBSize: No DBSize information for #{db_host}"
@@ -45,7 +43,6 @@ class DBSize < BasePlugin
       db_resource: @database[:db_resources].where(name: db_host).get(:id)
     )
   rescue => e # Don't crash on errors
-    puts e
     MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")
     STDERR.puts "DBSize: #{e}: #{db_info}" # Log the error
   end
