@@ -21,6 +21,8 @@ class Iam < Sinatra::Base
                                            description: 'The default project')
   NodeResource.find_or_create(project_id: default_project.id,
                               name: 'default')
+  DBResource.find_or_create(project_id: default_project.id,
+                            name: 'default')
 
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
