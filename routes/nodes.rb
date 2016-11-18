@@ -24,7 +24,7 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found'
           halt 404, 'node not found'
         end
-        @nodes = Project.filter(id: @node.project_id).all
+        @projects = Project.filter(id: @node.project_id).all
         erb :'nodes/show'
       end
 
@@ -47,9 +47,7 @@ module Sinatra
       # This could also be PUT
       app.post '/nodes/?' do
         # recieve new node
-        node = NodeResource.create(project_id: Iam.settings.DB[:projects]
-                                                .where(name: params[:project_name])
-                                                .get(:id) || '',
+        node = NodeResource.create(project_id:  params[:project_id]|| '',
                                    name:       params[:name],
                                    type:       params[:type] || '',
                                    cluster:    params[:cluster] || '',
@@ -62,9 +60,7 @@ module Sinatra
         # recieve an updated node
         node = NodeResource[id: params[:id]]
 
-        node.update(project_id: Iam.settings.DB[:projects]
-                                  .where(name: params[:project_name])
-                                  .get(:id) || node.project_id,
+        node.update(project_id:  params[:project_id] || node.project_id,
                     name:       params[:name] || node.name,
                     type:       params[:type] || node.type,
                     cluster:    params[:cluster] || node.cluster,
