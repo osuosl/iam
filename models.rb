@@ -60,3 +60,20 @@ class NodeResource < Sequel::Model
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 end
+
+# Database Resource data model
+# A Database belongs to one Project
+# Projects may own many Databases
+# String    :name,        :unique => true
+# String    :type
+# String    :server
+# DateTime  :created
+# DateTime  :modified
+# Boolean     :active, default: true
+class DBResource < Sequel::Model
+  many_to_one :projects
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
