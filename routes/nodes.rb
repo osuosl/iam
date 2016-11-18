@@ -63,7 +63,6 @@ module Sinatra
         params[:cluster] = nil if params[:cluster] == ''
         params[:active] = nil if params[:description] == ''
 
-
         # recieve an updated node
         node = NodeResource[id: params[:id]]
 
