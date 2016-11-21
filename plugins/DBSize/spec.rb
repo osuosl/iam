@@ -2,7 +2,6 @@ require_relative './plugin.rb'
 describe 'DBSize plugin' do
   before(:all) do
     @db_table = Iam.DB[:db_size_measurements]
-    @db_key = 'Data Base Size in Bytes'
   end
 
   # Store method
@@ -14,10 +13,7 @@ describe 'DBSize plugin' do
 
     before(:each) do
       # Store cached nodes in DB, no error
-      # This                vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-      @cache.set('test_db', Hash[@db_key, 123_456.0, :active, true])
-      #      is a because Rubocop doesn't like
-      # {'Data Base Size in Bytes': 'ABCD', active: true}
+      @cache.set('test_db', 123_456.0)
       @cache.write
     end
 
@@ -35,7 +31,7 @@ describe 'DBSize plugin' do
     end
 
     it 'does fail with invalid data' do
-      @cache.set('bad_test_db', Hash[@db_key, 'ABCD', :active, true])
+      @cache.set('bad_test_db', 'ABCD')
       @cache.write
 
       expect { DBSize.new.store('bad_test_db') }.to \
