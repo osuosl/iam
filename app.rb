@@ -12,7 +12,7 @@ class Iam < Sinatra::Base
     require file
   end
 
-  # initialize the app with some default clients, projects and nodeResrouces
+  # initialize the app with some default clients, projects and nodeResources
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
                                          description: 'The default client')
@@ -32,6 +32,9 @@ class Iam < Sinatra::Base
   get '/report/?' do
     # get new client form
     @clients = Client.all
+    @data = DiskTemplate.new.report
+    puts @data
     erb :report
   end
+  run!
 end
