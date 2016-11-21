@@ -20,7 +20,6 @@
           </a>
         </h4>
       </div>
-      <%= @data %>
       <div id="client-<%= @client.id %>" class="panel-collapse collapse">
         <% Project.filter(client_id: @client.id).each do |p| %>
           <div class="panel-body">
