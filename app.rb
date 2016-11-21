@@ -32,9 +32,6 @@ class Iam < Sinatra::Base
   get '/report/?' do
     # get new client form
     @clients = Client.all
-    @data = DiskTemplate.new.report
-    puts @data
     erb :report
   end
-  run!
 end
