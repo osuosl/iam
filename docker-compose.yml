@@ -23,24 +23,5 @@ services:
     command: ./run-tests.sh
     extends:
       service: app
-    links:
-      - testing-psql
-      - testing-mysql
     ports:
       - "4567:4567"
-
-  ###
-  # Postgres database for testing.
-  ###
-  testing-psql:
-    image: postgres
-    env_file:
-      - ./dockerfiles/app.env
-
-  ###
-  # MYSQL database for testing.
-  ###
-  testing-mysql:
-    image: mysql
-    env_file:
-      - ./dockerfiles/app.env
