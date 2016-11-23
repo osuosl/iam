@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr>
-          <td>name</td>
+          <td>Name</td>
           <td>
             <% if @node %>
               <%= @node.name %>
@@ -22,6 +22,25 @@
           </td>
           <td>
             <input type="text" name="name" placeholder="New name">
+          </td>
+        </tr>
+        <tr>
+          <td>Project Id</td>
+          <td>
+            <% if @node %>
+              <%= @node.project_id %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <select  name="project_id">
+            <% for @project in @projects %>
+               <% if @project.active %>
+                  <option value="<%= @project.id %>"><%= @project.name %></option>
+              <% end %>
+            <% end %>
+            </select>
           </td>
         </tr>
         <tr>

@@ -35,6 +35,7 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
+        @projects = Project.all
         erb :'nodes/edit'
       end
 
