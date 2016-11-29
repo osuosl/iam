@@ -71,7 +71,11 @@
                           </td>
                           <td>
                             <% data = DiskTemplate.new.report({node: n.name}) %>
-                            <%= data[0][:value] %>
+                            <% if data != nil && data.last != nil %>
+                              <%= data.last[:value] %>
+                            <% else %>
+                              Not found
+                            <% end %>
                           </td>
                         </tr>
                         <% end %>
