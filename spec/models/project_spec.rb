@@ -7,8 +7,8 @@ describe 'The Project Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has no projects' do
-    expect(Project.all).to be_empty
+  it 'initially has only one project(default project)' do
+    expect(Project.count).to be(1)
   end
 
   it 'has a model name' do

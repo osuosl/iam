@@ -38,13 +38,17 @@ class RamSize < BasePlugin
           (should be number)"
     end
 
+    # check if node resource exist, otherwise set it to default
+    node_resource = @database[:node_resources].where(name: fqdn).get(:id)
+    node_resource = NodeResource.find(name: 'default').id unless node_resource
+
     # Insert data into disk_size_measurements table
     @database[@table].insert(
       node:          fqdn,
       value:         node_info['total_ram'].to_i,
       active:        node_info['active'],
       created:       DateTime.now,
-      node_resource: @database[:node_resources].where(name: fqdn).get(:id)
+      node_resource: node_resource
     )
   rescue => e # Don't crash on errors
     MyLog.log.error StandardError.new("RamSize:  #{e}: #{node_info}")
