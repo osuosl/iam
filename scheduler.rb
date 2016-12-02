@@ -100,11 +100,13 @@ class Scheduler
     collector = Collectors.new
     dbs = Iam.settings.db_collector_dbs
     dbs.each do |var|
-      if var['host'] != 'testing-mysql' ||  var['host'] != 'testing-psql'
+      begin
         collector.collect_db(var['type'],
                              var['host'],
                              var['user'],
                              var['password'])
+      rescue => e
+        MyLog.log.warn "Cant collect from the database"
       end
     end
   end

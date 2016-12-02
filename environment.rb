@@ -116,14 +116,16 @@ class Iam < Sinatra::Base
   if ENV['DB_COLLECTOR_DBS']
     db = ENV['DB_COLLECTOR_DBS']
     db_collector_dbs = []
+    dbHash = {}
     db.split(',').each do |h|
-      dbHash = {}
       h = h.split(':')
       dbHash[h[0]] = h[1]
-      db_collector_dbs.append(dbHash)
     end
+    # db_collector_dbs.append(dbHash)
   else
     db_collector_dbs = config['db_collector_dbs']
   end
-  set :db_collector_dbs, db_collector_dbs
+  puts 'the dbs'
+  puts dbHash
+  set :db_collector_dbs, dbHash
 end
