@@ -25,7 +25,6 @@ services:
       service: app
     links:
       - testing-psql
-      - testing-mysql
     ports:
       - "4567:4567"
 

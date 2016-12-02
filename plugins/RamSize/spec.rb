@@ -8,7 +8,7 @@ describe 'RamSize plugin' do
   describe '.store method' do
     before(:all) do
       RamSize.new.register
-      @cache = Cache.new(Iam.settings.cache_file)
+      @cache = Cache.new(Iam.settings.cache_path)
     end
 
     before(:each) do

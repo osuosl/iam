@@ -55,7 +55,7 @@ class Scheduler
 
   def initialize
     @rufus_scheduler = Rufus::Scheduler.new
-    @cache = Cache.new(Iam.settings.cache_file)
+    @cache = Cache.new(Iam.settings.cache_path)
   end
 
   def setup_jobs
@@ -69,7 +69,7 @@ class Scheduler
 
     # offset schedule for plugins - run the store methods 15 minutes after
     # the collector methods run
-    @rufus_scheduler.every '30m', first_in: '15m' do
+    @rufus_scheduler.every '30m', first_in: 0.4 do
       `rake plugins`
       plugins_job
     end
@@ -100,10 +100,12 @@ class Scheduler
     collector = Collectors.new
     dbs = Iam.settings.db_collector_dbs
     dbs.each do |var|
-      collector.collect_db(var['type'],
-                           var['host'],
-                           var['user'],
-                           var['password'])
+      if var['host'] != 'testing-mysql' ||  var['host'] != 'testing-psql'
+        collector.collect_db(var['type'],
+                             var['host'],
+                             var['user'],
+                             var['password'])
+      end
     end
   end
 

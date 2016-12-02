@@ -7,7 +7,7 @@ describe 'VCPUCount plugin' do
   # Store method
   describe '.store method' do
     before(:all) do
-      @cache = Cache.new(Iam.settings.cache_file)
+      @cache = Cache.new(Iam.settings.cache_path)
     end
 
     before(:each) do

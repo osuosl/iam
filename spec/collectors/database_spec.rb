@@ -93,7 +93,7 @@ describe 'IaM Database Collector' do
 
     # Reads values in from cache file
     # cache = Cache.new(ENV['TEST_CACHE_FILE'])
-    cache = Cache.new(Iam.settings.cache_file)
+    cache = Cache.new(Iam.settings.cache_path)
 
     @expected.each do |var|
       expect(cache.dump).to include(var)
