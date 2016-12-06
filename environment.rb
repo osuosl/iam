@@ -118,7 +118,6 @@ class Iam < Sinatra::Base
     db = ENV['DB_COLLECTOR_DBS']
     db_collector_dbs = []
     db_hash = {}
-
     db.split(';').each do |k|
       db_hash = {}
       k.split(',').each do |h|
@@ -127,7 +126,6 @@ class Iam < Sinatra::Base
       end
       db_collector_dbs.append(db_hash)
     end
-
   else
     db_collector_dbs = config['db_collector_dbs']
   end
