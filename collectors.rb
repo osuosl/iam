@@ -15,9 +15,9 @@ class Collectors
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
     @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
-      nil, '%'
+                           nil, '%'
     @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
-      nil, '%'
+                             nil, '%'
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
@@ -28,7 +28,7 @@ class Collectors
     uri = URI("https://#{cluster}.osuosl.bak:5080/2/instances?bulk=1")
     begin
       Net::HTTP.start(uri.host, uri.port,
-                      use_ssl:     uri.scheme == 'https',
+                      use_ssl: uri.scheme == 'https',
                       verify_mode: OpenSSL::SSL::VERIFY_NONE) do |http|
         # perform get request on full path. If this doesn't work, program
         # control will jump to the rescue block below.
@@ -40,8 +40,8 @@ class Collectors
           disk_usage_meas = node['disk_usage'] || 'unknown'
           disk_template_meas = node['disk_template'] || 'unknown'
           num_cpus_meas = node['oper_vcpus'] ||
-                               node['beparams']['vcpus'] ||
-                               node['custom_beparams']['vcpus'] || 'unknown'
+                          node['beparams']['vcpus'] ||
+                          node['custom_beparams']['vcpus'] || 'unknown'
           total_ram = node['beparams']['memory'] || 'unknown'
           active = node['oper_state']
           type = 'ganeti'
@@ -92,10 +92,10 @@ class Collectors
     db.fetch("SELECT table_schema
                 'DB Name',
               cast(round(sum( data_length + index_length ) , 1) as binary)
-                'Data Base Size in Bytes'
+                'Size in Bytes'
               FROM information_schema.TABLES
               GROUP BY table_schema") do |var|
-      db_size_meas = var[:"Data Base Size in Bytes"] || 'unknown'
+      db_size_meas = var[:"Size in Bytes"] || 'unknown'
       active_meas = 1
       type = 'mysql'
       server = host

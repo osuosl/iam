@@ -47,7 +47,7 @@ class DiskSize < BasePlugin
       created:       DateTime.now,
       node_resource: node_resource
     )
-    rescue => e # Don't crash on errors
-      MyLog.log.error StandardError.new("DiskSize:  #{e}: #{node_info}")
+  rescue => e # Don't crash on errors
+    MyLog.log.error StandardError.new("DiskSize:  #{e}: #{node_info}")
   end
 end
