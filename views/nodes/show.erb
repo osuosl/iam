@@ -1,4 +1,46 @@
-<h3><%= @node.name %></h3>
-
-<%= @node.type %><br>
-<%= @node.cluster %><br>
+<div class="container">
+  <h2>Node: <%= @node.name %> -
+    <a href="/node/<%= @node.id %>/edit">edit</a>
+  </h2>
+  <p>
+    Project Id: <%= @node.project_id %> <br>
+    Type: <%= @node.type %> <br>
+    Cluster: <%= @node.cluster %> <br>
+    Active: <%= @node.active %><br>
+  </p>
+  <table class="table">
+      <thead>
+        <tr>
+          <th>Project Id</th>
+          <th>Type</th>
+          <th>Cluster</th>
+          <th>Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for @project in @projects %>
+          <% if @project.active %>
+          <tr>
+            <th scope="row"><%= @project.id %></th>
+          <td>
+            <a href="/projects/<%= @project.id %>" >
+              <%= @project.name %>
+            </a>
+          </td>
+          <td>
+            <%= @project.resources %>
+          </td>
+          <td>
+            <%= @project.description %>
+          </td>
+          <td>
+            <%= @project.active %>
+          </td>
+        </tr>
+        <% end %>
+        <% end %>
+      </tbody>
+  </table>
+  <br>
+  <br>
+</div>

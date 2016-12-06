@@ -13,7 +13,8 @@ module Sinatra
 
       app.get '/node/new/?' do
         # get new node form
-        erb :'nodes/edit'
+        @projects = Project.all
+        erb :'nodes/create'
       end
 
       app.get '/node/:id/?' do
@@ -23,6 +24,7 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found'
           halt 404, 'node not found'
         end
+        @projects = Project.filter(id: @node.project_id).all
         erb :'nodes/show'
       end
 
@@ -33,6 +35,7 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
+        @projects = Project.all
         erb :'nodes/edit'
       end
 
@@ -45,9 +48,7 @@ module Sinatra
       # This could also be PUT
       app.post '/nodes/?' do
         # recieve new node
-        node = NodeResource.create(project_id: Iam.settings.DB[:projects]
-                                                .where(name: params[:project_name])
-                                                .get(:id) || '',
+        node = NodeResource.create(project_id:  params[:project_id] || '',
                                    name:       params[:name],
                                    type:       params[:type] || '',
                                    cluster:    params[:cluster] || '',
@@ -57,24 +58,29 @@ module Sinatra
       end
 
       app.patch '/nodes/?' do
+        # set blanks to nil
+        params[:name] = nil if params[:name] == ''
+        params[:type] = nil if params[:type] == ''
+        params[:cluster] = nil if params[:cluster] == ''
+        params[:active] = nil if params[:description] == ''
+
         # recieve an updated node
         node = NodeResource[id: params[:id]]
 
-        node.update(project_id: Iam.settings.DB[:projects]
-                                  .where(name: params[:project_name])
-                                  .get(:id) || node.project_id,
+        node.update(project_id:  params[:project_id] || node.project_id,
                     name:       params[:name] || node.name,
                     type:       params[:type] || node.type,
                     cluster:    params[:cluster] || node.cluster,
-                    modified:   DateTime.now || node.modified)
+                    modified:   DateTime.now || node.modified,
+                    active: params[:active] || node.active)
         redirect "/node/#{params[:id]}"
       end
 
       app.delete '/node/:id/?' do
         # delete a node
-        @node = NodeResource[id: params[:id]]
-        @node.delete unless @node.nil?
-        redirect '/nodes' unless @node.nil?
+        node = NodeResource[id: params[:id]]
+        node.delete unless node.nil?
+        redirect '/nodes/?' unless node.nil?
         404
       end
     end

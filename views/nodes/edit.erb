@@ -1,6 +1,90 @@
-<% if @node %>
-  <h3><%= @node.name %></h3>
-<% else %>
-  <h3>New node</h3>
-<% end %>
-  This will eventually be the edit node form.
+<div class="container">
+  <form action='/nodes' method='post'>
+    <input type="hidden" name="_method" value="patch">
+    <input type="hidden" name="id" value="<%= @node.id %>">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Node Name</th>
+          <th>Old</th>
+          <th>New</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td>
+            <% if @node %>
+              <%= @node.name %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="name" placeholder="New name">
+          </td>
+        </tr>
+        <tr>
+          <td>Project Id</td>
+          <td>
+            <% if @node %>
+              <%= @node.project_id %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <select  name="project_id">
+            <% for @project in @projects %>
+               <% if @project.active %>
+                  <option value="<%= @project.id %>"><%= @project.name %></option>
+              <% end %>
+            <% end %>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td>
+            <% if @node %>
+              <%= @node.type %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="type" placeholder="New type">
+          </td>
+        </tr>
+        <tr>
+          <td>Cluster</td>
+          <td>
+            <% if @node %>
+              <%= @node.cluster %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="cluster" placeholder="New cluster">
+          </td>
+        </tr>
+        <tr>
+          <td>Active state</td>
+          <td>
+            <% if @node %>
+              <%= @node.active %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="radio" name="active" value="True"> True
+            <input type="radio" name="active" value="False"> False
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <input type="submit" value="Update" class="btn btn-primary">
+  </form>
+</div>

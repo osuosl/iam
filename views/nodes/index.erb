@@ -1,8 +1,43 @@
-
-<table>
-  <% for @node in @nodes %>
-    <tr>
-      <td><%= @node.name %><td>
-    </tr>
-  <% end %>
-</table>
+<div class="container">
+  <br>
+  <div class="title">
+    <h2>Node List</h2>
+    <a href="/node/new">Create</a>
+  </div>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Node Name</th>
+        <th>Type</th>
+        <th>Cluster</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% for @node in @nodes %>
+      <% if @node.active %>
+      <tr>
+        <th scope="row"><%= @node.id %></th>
+          <td>
+            <a href="/node/<%= @node.id %>">
+              <%= @node.name %>
+            </a>
+          </td>
+          <td>
+            <%= @node.type %>
+          </td>
+          <td>
+            <%= @node.cluster %>
+          </td>
+          <td>
+            <a href="/node/<%= @node.id %>/edit" >
+              Edit
+            </a>
+          </td>
+      </tr>
+      <% end %>
+    <% end %>
+    </tbody>
+  </table>
+</div>
