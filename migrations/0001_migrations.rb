@@ -38,6 +38,5 @@ Sequel.migration do
       DateTime    :modified
       Boolean     :active, default: true
     end
-
   end
 end
