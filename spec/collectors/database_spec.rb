@@ -68,10 +68,10 @@ describe 'IaM Database Collector' do
       # @expected is populated like the hash is populated in
       # collectors.rb/collect_db.
       # It is later compared against the cache in the first test.
-      @expected.push(var[:"DB Name"] => { db_size: var[:"Size in Bytes"],
-                                          active:  1,
-                                          type: 'mysql',
-                                          server:  ENV['TEST_MYSQL_HOST'] })
+      @expected.push(var[:"DB Name"] => { 'db_size' => var[:"Size in Bytes"],
+                                          'active' =>  1,
+                                          'type' => 'mysql',
+                                          'server' => ENV['TEST_MYSQL_HOST'] })
     end
 
     # Uncomment this line to see what the above query gets us
