@@ -94,9 +94,11 @@ class Collectors
                 'Data Base Size in Bytes'
               FROM information_schema.TABLES
               GROUP BY table_schema") do |var|
-      db_size = var[:"Data Base Size in Bytes"]
+      db_size_meas = var[:"Data Base Size in Bytes"] || 'unknown'
+      active_meas = 1
       type = 'mysql'
       server = host
+
 
       @db_cache.set(var[:"DB Name"], JSON.parse(@db_template.result(binding)))
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
