@@ -13,7 +13,7 @@ module Sinatra
 
       app.get '/db/new/?' do
         # get new database form
-        @db = DBResource.all
+        @projects = Project.all
         erb :'database/create'
       end
 
