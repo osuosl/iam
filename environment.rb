@@ -115,13 +115,30 @@ class Iam < Sinatra::Base
   # array of hashes (hackarific)
   # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
   if ENV['DB_COLLECTOR_DBS']
-    db_collector_dbs = []
-    ENV['DB_COLLECTOR_DBS'].split(',').each | db |
-      db.split(':').each { |key, value| db_hash[key] = value }
-    db_collector_dbs.append(db_hash)
+      db = ENV['DB_COLLECTOR_DBS']
+      db_collector_dbs = []
+      dbHash = {}
+      puts 'the db'
+      puts db
+      db.split(';').each do |k|
+        dbHash = {}
+        # puts 'the k'
+        # puts k
+        k.split(',').each do |h|
+          h = h.split(':')
+          dbHash[h[0]] = h[1]
+        end
+        db_collector_dbs.append(dbHash)
+      end
+      # puts 'the db hash'
+      # puts dbHash.class.name
+      # puts 'the k'
+      # puts dbHash
+      # db_collector_dbs.append(dbHash)
   else
     db_collector_dbs = config['db_collector_dbs']
   end
-
+  puts 'hererere'
+  puts db_collector_dbs.class.name
   set :db_collector_dbs, db_collector_dbs
-end
+  end
