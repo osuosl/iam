@@ -35,7 +35,7 @@ class DBSize < BasePlugin
     end
 
     # check if node resource exist, otherwise set it to default
-    db_resource = @database[:node_resources].where(name: db_host).get(:id)
+    db_resource = @database[:db_resources].where(name: db_host).get(:id)
     db_resource = DBResource.find(name: 'default').id unless db_resource
 
     # Insert data into db_size_measurements table
