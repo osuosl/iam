@@ -4,7 +4,7 @@ require_relative '../logging/logs'
 # Our app
 module Sinatra
   # Our D Routing
-  module DBResource
+  module DBRoutes
     # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
       ##
@@ -13,7 +13,7 @@ module Sinatra
 
       app.get '/db/new/?' do
         # get new database form
-        @db = DB.all
+        @db = DBResource.all
         erb :'database/create'
       end
 
@@ -41,7 +41,7 @@ module Sinatra
 
       app.get '/dbs/?' do
         # get a list of all database
-        @db = DBResource.all
+        @dbs = DBResource.all
         erb :'database/index'
       end
 
@@ -49,11 +49,11 @@ module Sinatra
       app.post '/dbs/?' do
         # recieve new database
         db = DBResource.create(project_id:  params[:project_id] || '',
-                                   name:       params[:name],
-                                   type:       params[:type] || '',
-                                   server:    params[:server] || '',
-                                   created:    DateTime.now || '',
-                                   modified:   DateTime.now || '')
+                               name:       params[:name],
+                               type:       params[:type] || '',
+                               server:    params[:server] || '',
+                               created:    DateTime.now || '',
+                               modified:   DateTime.now || '')
         redirect "/db/#{db.id}"
       end
 
@@ -68,11 +68,11 @@ module Sinatra
         db = DBResource[id: params[:id]]
 
         db.update(project_id:  params[:project_id] || db.project_id,
-                    name:       params[:name] || db.name,
-                    type:       params[:type] || db.type,
-                    server:    params[:server] || db.server,
-                    modified:   DateTime.now || db.modified,
-                    active: params[:active] || db.active)
+                  name:       params[:name] || db.name,
+                  type:       params[:type] || db.type,
+                  server:    params[:server] || db.server,
+                  modified:   DateTime.now || db.modified,
+                  active: params[:active] || db.active)
         redirect "/db/#{params[:id]}"
       end
 
