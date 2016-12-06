@@ -99,7 +99,6 @@ class Collectors
       type = 'mysql'
       server = host
 
-
       @db_cache.set(var[:"DB Name"], JSON.parse(@db_template.result(binding)))
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
