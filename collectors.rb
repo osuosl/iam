@@ -14,8 +14,10 @@ class Collectors
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
-    @db_template = ERB.new File.new('cache_templates/db_template.erb').read, nil, '%'
-    @node_template = ERB.new File.new('cache_templates/node_template.erb').read, nil, '%'
+    @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
+      nil, '%'
+    @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
+      nil, '%'
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
@@ -33,17 +35,16 @@ class Collectors
         response = http.request Net::HTTP::Get.new uri
         # Store returned information in with datetime and node name
         JSON.parse(response.body).each do |node|
-          node_name          = node['name']                     || 'unknown'
-          disk_sizes_meas    = node['disk.sizes']               || 'unknown'
-          disk_usage_meas    = node['disk_usage']               || 'unknown'
-          disk_template_meas = node['disk_template']            || 'unknown'
-          num_cpus_meas      = node['oper_vcpus']               ||
-                               node['beparams']['vcpus']        ||
+          node_name = node['name'] || 'unknown'
+          disk_sizes_meas = node['disk.sizes'] || 'unknown'
+          disk_usage_meas = node['disk_usage'] || 'unknown'
+          disk_template_meas = node['disk_template'] || 'unknown'
+          num_cpus_meas = node['oper_vcpus'] ||
+                               node['beparams']['vcpus'] ||
                                node['custom_beparams']['vcpus'] || 'unknown'
-          total_ram          = node['beparams']['memory']       || 'unknown'
-          active             = node['oper_state']
-          cluster            = cluster                          || 'unknown'
-          type               = 'ganeti'
+          total_ram = node['beparams']['memory'] || 'unknown'
+          active = node['oper_state']
+          type = 'ganeti'
 
           @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
           @node_cache.set(node_name + ':datetime', Time.new.inspect)
