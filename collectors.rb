@@ -41,8 +41,8 @@ class Collectors
                                node['beparams']['vcpus']        ||
                                node['custom_beparams']['vcpus'] || 'unknown'
           total_ram          = node['beparams']['memory']       || 'unknown'
-          active_meas        = node['oper_state']
-          cluster            = cluster
+          active             = node['oper_state']
+          cluster            = cluster                          || 'unknown'
           type               = 'ganeti'
 
           @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
