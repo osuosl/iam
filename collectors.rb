@@ -14,8 +14,8 @@ class Collectors
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
-    # TODO: Query database for each unique cluster name
-    @template = ERB.new File.new('datastruct.erb').read, nil, '%'
+    @db_template = ERB.new File.new('cache_templates/db_template.erb').read, nil, '%'
+    @node_template = ERB.new File.new('cache_templates/node_template.erb').read, nil, '%'
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
@@ -42,8 +42,10 @@ class Collectors
                                node['custom_beparams']['vcpus'] || 'unknown'
           total_ram          = node['beparams']['memory']       || 'unknown'
           active_meas        = node['oper_state']
+          cluster            = cluster
+          type               = 'ganeti'
 
-          @node_cache.set(node_name, JSON.parse(@template.result(binding)))
+          @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
           @node_cache.set(node_name + ':datetime', Time.new.inspect)
         end
       end
@@ -62,7 +64,7 @@ class Collectors
       collect_postgres(host, user, password)
     else
       MyLog.log.error StandardError.new(
-        "db_type `#{db_type}` is neither `:mysql` nor `:postgres`."
+        "db_type `#{db_type}` is neither `mysql` nor `postgres`."
       )
     end
   end
@@ -92,7 +94,11 @@ class Collectors
                 'Data Base Size in Bytes'
               FROM information_schema.TABLES
               GROUP BY table_schema") do |var|
-      @db_cache.set(var[:"DB Name"], var[:"Data Base Size in Bytes"])
+      db_size = var[:"Data Base Size in Bytes"]
+      type = 'mysql'
+      server = host
+
+      @db_cache.set(var[:"DB Name"], JSON.parse(@db_template.result(binding)))
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
     @db_cache.write
