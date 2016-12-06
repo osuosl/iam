@@ -1,0 +1,43 @@
+<div class="container">
+  <br>
+  <div class="title">
+    <h2>Database List</h2>
+    <a href="/db/new">Create</a>
+  </div>
+  <br>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Database Name</th>
+        <th>Type</th>
+        <th>Server</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% for @db in @dbs %>
+      <% if @db.active %>
+      <tr>
+        <th scope="row"><%= @db.id %></th>
+          <td>
+            <a href="/db/<%= @db.id %>">
+              <%= @db.name %>
+            </a>
+          </td>
+          <td>
+            <%= @db.type %>
+          </td>
+          <td>
+            <%= @db.server %>
+          </td>
+          <td>
+            <a href="/db/<%= @db.id %>/edit" >
+              Edit
+            </a>
+          </td>
+      </tr>
+      <% end %>
+    <% end %>
+    </tbody>
+  </table>
+</div>

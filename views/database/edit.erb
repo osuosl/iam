@@ -1,0 +1,90 @@
+<div class="container">
+  <form action='/dbs' method='post'>
+    <input type="hidden" name="_method" value="patch">
+    <input type="hidden" name="id" value="<%= @db.id %>">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Database Name</th>
+          <th>Old</th>
+          <th>New</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Name</td>
+          <td>
+            <% if @db %>
+              <%= @db.name %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="name" placeholder="New name">
+          </td>
+        </tr>
+        <tr>
+          <td>Project Id</td>
+          <td>
+            <% if @db %>
+              <%= @db.project_id %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <select  name="project_id">
+            <% for @project in @projects %>
+               <% if @project.active %>
+                  <option value="<%= @project.id %>"><%= @project.name %></option>
+              <% end %>
+            <% end %>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td>
+            <% if @db %>
+              <%= @db.type %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="type" placeholder="New type">
+          </td>
+        </tr>
+        <tr>
+          <td>Server</td>
+          <td>
+            <% if @db %>
+              <%= @db.server %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="server" placeholder="New server">
+          </td>
+        </tr>
+        <tr>
+          <td>Active state</td>
+          <td>
+            <% if @db %>
+              <%= @db.active %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="radio" name="active" value="True"> True
+            <input type="radio" name="active" value="False"> False
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <input type="submit" value="Update" class="btn btn-primary">
+  </form>
+</div>

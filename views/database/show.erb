@@ -1,0 +1,46 @@
+<div class="container">
+  <h2>Database: <%= @db.name %> -
+    <a href="/db/<%= @db.id %>/edit">edit</a>
+  </h2>
+  <p>
+    Project Id: <%= @db.project_id %> <br>
+    Type: <%= @db.type %> <br>
+    Server: <%= @db.server %> <br>
+    Active: <%= @db.active %><br>
+  </p>
+  <table class="table">
+      <thead>
+        <tr>
+          <th>Project Id</th>
+          <th>Type</th>
+          <th>Server</th>
+          <th>Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for @project in @projects %>
+          <% if @project.active %>
+          <tr>
+            <th scope="row"><%= @project.id %></th>
+          <td>
+            <a href="/projects/<%= @project.id %>" >
+              <%= @project.name %>
+            </a>
+          </td>
+          <td>
+            <%= @project.resources %>
+          </td>
+          <td>
+            <%= @project.description %>
+          </td>
+          <td>
+            <%= @project.active %>
+          </td>
+        </tr>
+        <% end %>
+        <% end %>
+      </tbody>
+  </table>
+  <br>
+  <br>
+</div>

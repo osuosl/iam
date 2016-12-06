@@ -1,0 +1,55 @@
+<div class="container">
+  <form action='/dbs' name="createDatabase" method='post' onsubmit="return validateForm()">
+    <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>New Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Database name</td>
+        <td>
+           <input type="text" name="name" placeholder="New Database">
+        </td>
+      </tr>
+      <tr>
+        <td>Project Id</td>
+        <td>
+          <select  name="project_id">
+          <% for @project in @projects %>
+             <% if @project.active %>
+                <option value="<%= @project.id %>"><%= @project.name %></option>
+            <% end %>
+          <% end %>
+          </select>
+        </td>
+      </tr>
+      </tr>
+      <tr>
+        <td>Type</td>
+        <td>
+          <input type="text" name="type" placeholder="New Type">
+        </td>
+      </tr>
+      <tr>
+        <td>Server</td>
+        <td>
+          <input type="text" name="server" placeholder="New Server">
+        </td>
+      </tr>
+    </table>
+    <input type="submit" value="Create Database" class="btn btn-primary">
+  </form>
+</div>
+
+<script>
+function validateForm() {
+  var x = document.forms["createDatabase"]["name"].value;
+  if (x == null || x == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+}
+</script>
