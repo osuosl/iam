@@ -64,6 +64,22 @@ class BasePlugin
     # Reports in a ruby hash
     dataset.all
   end
+
+  # create a db resource if we come across one in the data that isn't defined
+  # already. Assign it to the default project.
+  def default_db(name, type, server)
+    project = Project.where(name: 'default').get(:id)
+    DBResource.create(name: name, type: type, project_id: project,
+                      server: server)[:id]
+  end
+
+  # create a node resource if we come across one in the data that isn't defined
+  # already. Assign it to the default project.
+  def default_node(name, type, cluster)
+    project = Project.where(name: 'default').get(:id)
+    NodeResource.create(name: name, type: type, project_id: project,
+                        cluster: cluster)[:id]
+  end
 end
 
 # our base level testing initialization

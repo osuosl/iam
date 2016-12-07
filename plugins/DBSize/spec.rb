@@ -13,7 +13,7 @@ describe 'DBSize plugin' do
 
     before(:each) do
       # Store cached nodes in DB, no error
-      @cache.set('test_db', 123_456.0)
+      @cache.set('test_db', db_size: 123_456.0, active: true)
       @cache.write
     end
 
@@ -31,7 +31,7 @@ describe 'DBSize plugin' do
     end
 
     it 'does fail with invalid data' do
-      @cache.set('bad_test_db', 'ABCD')
+      @cache.set('bad_test_db', db_size: 'ABCD')
       @cache.write
 
       expect { DBSize.new.store('bad_test_db') }.to \
@@ -41,7 +41,7 @@ describe 'DBSize plugin' do
       @cache.write
     end
 
-    it 'fails when not passed node name' do
+    it 'fails when not passed db name' do
       # This is bad plugin usage that should actually crash
       expect { DBSize.new.store }.to raise_error(ArgumentError)
     end
