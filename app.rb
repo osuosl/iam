@@ -28,6 +28,7 @@ class Iam < Sinatra::Base
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
+  register Sinatra::DBRoutes
 
   get '/report/?' do
     # get new client form
