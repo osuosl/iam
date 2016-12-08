@@ -69,7 +69,7 @@ describe 'IaM Database Collector' do
       # collectors.rb/collect_db.
       # It is later compared against the cache in the first test.
       @expected.push(var[:"DB Name"] => { 'db_size' => var[:"Size in Bytes"],
-                                          'active' =>  1,
+                                          'active' =>  'true',
                                           'type' => 'mysql',
                                           'server' => ENV['TEST_MYSQL_HOST'] })
     end
