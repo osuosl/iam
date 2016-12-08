@@ -21,8 +21,8 @@ module Sinatra
         # view a database
         @db = DBResource[id: params[:id]]
         if @db.nil?
-          MyLog.log.fatal 'routes/database: Database not found'
-          halt 404, 'database not found'
+          MyLog.log.fatal 'routes/database: Database Resource not found'
+          halt 404, 'database resource not found'
         end
         @projects = Project.filter(id: @db.project_id).all
         erb :'database/show'
@@ -32,8 +32,8 @@ module Sinatra
         # get database edit form
         @db = DBResource[id: params[:id]]
         if @db.nil?
-          MyLog.log.fatal 'routes/database: Database not found [edit]'
-          halt 404, 'database not found'
+          MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
+          halt 404, 'database resource not found'
         end
         @projects = Project.all
         erb :'database/edit'

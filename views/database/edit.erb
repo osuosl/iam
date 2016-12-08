@@ -29,17 +29,15 @@
           <td>Project Id</td>
           <td>
             <% if @db %>
-              <%= @db.project_id %>
+              <%= @project.name %>
             <% else %>
               N/A
             <% end %>
           </td>
           <td>
             <select  name="project_id">
-            <% for @project in @projects %>
-               <% if @project.active %>
-                  <option value="<%= @project.id %>"><%= @project.name %></option>
-              <% end %>
+            <% if @project.active %>
+              <option value="<%= @project.id %>"><%= @project.name %></option>
             <% end %>
             </select>
           </td>
