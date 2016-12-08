@@ -43,7 +43,7 @@ class Collectors
                           node['beparams']['vcpus'] ||
                           node['custom_beparams']['vcpus'] || 'unknown'
           total_ram = node['beparams']['memory'] || 'unknown'
-          active = node['oper_state']
+          active_meas = node['oper_state']
           type = 'ganeti'
 
           @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
@@ -51,7 +51,7 @@ class Collectors
         end
       end
     rescue JSON::ParserError, SocketError => e
-      MyLog.log.fatal "Error getting data from #{cluster}: #{e}"
+      MyLog.log.fatal "Error getting ganeti data from #{cluster}: #{e}"
     end
     @node_cache.write
   end
@@ -96,7 +96,7 @@ class Collectors
               FROM information_schema.TABLES
               GROUP BY table_schema") do |var|
       db_size_meas = var[:"Size in Bytes"] || 'unknown'
-      active_meas = 1
+      active_meas = 'true'
       type = 'mysql'
       server = host
 
