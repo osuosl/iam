@@ -19,7 +19,7 @@ class DBSize < BasePlugin
     register
   end
 
-  # rubocop: disable MethodLength, AbcSize
+  # rubocop: disable MethodLength,AbcSize
   def store(db_host)
     # Pull node information from cache as a ruby hash
     db_info = @cache.get(db_host)
@@ -37,8 +37,10 @@ class DBSize < BasePlugin
     # check if resource exists, otherwise create it for the default project
     db_resource = @database[:db_resources].where(name: db_host).get(:id)
 
-    db_resource = default_db(db_host, db_info['type'],
-                             db_info['server']) unless db_resource
+    unless db_resource
+      db_resource = default_db(db_host, db_info['type'],
+                               db_info['server'])
+    end
 
     # Insert data into db_size_measurements table
     @database[@table].insert(

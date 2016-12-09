@@ -7,8 +7,8 @@ describe 'The DBResource Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has one DBResource (the default DBResource)' do
-    expect(DBResource.count).to be(1)
+  it 'initially has zero DBResources' do
+    expect(DBResource.count).to be(0)
   end
 
   it 'has a model name' do

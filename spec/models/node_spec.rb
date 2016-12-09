@@ -7,8 +7,8 @@ describe 'The NodeResource Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially have only one NodeResource(the defualt)' do
-    expect(NodeResource.count).to be(1)
+  it 'initially have only zero NodeResource' do
+    expect(NodeResource.count).to be(0)
   end
 
   it 'has a model name' do
