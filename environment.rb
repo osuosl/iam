@@ -61,9 +61,6 @@ class Iam < Sinatra::Base
     ENV['LOG_FILE_PATH'] = logfile
     ENV['GANETI_CLUSTERS'] = 'ganeti'
 
-    # set some fake databases so the collector tests work
-    set :db_collector_dbs, [{ 'type' => 'mysql', 'user' => 'listener',
-                              'password' => '', 'host' => 'localhost' }]
   end
 
   # Bundler.require(...) requires all gems necessary regardless of

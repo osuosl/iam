@@ -62,14 +62,14 @@ describe 'IaM Database Collector' do
                   table_schema
                     'DB Name',
                   cast(round(sum(data_length+index_length),1) as binary)
-                    'Size in Bytes'
+                    'Size'
                   FROM information_schema.TABLES
                   GROUP BY table_schema") do |var|
       # @expected is populated like the hash is populated in
       # collectors.rb/collect_db.
       # It is later compared against the cache in the first test.
-      @expected.push(var[:"DB Name"] => { 'db_size' => var[:"Size in Bytes"],
-                                          'active' =>  1,
+      @expected.push(var[:"DB Name"] => { 'db_size' => var[:Size].to_i,
+                                          'active' =>  'true',
                                           'type' => 'mysql',
                                           'server' => ENV['TEST_MYSQL_HOST'] })
     end
@@ -92,7 +92,7 @@ describe 'IaM Database Collector' do
     c.collect_db('mysql',
                  ENV['TEST_MYSQL_HOST'],
                  ENV['TEST_MYSQL_USER'],
-                 ENV['TEST_MYSQL_PASSWORD'])
+                 ENV['TEST_MYSQL_PASS'])
 
     # Reads values in from cache file
     cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
