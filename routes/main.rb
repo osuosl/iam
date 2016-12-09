@@ -20,6 +20,12 @@ module Sinatra
       app.get '/' do
         erb :index
       end
+
+      get '/report/?' do
+        # get new client form
+        @clients = Client.all
+        erb :report
+      end
     end
   end
   register MainRoutes

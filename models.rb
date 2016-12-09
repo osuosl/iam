@@ -25,6 +25,8 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
+  one_to_many :node_resources
+  one_to_many :db_resources
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
