@@ -3,42 +3,86 @@
     <a href="/projects/<%= @project.id %>/edit">edit</a>
   </h2>
   <p>
-    Client Id: <%= @project.client_id %> <br>
-    Resources: <%= @project.resources %> <br>
+    <% for @client in @clients %>
+      <% if @client.active %>
+      Client:
+        <a href="/clients/<%= @client.id %>" >
+          <%= @client.name %>
+        </a>
+      <% end %>
+    <% end %>
+
+    <br>
     Description: <%= @project.description %> <br>
-    Active: <%= @project.active %><br>
+    Active State: <%= @project.active %><br>
+    Resources: <%= @project.resources %> <br>
   </p>
   <table class="table">
       <thead>
         <tr>
-          <th>Client Id</th>
+          <th>Node Id</th>
           <th>Name</th>
-          <th>Email</th>
-          <th>Description</th>
+          <th>Type</th>
+          <th>Cluster</th>
           <th>Active</th>
         </tr>
       </thead>
       <tbody>
-        <% for @client in @clients %>
-          <% if @client.active %>
+        <% for @node in @nodes %>
+          <% if @node.active %>
           <tr>
-            <th scope="row"><%= @client.id %></th>
-          <td>
-            <a href="/clients/<%= @client.id %>" >
-              <%= @client.name %>
-            </a>
-          </td>
-          <td>
-            <%= @client.contact_email %>
-          </td>
-          <td>
-            <%= @client.description %>
-          </td>
-          <td>
-            <%= @client.active %>
-          </td>
-        </tr>
+            <th scope="row"><%= @node.id %></th>
+            <td>
+              <a href="/clients/<%= @node.id %>" >
+                <%= @node.name %>
+              </a>
+            </td>
+            <td>
+              <%= @node.type %>
+            </td>
+            <td>
+              <%= @node.cluster %>
+            </td>
+            <td>
+              <%= @node.active %>
+            </td>
+          </tr>
+          <% end %>
         <% end %>
+      </tbody>
+  </table>
+  <br>
+  <table class="table">
+      <thead>
+        <tr>
+          <th>DB Id</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Server</th>
+          <th>Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for @db in @dbs %>
+          <% if @db.active %>
+          <tr>
+            <th scope="row"><%= @db.id %></th>
+            <td>
+              <a href="/clients/<%= @node.id %>" >
+                <%= @db.name %>
+              </a>
+            </td>
+            <td>
+              <%= @db.type %>
+            </td>
+            <td>
+              <%= @db.server %>
+            </td>
+            <td>
+              <%= @db.active %>
+            </td>
+          </tr>
+          <% end %>
         <% end %>
       </tbody>
   </table>
