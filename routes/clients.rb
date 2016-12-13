@@ -26,9 +26,25 @@ module Sinatra
           MyLog.log.fatal 'routes/clients: Client not found'
           halt 404, 'Client not found'
         end
-        @projects = Project.filter(client_id: @client.id).all
-        @nodes = NodeResource.filter(project_id: @node.id).all
-        @dbs = DBResource.filter(project_id: @db.id).all
+
+        if @project.nil?
+          @pro_nil = true
+        else
+          @projects = Project.filter(client_id: @client.id).all
+        end
+
+        if @node.nil?
+          @node_nil = true
+        else
+          @nodes = NodeResource.filter(project_id: @node.id).all
+        end
+
+        if @db.nil?
+          @db_nil = true
+        else
+          @dbs = DBResource.filter(project_id: @db.id).all
+        end
+
         erb :'clients/show'
       end
 

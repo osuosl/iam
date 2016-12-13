@@ -9,21 +9,21 @@
     Active: <%= @client.active %>
 </p>
 
-
-<table class="table">
-    <h4> Projects </h4>
-    <thead>
-        <tr>
-            <th> Id </th>
-            <th> Project Name</th>
-            <th> Resources</th>
-            <th> Description</th>
-            <th> Active</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for @project in @projects %>
-            <% if @project.active %>
+<% unless @pro_nil  %>
+    <table class="table">
+        <h4> Projects </h4>
+        <thead>
+            <tr>
+                <th> Id </th>
+                <th> Project Name</th>
+                <th> Resources</th>
+                <th> Description</th>
+                <th> Active</th>
+            </tr>
+        </thead>
+        <tbody>
+         <% for @project in @projects %>
+           <% if @project.active %>
             <tr>
                 <th scope="row"><%= @project.id %> </th>
                 <td>
@@ -44,58 +44,62 @@
             <% end %>
         <% end %>
     </tbody>
-</table>
+  </table>
+
 
 <br>
 
-<table class="table">
-  <h4> Nodes </h4>
-    <thead>
-     <tr>
-       <th> Id </th>
-       <th> Name</th>
-       <th> Type</th>
-       <th> Cluster</th>
-       <th> Active</th>
-     </tr>
-    </thead>
-    <tbody>
-      <% for @node in @nodes %>
-         <% if @node.active %>
+<% unless @node_nil %>
+    <table class="table">
+        <h4> Nodes </h4>
+        <thead>
             <tr>
-               <th scope="row"><%= @node.id %> </th>
-               <td>
-                  <a href="/nodes/<%= @node.id %>" >
-                     <%= @node.name %>
-                  </a>
-               </td>
-               <td>
-                     <%= @node.type %>
-               </td>
-               <td>
-                     <%= @node.cluster %>
-               </td>
-               <td>
-                     <%= @node.active %>
-               </td>
+                <th> Id </th>
+                <th> Name</th>
+                <th> Type</th>
+                <th> Cluster</th>
+                <th> Active</th>
             </tr>
-         <% end %>
+        </thead>
+        <tbody>
+        <% for @node in @nodes %>
+             <% if @node.active %>
+                <tr>
+                <th scope="row"><%= @node.id %> </th>
+                    <td>
+                        <a href="/nodes/<%= @node.id %>" >
+                             <%= @node.name %>
+                        </a>
+                    </td>
+                    <td>
+                        <%= @node.type %>
+                    </td>
+                    <td>
+                        <%= @node.cluster %>
+                    </td>
+                    <td>
+                        <%= @node.active %>
+                    </td>
+                </tr>
+            <% end %>
       <% end %>
-    </tbody>
+      </tbody>
 </table>
+<% end %>
 
 <br>
 
-<table class="table">
-  <h4> Databases </h4>
-    <thead>
-       <tr>
-         <th> Id </th>
-         <th> Name</th>
-         <th> Type</th>
-         <th> Server</th>
-         <th> Active</th>
-       </tr>
+<% unless @db_nil %>
+    <table class="table">
+    <h4> Databases </h4>
+     <thead>
+           <tr>
+             <th> Id </th>
+             <th> Name</th>
+             <th> Type</th>
+             <th> Server</th>
+             <th> Active</th>
+            </tr>
     </thead>
     <tbody>
        <% for @db in @dbs %>
@@ -121,7 +125,8 @@
       <% end %>
    </tbody>
 </table>
-
+<% end %>
+<% end %>
 <br>
 
 </div>
