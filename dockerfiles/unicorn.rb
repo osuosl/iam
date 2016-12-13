@@ -1,6 +1,7 @@
 # set path to app that will be used to configure unicorn,
 # note the trailing slash in this example
 app_dir = '/data/code'
+pid_dir = '/tmp'
 
 worker_processes 1
 working_directory app_dir
@@ -8,12 +9,12 @@ working_directory app_dir
 timeout 30
 
 # Set process id path
-pid "#{app_dir}/pids/unicorn.pid"
+pid "#{pid_dir}/unicorn.pid"
 
 # load the scheduler init script
 require "#{app_dir}/scheduler"
 # path to the scheduler pid file
-scheduler_pid_file = "#{app_dir}/pids/scheduler.pid"
+scheduler_pid_file = "#{pid_dir}/scheduler.pid"
 
 after_fork do |server, worker|
   # run scheduler initialization
