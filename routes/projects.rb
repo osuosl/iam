@@ -35,7 +35,6 @@ module Sinatra
           halt 404, "Project's nodes not found"
         end
         @dbs = DBResource.filter(project_id: @project.id).all
-        puts "DBS: " + @dbs.to_s
         if @dbs.nil?
           MyLog.log.fatal "routes/projects: Project's dbs not found"
           halt 404, "Project's dbs not found"
