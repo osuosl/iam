@@ -18,11 +18,17 @@ module Sinatra
       app.get '/clients/:id/?' do
         # view a client
         @client = Client[id: params[:id]]
+        @project = Project[id: params[:id]]
+        @node = NodeResource[id: params[:id]]
+        @db = DBResource[id: params[:id]]
+
         if @client.nil?
           MyLog.log.fatal 'routes/clients: Client not found'
           halt 404, 'Client not found'
         end
-        @projects = Project.filter(client_id: @client.id)
+        @projects = Project.filter(client_id: @client.id).all
+        @nodes = NodeResource.filter(project_id: @node.id).all
+        @dbs = DBResource.filter(project_id: @db.id).all
         erb :'clients/show'
       end
 
