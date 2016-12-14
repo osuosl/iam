@@ -29,5 +29,4 @@ class Iam < Sinatra::Base
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
   register Sinatra::DBRoutes
-
 end
