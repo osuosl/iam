@@ -30,9 +30,4 @@ class Iam < Sinatra::Base
   register Sinatra::NodeRoutes
   register Sinatra::DBRoutes
 
-  get '/report/?' do
-    # get new client form
-    @clients = Client.all
-    erb :report
-  end
 end
