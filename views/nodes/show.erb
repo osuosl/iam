@@ -41,6 +41,44 @@
         <% end %>
       </tbody>
   </table>
+
+  REPORT:
+  <%= @report %>
+  <div id="diskSize-graph"></div>
+  <div id="diskSize-graph2"></div>
+
   <br>
   <br>
 </div>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.11.0/metricsgraphics.min.js"></script>
+
+<script>
+data = <%= @report %>;
+d3.json(data, function(data) {
+    data = MG.convert.date(data, 'created');
+    MG.data_graphic({
+        title: "Line Chart",
+        description: "This is a simple line chart. You can remove the area portion by adding area: false to the arguments list.",
+        data: data,
+        width: 600,
+        height: 200,
+        right: 40,
+        target: document.getElementById('diskSize-graph'),
+        x_accessor: 'created',
+        y_accessor: 'value'
+    });
+});
+
+MG.data_graphic({
+    title: "Singleton",
+    description: "Handling a solitary data point.",
+    data: <%= @report %>,
+    width: 600,
+    height: 200,
+    right: 40,
+    x_accessor: 'created',
+    target: '#diskSize-graph2'
+});
+</script>
