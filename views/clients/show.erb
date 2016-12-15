@@ -9,7 +9,6 @@
     Active: <%= @client.active %>
 </p>
 
-<% unless @pro_nil  %>
     <table class="table">
         <h4> Projects </h4>
         <thead>
@@ -43,7 +42,6 @@
 
 <br>
 
-<% unless @node_nil %>
     <table class="table">
         <h4> Nodes </h4>
         <thead>
@@ -77,11 +75,9 @@
       <% end %>
       </tbody>
 </table>
-<% end %>
 
 <br>
 
-<% unless @db_nil %>
     <table class="table">
     <h4> Databases </h4>
      <thead>
@@ -115,8 +111,6 @@
       <% end %>
    </tbody>
 </table>
-<% end %>
-<% end %>
 <br>
 
 </div>
