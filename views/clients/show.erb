@@ -14,7 +14,6 @@
         <h4> Projects </h4>
         <thead>
             <tr>
-                <th> Id </th>
                 <th> Name</th>
                 <th> Resources</th>
                 <th> Description</th>
@@ -25,7 +24,7 @@
          <% for @project in @projects %>
            <% if @project.active %>
             <tr>
-                <th scope="row"><%= @project.id %> </th>
+                
                 <td>
                     <a href="/projects/<%= @project.id %>" >
                         <%= @project.name %>
@@ -54,7 +53,7 @@
         <h4> Nodes </h4>
         <thead>
             <tr>
-                <th> Id </th>
+             
                 <th> Name</th>
                 <th> Type</th>
                 <th> Cluster</th>
@@ -65,7 +64,7 @@
         <% for @node in @nodes %>
              <% if @node.active %>
                 <tr>
-                <th scope="row"><%= @node.id %> </th>
+          
                     <td>
                         <a href="/nodes/<%= @node.id %>" >
                              <%= @node.name %>
@@ -94,7 +93,7 @@
     <h4> Databases </h4>
      <thead>
            <tr>
-             <th> Id </th>
+        
              <th> Name</th>
              <th> Type</th>
              <th> Server</th>
@@ -105,7 +104,7 @@
        <% for @db in @dbs %>
            <% if @db.active %>
              <tr>
-                <th scope="row"><%= @db.id %> </th>
+       
                 <td>
                    <a href="/dbs/<%= @db.id %>" >
                      <%= @db.name %>
