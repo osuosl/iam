@@ -30,16 +30,7 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
         @nodes = NodeResource.filter(project_id: @project.id).all
-        if @nodes.nil?
-          MyLog.log.fatal "routes/projects: Project's nodes not found"
-          halt 404, "Project's nodes not found"
-        end
         @dbs = DBResource.filter(project_id: @project.id).all
-        if @dbs.nil?
-          MyLog.log.fatal "routes/projects: Project's dbs not found"
-          halt 404, "Project's dbs not found"
-        end
-
         erb :'projects/show'
       end
 

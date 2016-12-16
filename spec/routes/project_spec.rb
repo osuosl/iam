@@ -90,18 +90,17 @@ describe 'The Projects endpoint' do
   end
 
   it 'allows us to edit a single project field then redirects to the list' do
-    project = Project.create(name: 'Edit Resources', resources: 'node,ftp,db')
-
-    edited_project = { id: project.id, resources: 'node,!!!,db' }
+    project = Project.create(name: 'Edit Description', description: 'unedited')
+    edited_project = { id: project.id, description: 'i edited this' }
 
     patch '/projects', edited_project
 
-    expect(Project[name: 'Edit Resources'].resources).to eq('node,!!!,db')
+    expect(Project[name: 'Edit Description'].description).to eq('i edited this')
 
     expect(last_response.status).to eq(302)
     follow_redirect!
     expect(last_request.path).to eq("/projects/#{project.id}")
     expect(last_response.status).to eq(200)
-    expect(last_response.body).to include('node,!!!,db')
+    expect(last_response.body).to include('i edited this')
   end
 end
