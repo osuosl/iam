@@ -24,13 +24,24 @@ module Sinatra
           halt 404, 'Client not found'
         end
 
-        @client.projects.each do |pro|
-          pro.node_resources.each do |node|
-            @nodes = @projects.node_resources
-         
-         end
-        end 
-         # @dbs = @projects.db_resources
+        @projects = @client.projects
+puts 'the projects'
+puts @projects[0]
+        unless @projects.nil?
+          @projects.each do |pro|
+            pro.node_resources.each do |node|
+              node.each do |n|
+                puts 'node: '
+                puts n
+              end
+              @nodes = node
+            end
+          end
+        end
+        puts 'the nodes'
+        puts @nodes
+       # @nodes = nil
+        @dbs = nil
 
         erb :'clients/show'
       end

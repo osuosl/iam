@@ -8,7 +8,7 @@
     Description: <%= @client.description %> <br>
     Active: <%= @client.active %>
 </p>
-
+<% unless @projects.nil? %>
     <table class="table">
         <h4> Projects </h4>
         <thead>
@@ -20,7 +20,6 @@
         </thead>
         <tbody>
          <% for @project in @projects %>
-           <% if @project.active %>
             <tr>
                 <td>
                     <a href="/projects/<%= @project.id %>" >
@@ -35,13 +34,12 @@
                 </td>
             </tr>
             <% end %>
-        <% end %>
     </tbody>
   </table>
 
 
 <br>
-
+<% unless @nodes.nil? %>
     <table class="table">
         <h4> Nodes </h4>
         <thead>
@@ -75,9 +73,11 @@
       <% end %>
       </tbody>
 </table>
+<% end %>
 
 <br>
 
+<% unless @dbs.nil? %>
     <table class="table">
     <h4> Databases </h4>
      <thead>
@@ -111,6 +111,8 @@
       <% end %>
    </tbody>
 </table>
+<% end %>
+<% end %>
 <br>
 
 </div>
