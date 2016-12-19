@@ -14,8 +14,8 @@
 
     <br>
     Description: <%= @project.description %> <br>
-    Active State: <%= @project.active %><br>
-  </p>
+    Active State: <%= @project.active ? "Active" : "Inactive" %>
+  <br>
   <br>
   <h4>Nodes</h4>
  
@@ -31,7 +31,6 @@
       <tbody>
       <% if @nodes %>
         <% for @node in @nodes %>
-          <% if @node.active %>
           <tr>
             <td>
               <a href="/clients/<%= @node.id %>" >
@@ -48,7 +47,6 @@
               <%= @node.active %>
             </td>
           </tr>
-          <% end %>
         <% end %>
       <% end  %>
       </tbody>
@@ -67,7 +65,6 @@
       <tbody>
       <% if @dbs  %>
         <% for @db in @dbs %>
-          <% if @db.active %>
           <tr>
             <td>
               <a href="/clients/<%= @node.id %>" >
@@ -84,7 +81,6 @@
               <%= @db.active %>
             </td>
           </tr>
-          <% end %>
         <% end %>
       <% end  %>
       </tbody>

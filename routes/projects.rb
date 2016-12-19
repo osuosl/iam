@@ -31,6 +31,8 @@ module Sinatra
         end
         @nodes = NodeResource.filter(project_id: @project.id).all
         @dbs = DBResource.filter(project_id: @project.id).all
+        # @nodes = @project.node_resources
+        # @dbs = @project.db_resources
         erb :'projects/show'
       end
 
