@@ -26,10 +26,6 @@ module Sinatra
           halt 404, 'node not found'
         end
         @projects = Project.filter(id: @node.project_id).all
-        @report = DiskSize.new.report({ node: @node.name })
-        @report = @report.to_s.tr(':', '')
-        @report = @report.gsub! '=>', ':'
-        @report = @report.gsub! ' ', ''
         erb :'nodes/show'
       end
 

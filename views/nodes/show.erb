@@ -11,7 +11,7 @@
   <table class="table">
       <thead>
         <tr>
-          <th>Project Id</th>
+          <th>Name</th>
           <th>Type</th>
           <th>Cluster</th>
           <th>Active</th>
@@ -19,9 +19,7 @@
       </thead>
       <tbody>
         <% for @project in @projects %>
-          <% if @project.active %>
           <tr>
-            <th scope="row"><%= @project.id %></th>
           <td>
             <a href="/projects/<%= @project.id %>" >
               <%= @project.name %>
@@ -38,47 +36,46 @@
           </td>
         </tr>
         <% end %>
-        <% end %>
       </tbody>
   </table>
-
-  REPORT:
-  <%= @report %>
-  <div id="diskSize-graph"></div>
-  <div id="diskSize-graph2"></div>
-
   <br>
+  <table class="table" >
+    <thead>
+      <tr>
+        <th>Node Name</th>
+        <th>VCPUCount</th>
+        <th>RamSize</th>
+        <th>DiskSize</th>
+        <th>DiskTemplate</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>
+        <%= @node.name %>
+      </td>
+      <td>
+        <% data = VCPUCount.new.report({node: @node.name}) %>
+        <%= DataUtil.average_value(data) %>
+      </td>
+      <td>
+        <% data = RamSize.new.report({node: @node.name}) %>
+        <%= DataUtil.average_value(data) %>
+      </td>
+      <td>
+        <% data = DiskSize.new.report({node: @node.name}) %>
+        <%= DataUtil.average_value(data) %>
+      </td>
+      <td>
+        <% data = DiskTemplate.new.report({node: @node.name}) %>
+        <% if data != nil && data.last != nil %>
+          <%= data.last[:value] %>
+        <% else %>
+          Not found
+        <% end %>
+      </td>
+    </tr>
+  </table>
+  
+   <br>
   <br>
 </div>
-
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.11.0/metricsgraphics.min.js"></script>
-
-<script>
-data = <%= @report %>;
-d3.json(data, function(data) {
-    data = MG.convert.date(data, 'created');
-    MG.data_graphic({
-        title: "Line Chart",
-        description: "This is a simple line chart. You can remove the area portion by adding area: false to the arguments list.",
-        data: data,
-        width: 600,
-        height: 200,
-        right: 40,
-        target: document.getElementById('diskSize-graph'),
-        x_accessor: 'created',
-        y_accessor: 'value'
-    });
-});
-
-MG.data_graphic({
-    title: "Singleton",
-    description: "Handling a solitary data point.",
-    data: <%= @report %>,
-    width: 600,
-    height: 200,
-    right: 40,
-    x_accessor: 'created',
-    target: '#diskSize-graph2'
-});
-</script>
