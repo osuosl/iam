@@ -52,21 +52,26 @@
         </thead>
         <tbody>
         <% for @node in @nodes %>
-             <% if @node.active %>
+            <% if @node.to_s.include? ":active=>true" %> 
+                <% puts 'node is included!' %>
+                <% puts @node.class.name %>
+                <% @node = @node.to_s[25..-4] %>
+                <% @node = @node.tr(',', ' ').tr('=>' ,' ').split(' ') %>
+                <% puts Hash[@node] %>
                 <tr>
                     <td>
-                        <a href="/nodes/<%= @node.id %>" >
-                             <%= @node.name %>
+                        <a href="/nodes/<%= @node["id"] %>" >
+                             <%= @node["name"] %>
                         </a>
                     </td>
                     <td>
-                        <%= @node.type %>
+                        <%= @node["type"] %>
                     </td>
                     <td>
-                        <%= @node.cluster %>
+                        <%= @node["cluster"] %>
                     </td>
                     <td>
-                        <%= @node.active %>
+                        <%= @node["active"] %>
                     </td>
                 </tr>
             <% end %>

@@ -25,22 +25,18 @@ module Sinatra
         end
 
         @projects = @client.projects
-puts 'the projects'
-puts @projects[0]
+        puts @projects.inspect        
+        
         unless @projects.nil?
+          n = []
           @projects.each do |pro|
-            pro.node_resources.each do |node|
-              node.each do |n|
-                puts 'node: '
-                puts n
-              end
-              @nodes = node
-            end
+             no = {}
+             no = pro.node_resources
+             n.append(no)
           end
+          @nodes = n
         end
-        puts 'the nodes'
-        puts @nodes
-       # @nodes = nil
+
         @dbs = nil
 
         erb :'clients/show'
