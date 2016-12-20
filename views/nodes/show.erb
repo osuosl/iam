@@ -3,11 +3,12 @@
     <a href="/node/<%= @node.id %>/edit">edit</a>
   </h2>
   <p>
-    Project Id: <%= @node.project_id %> <br>
-    Type: <%= @node.type %> <br>
-    Cluster: <%= @node.cluster %> <br>
+    Type: <%= @node.type %><br>
+    Cluster: <%= @node.cluster %><br>
     Active: <%= @node.active %><br>
   </p>
+  <br>
+  <h4>Projects</h4>
   <table class="table">
       <thead>
         <tr>
@@ -39,10 +40,10 @@
       </tbody>
   </table>
   <br>
+  <h4>Node Data</h4>
   <table class="table" >
     <thead>
       <tr>
-        <th>Node Name</th>
         <th>VCPUCount</th>
         <th>RamSize</th>
         <th>DiskSize</th>
@@ -50,9 +51,6 @@
       </tr>
     </thead>
     <tr>
-      <td>
-        <%= @node.name %>
-      </td>
       <td>
         <% data = VCPUCount.new.report({node: @node.name}) %>
         <%= DataUtil.average_value(data) %>
