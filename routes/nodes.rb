@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require_relative '../logging/logs'
-require_relative '../plugins/DiskSize/plugin'
 
 # Our app
 module Sinatra
