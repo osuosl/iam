@@ -51,38 +51,32 @@
         </thead>
         <tbody>
         <% for @node in @nodes %>
-            <% puts 'for node in nodes' %>
-            <% puts @node.inspect %>
-            <% if @node[0].active %> 
-                <% puts 'node is included!' %>
-                <% puts @node.inspect %>
-<%#                <% @node = @node.to_s[25..-4] %>
-<%#                <% @node = @node.tr(',', ' ').tr('=>' ,' ').split(' ') %>
- <%#               <% puts Hash[@node] %> 
+           <% @node.each do |sub| %>
+            <% if sub.active %> 
                 <tr>
                     <td>
-                        <a href="/nodes/<%= @node[0].id %>" >
-                             <%= @node[0].name %>
+                        <a href="/nodes/<%= sub.id %>" >
+                             <%= sub.name %>
                         </a>
                     </td>
                     <td>
-                        <%= @node[0].type %>
+                        <%= sub.type %>
                     </td>
                     <td>
-                        <%= @node[0].cluster %>
+                        <%= sub.cluster %>
                     </td>
                     <td>
-                        <%= @node[0].active %>
+                        <%= sub.active %>
                     </td>
                 </tr>
             <% end %>
+         <% end %>
       <% end %>
       </tbody>
 </table>
 
 <br>
 
-<% unless @dbs.nil? %>
     <table class="table">
     <h4> Databases </h4>
      <thead>
@@ -95,28 +89,29 @@
     </thead>
     <tbody>
        <% for @db in @dbs %>
-           <% if @db.active %>
+        <% @db.each do |dbsub| %>
+           <% if dbsub.active %>
              <tr>
                 <td>
-                   <a href="/dbs/<%= @db.id %>" >
-                     <%= @db.name %>
+                   <a href="/dbs/<%= dbsub.id %>" >
+                     <%= dbsub.name %>
                    </a>
                 </td>
                 <td>
-                     <%= @db.type %>
+                     <%= dbsub.type %>
                 </td>
                 <td>
-                     <%= @db.server %>
+                     <%= dbsub.server %>
                 </td>
                 <td>
-                    <%= @db.active %>
+                    <%= dbsub.active %>
                 </td>
               </tr>
           <% end %>
       <% end %>
+     <% end %> 
    </tbody>
 </table>
-<% end %>
 <% end %>
 <br>
 

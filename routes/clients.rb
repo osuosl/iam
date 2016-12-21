@@ -25,24 +25,26 @@ module Sinatra
         end
 
         @projects = @client.projects
-#        puts @projects.inspect        
         
         unless @projects.nil?
           n = [] 
           @projects.each do |pro|
-            puts 'each node'
-            puts pro.node_resources.inspect
-            puts '------'
             unless pro.node_resources.empty?
-                puts 'pushing:'
                 n.push(pro.node_resources)
-                puts pro.node_resources
             end   
           end
           @nodes = n
         end
-puts @nodes.inspect
-        @dbs = nil
+        
+        unless @projects.nil?
+            d = []
+            @projects.each do |p|
+                unless p.db_resources.empty?
+                    d.push(p.db_resources)
+                end
+            end
+            @dbs = d
+        end
 
         erb :'clients/show'
       end
