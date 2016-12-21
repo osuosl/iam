@@ -39,7 +39,6 @@
 
 
 <br>
-<% unless @nodes.nil? %>
     <table class="table">
         <h4> Nodes </h4>
         <thead>
@@ -52,33 +51,34 @@
         </thead>
         <tbody>
         <% for @node in @nodes %>
-            <% if @node.to_s.include? ":active=>true" %> 
+            <% puts 'for node in nodes' %>
+            <% puts @node.inspect %>
+            <% if @node[0].active %> 
                 <% puts 'node is included!' %>
-                <% puts @node.class.name %>
-                <% @node = @node.to_s[25..-4] %>
-                <% @node = @node.tr(',', ' ').tr('=>' ,' ').split(' ') %>
-                <% puts Hash[@node] %>
+                <% puts @node.inspect %>
+<%#                <% @node = @node.to_s[25..-4] %>
+<%#                <% @node = @node.tr(',', ' ').tr('=>' ,' ').split(' ') %>
+ <%#               <% puts Hash[@node] %> 
                 <tr>
                     <td>
-                        <a href="/nodes/<%= @node["id"] %>" >
-                             <%= @node["name"] %>
+                        <a href="/nodes/<%= @node[0].id %>" >
+                             <%= @node[0].name %>
                         </a>
                     </td>
                     <td>
-                        <%= @node["type"] %>
+                        <%= @node[0].type %>
                     </td>
                     <td>
-                        <%= @node["cluster"] %>
+                        <%= @node[0].cluster %>
                     </td>
                     <td>
-                        <%= @node["active"] %>
+                        <%= @node[0].active %>
                     </td>
                 </tr>
             <% end %>
       <% end %>
       </tbody>
 </table>
-<% end %>
 
 <br>
 
