@@ -70,7 +70,7 @@ class BasePlugin
   def default_db(name, type, server)
     project = Project.where(name: 'default').get(:id)
     # use find or create because create() crashes if a duplicate is found
-    DBResource.find_or_create(name: name, type: type, project_id: project,
+    DbResource.find_or_create(name: name, type: type, project_id: project,
                               server: server)[:id]
   end
 

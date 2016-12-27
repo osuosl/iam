@@ -70,7 +70,7 @@ end
 # DateTime  :created
 # DateTime  :modified
 # Boolean     :active, default: true
-class DBResource < Sequel::Model
+class DbResource < Sequel::Model
   many_to_one :projects
   def validate
     super
