@@ -16,17 +16,19 @@ class Iam < Sinatra::Base
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
                                          description: 'The default client')
-  default_project = Project.find_or_create(name: 'default',
-                                           client_id: default_client.id,
-                                           description: 'The default project')
-  NodeResource.find_or_create(project_id: default_project.id,
-                              name: 'default')
-  DBResource.find_or_create(project_id: default_project.id,
-                            name: 'default')
+  Project.find_or_create(name: 'default',
+                         client_id: default_client.id,
+                         description: 'The default project')
 
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
-  register Sinatra::DBRoutes
+  register Sinatra::DbRoutes
+
+  get '/report/?' do
+    # get new client form
+    @clients = Client.all
+    erb :report
+  end
 end

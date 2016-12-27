@@ -27,11 +27,12 @@ describe 'IaM Database Collector' do
       @DB[:root].run("CREATE DATABASE IF NOT EXISTS db#{i};")
       @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.*
                       TO '#{ENV['TEST_MYSQL_USER']}'@'%'
+                      IDENTIFIED BY '#{ENV['TEST_MYSQL_USER_PASS']}'
                       WITH GRANT OPTION;")
 
       # Connect to each database individually
       @DB[i] = Sequel.mysql("db#{i}", user: ENV['TEST_MYSQL_USER'],
-                                      password: ENV['TEST_MYSQL_PASS'],
+                                      password: ENV['TEST_MYSQL_USER_PASS'],
                                       host: ENV['TEST_MYSQL_HOST'])
 
       # Create i*i tables on each database
@@ -92,7 +93,7 @@ describe 'IaM Database Collector' do
     c.collect_db('mysql',
                  ENV['TEST_MYSQL_HOST'],
                  ENV['TEST_MYSQL_USER'],
-                 ENV['TEST_MYSQL_PASS'])
+                 ENV['TEST_MYSQL_USER_PASS'])
 
     # Reads values in from cache file
     cache = Cache.new("#{Iam.settings.cache_path}/db_cache")

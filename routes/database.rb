@@ -3,8 +3,8 @@ require_relative '../logging/logs'
 
 # Our app
 module Sinatra
-  # Our D Routing
-  module DBRoutes
+  # Our Database Routing
+  module DbRoutes
     # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
       ##
@@ -19,7 +19,7 @@ module Sinatra
 
       app.get '/db/:id/?' do
         # view a database
-        @db = DBResource[id: params[:id]]
+        @db = DbResource[id: params[:id]]
         if @db.nil?
           MyLog.log.fatal 'routes/database: Database Resource not found'
           halt 404, 'database resource not found'
@@ -30,7 +30,7 @@ module Sinatra
 
       app.get '/db/:id/edit/?' do
         # get database edit form
-        @db = DBResource[id: params[:id]]
+        @db = DbResource[id: params[:id]]
         if @db.nil?
           MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
           halt 404, 'database resource not found'
@@ -41,14 +41,14 @@ module Sinatra
 
       app.get '/dbs/?' do
         # get a list of all database
-        @dbs = DBResource.all
+        @dbs = DbResource.all
         erb :'database/index'
       end
 
       # This could also be PUT
       app.post '/dbs/?' do
         # recieve new database
-        db = DBResource.create(project_id:  params[:project_id] || '',
+        db = DbResource.create(project_id:  params[:project_id] || '',
                                name:       params[:name],
                                type:       params[:type] || '',
                                server:    params[:server] || '',
@@ -65,7 +65,7 @@ module Sinatra
         params[:active] = nil if params[:description] == ''
 
         # recieve an updated database
-        db = DBResource[id: params[:id]]
+        db = DbResource[id: params[:id]]
 
         db.update(project_id:  params[:project_id] || db.project_id,
                   name:       params[:name] || db.name,
@@ -78,12 +78,12 @@ module Sinatra
 
       app.delete '/db/:id/?' do
         # delete a database
-        db = DBResource[id: params[:id]]
+        db = DbResource[id: params[:id]]
         db.delete unless db.nil?
         redirect '/dbs/?' unless db.nil?
         404
       end
     end
   end
-  register DBRoutes
+  register DbRoutes
 end
