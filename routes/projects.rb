@@ -29,10 +29,8 @@ module Sinatra
           MyLog.log.fatal "routes/projects: Project's clients not found"
           halt 404, "Project's Client not found"
         end
-        @nodes = NodeResource.filter(project_id: @project.id).all
-        @dbs = DBResource.filter(project_id: @project.id).all
-        # @nodes = @project.node_resources
-        # @dbs = @project.db_resources
+        @nodes = @project.node_resources
+        @dbs = @project.db_resources
         erb :'projects/show'
       end
 
