@@ -3,18 +3,16 @@
     <a href="/projects/<%= @project.id %>/edit">edit</a>
   </h2>
   <p>
-    <% for @client in @clients %>
-      <% if @client.active %>
+    <% if @clients[0].active %>
       Client:
-        <a href="/clients/<%= @client.id %>" >
-          <%= @client.name %>
+        <a href="/clients/<%= @clients[0].id %>" >
+          <%= @clients[0].name %>
         </a>
-      <% end %>
     <% end %>
 
     <br>
     Description: <%= @project.description %> <br>
-    Active State: <%= @project.active ? "Active" : "Inactive" %>
+    <%= @project.active ? "Active" : "Inactive" %>
   <br>
   <br>
   <h4>Nodes</h4>
@@ -25,7 +23,7 @@
           <th>Name</th>
           <th>Type</th>
           <th>Cluster</th>
-          <th>Active</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +42,7 @@
               <%= @node.cluster %>
             </td>
             <td>
-              <%= @node.active %>
+              <%= @node.active ? "Active" : "Inactive" %>
             </td>
           </tr>
         <% end %>
@@ -59,7 +57,7 @@
           <th>Name</th>
           <th>Type</th>
           <th>Server</th>
-          <th>Active</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -78,7 +76,7 @@
               <%= @db.server %>
             </td>
             <td>
-              <%= @db.active %>
+              <%= @db.active ? "Active" : "Inactive" %>
             </td>
           </tr>
         <% end %>
