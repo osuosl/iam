@@ -18,6 +18,13 @@ describe 'The Projects endpoint' do
     expect(last_response).to be_ok
   end
 
+  it 'verifies the default project exists' do
+    project = Project.find(name: 'default')
+    expect(project).to exist
+    get "/projects/#{project.id}"
+    expect(last_response.status).to eq(200)
+  end
+
   it 'includes the names of existing projects' do
     FactoryGirl.create(:project, name: 'Project X')
     FactoryGirl.create(:project, name: 'Project Y')
