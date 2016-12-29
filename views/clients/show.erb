@@ -6,7 +6,7 @@
     Name: <%= @client.contact_name %> <br>
     Email: <%= @client.contact_email %> <br>
     Description: <%= @client.description %> <br>
-    Active: <%= @client.active %>
+    <%= @client.active ? 'Active' : 'Inactive' %>
 </p>
 <% unless @projects.nil? %>
     <table class="table">
@@ -15,7 +15,7 @@
             <tr>
                 <th> Name</th>
                 <th> Description</th>
-                <th> Active</th>
+                <th> Status</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@
                     <%= @project.description %>
                 </td>
                 <td>
-                    <%= @project.active %>
+                    <%= @project.active ? 'Active' : 'Inactive' %>
                 </td>
             </tr>
             <% end %>
@@ -46,7 +46,7 @@
                 <th> Name</th>
                 <th> Type</th>
                 <th> Cluster</th>
-                <th> Active</th>
+                <th> Status</th>
             </tr>
         </thead>
         <tbody>
@@ -66,7 +66,7 @@
                         <%= sub.cluster %>
                     </td>
                     <td>
-                        <%= sub.active %>
+                        <%= sub.active ? 'Active' : 'Inactive' %>
                     </td>
                 </tr>
             <% end %>
@@ -84,7 +84,7 @@
              <th> Name</th>
              <th> Type</th>
              <th> Server</th>
-             <th> Active</th>
+             <th> Status</th>
             </tr>
     </thead>
     <tbody>
@@ -104,7 +104,7 @@
                      <%= dbsub.server %>
                 </td>
                 <td>
-                    <%= dbsub.active %>
+                    <%= dbsub.active ? 'Active' : 'Inactive'%>
                 </td>
               </tr>
           <% end %>
