@@ -21,6 +21,7 @@ module Sinatra
       app.get '/' do
         erb :index
       end
+
       app.get '/report/?' do
         # get new client form
         @clients = Client.all

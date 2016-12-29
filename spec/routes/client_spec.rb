@@ -18,6 +18,13 @@ describe 'The Clients endpoint' do
     expect(last_response).to be_ok
   end
 
+  it 'verifies the default client exists' do
+    client = Client.find(name: 'default')
+    expect(client).to exist
+    get "clients/#{client.id}"
+    expect(last_response.status).to eq(200)
+  end
+
   it 'includes the names of existing clients' do
     FactoryGirl.create(:client, name: 'Client X')
     FactoryGirl.create(:client, name: 'Client Y')
