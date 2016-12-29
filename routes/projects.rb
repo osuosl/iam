@@ -55,7 +55,6 @@ module Sinatra
         # recieve new project
         project = Project.create(name: params[:name],
                                  client_id:   params[:client_id] || '',
-                                 resources:   params[:resources] || '',
                                  description: params[:description] || '')
         redirect "/projects/#{project.id}"
       end
@@ -63,14 +62,12 @@ module Sinatra
       app.patch '/projects/?' do
         # set blanks to nil
         params[:name] = nil if params[:name] == ''
-        params[:resources] = nil if params[:resources] == ''
         params[:description] = nil if params[:description] == ''
         params[:active] = nil if params[:description] == ''
 
         # recieve an updated project
         project = Project[id: params[:id]]
         project.update(name:  params[:name] || project.name,
-                       resources:   params[:resources] || project.resources,
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
         redirect "/projects/#{params[:id]}"

@@ -31,7 +31,7 @@ describe 'The Projects endpoint' do
   end
 
   it 'displays a specific project by id' do
-    project = Project.create(name: 'New Project')
+    project = Project.create(name: 'New Project', client_id: 1)
     get "/projects/#{project.id}"
     expect(last_response.body).to include('New Project')
   end
@@ -58,7 +58,7 @@ describe 'The Projects endpoint' do
   end
 
   it 'allows us to create a new project, then redirects to the list' do
-    post '/projects', name: 'im new'
+    post '/projects', name: 'im new', client_id: 1
 
     project = Project[name: 'im new']
     expect(project).to exist
@@ -73,12 +73,11 @@ describe 'The Projects endpoint' do
   end
 
   it 'allows us to edit a project, then redirects to the list' do
-    project = Project.create(name: 'Edit Me')
+    project = Project.create(name: 'Edit Me', client_id: 1)
 
     edited_project = { id: project.id,
                        name: 'Edited Project',
-                       client_id: project.client_id,
-                       resources: project.resources }
+                       client_id: project.client_id }
 
     patch '/projects', edited_project
 
@@ -90,7 +89,8 @@ describe 'The Projects endpoint' do
   end
 
   it 'allows us to edit a single project field then redirects to the list' do
-    project = Project.create(name: 'Edit Description', description: 'unedited')
+    project = Project.create(name: 'Edit Description', description: 'unedited',
+                             client_id: 1)
     edited_project = { id: project.id, description: 'i edited this' }
 
     patch '/projects', edited_project
