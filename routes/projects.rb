@@ -25,6 +25,12 @@ module Sinatra
           halt 404, 'Project not found'
         end
         @clients = Client.filter(id: @project.client_id).all
+        if @clients.nil?
+          MyLog.log.fatal "routes/projects: Project's clients not found"
+          halt 404, "Project's Client not found"
+        end
+        @nodes = @project.node_resources
+        @dbs = @project.db_resources
         erb :'projects/show'
       end
 
@@ -49,7 +55,6 @@ module Sinatra
         # recieve new project
         project = Project.create(name: params[:name],
                                  client_id:   params[:client_id] || '',
-                                 resources:   params[:resources] || '',
                                  description: params[:description] || '')
         redirect "/projects/#{project.id}"
       end
@@ -57,14 +62,12 @@ module Sinatra
       app.patch '/projects/?' do
         # set blanks to nil
         params[:name] = nil if params[:name] == ''
-        params[:resources] = nil if params[:resources] == ''
         params[:description] = nil if params[:description] == ''
         params[:active] = nil if params[:description] == ''
 
         # recieve an updated project
         project = Project[id: params[:id]]
         project.update(name:  params[:name] || project.name,
-                       resources:   params[:resources] || project.resources,
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
         redirect "/projects/#{params[:id]}"
