@@ -33,86 +33,82 @@
                     <%= @project.active ? 'Active' : 'Inactive' %>
                 </td>
             </tr>
+        <tr>
+        <td>
+         <table class="table">
+            <thead>
+                <tr>
+                    <th> Node Name</th>
+                    <th> Type</th>
+                    <th> Cluster</th>
+                    <th> Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            <% for node in @project.node_resources %>
+                <% if node.active %>
+                    <tr>
+                        <td>
+                            <a href="/nodes/<%= node.id %>" >
+                                <%= node.name %>
+                            </a>
+                        </td>
+                        <td>
+                            <%= node.type %>
+                        </td>
+                        <td>
+                            <%= node.cluster %>
+                        </td>
+                        <td>
+                            <%= node.active ? 'Active' : 'Inactive' %>
+                        </td>
+                    </tr>
+                <% end %>
             <% end %>
-    </tbody>
-  </table>
-
-
-<br>
+        </tbody>
+    </table>
+    </td>
+    </tr>
+    
+    <tr>
+    <td>
     <table class="table">
-        <h4> Nodes </h4>
         <thead>
             <tr>
-                <th> Name</th>
+                <th> Database Name</th>
                 <th> Type</th>
-                <th> Cluster</th>
+                <th> Server</th>
                 <th> Status</th>
             </tr>
         </thead>
         <tbody>
-        <% for @node in @nodes %>
-           <% @node.each do |sub| %>
-            <% if sub.active %> 
-                <tr>
+            <% for db in @project.db_resources %>
+                <% if db.active %>
+                 <tr>
                     <td>
-                        <a href="/nodes/<%= sub.id %>" >
-                             <%= sub.name %>
+                        <a href="/dbs/<%= db.id %>" >
+                            <%= db.name %>
                         </a>
                     </td>
                     <td>
-                        <%= sub.type %>
+                        <%= db.type %>
                     </td>
                     <td>
-                        <%= sub.cluster %>
+                        <%= db.server %>
                     </td>
                     <td>
-                        <%= sub.active ? 'Active' : 'Inactive' %>
+                        <%= db.active ? 'Active' : 'Inactive' %>
                     </td>
                 </tr>
             <% end %>
-         <% end %>
-      <% end %>
-      </tbody>
-</table>
+            <% end %>
+        </tbody>
+    </table>
+    </td>
+    </tr>
 
-<br>
-
-    <table class="table">
-    <h4> Databases </h4>
-     <thead>
-           <tr>
-             <th> Name</th>
-             <th> Type</th>
-             <th> Server</th>
-             <th> Status</th>
-            </tr>
-    </thead>
-    <tbody>
-       <% for @db in @dbs %>
-        <% @db.each do |dbsub| %>
-           <% if dbsub.active %>
-             <tr>
-                <td>
-                   <a href="/dbs/<%= dbsub.id %>" >
-                     <%= dbsub.name %>
-                   </a>
-                </td>
-                <td>
-                     <%= dbsub.type %>
-                </td>
-                <td>
-                     <%= dbsub.server %>
-                </td>
-                <td>
-                    <%= dbsub.active ? 'Active' : 'Inactive'%>
-                </td>
-              </tr>
-          <% end %>
-      <% end %>
-     <% end %> 
-   </tbody>
-</table>
+    <% end %>
+    </tbody>
+  </table>
 <% end %>
-<br>
-
 </div>
