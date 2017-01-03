@@ -128,4 +128,7 @@ class Iam < Sinatra::Base
   end
 
   set :db_collector_dbs, db_collector_dbs
+
+  timesync_collector_servers = config['timesync_collector_servers']
+  set :timesync_collector_servers, timesync_collector_servers
 end

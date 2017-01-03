@@ -4,6 +4,7 @@ require 'openssl'
 require 'json'
 require 'erb'
 require 'logging'
+require 'rimesync'
 require_relative 'lib/util'
 require_relative 'logging/logs'
 
@@ -108,5 +109,18 @@ class Collectors
 
   def collect_postgres(host, user, password)
     # Will look similar to collect_mysql
+  end
+
+  def collect_timesync(uri, user, password, auth_type)
+    puts "uri: #{uri}, user: #{user}, password: #{password}, auth_type: #{auth_type}"
+    conn = TimeSync.new uri
+    token = conn.authenticate(username: user, password: password, auth_type: auth_type)
+    raise SocketError if token.key? 'rimesync error'
+
+    times = conn.get_times
+
+    puts times
+  rescue JSON::ParserError, SocketError => e
+    MyLog.log.fatal "Error getting timesync data from #{uri}: #{e}"
   end
 end
