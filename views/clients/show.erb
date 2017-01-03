@@ -9,8 +9,8 @@
     <%= @client.active ? 'Active' : 'Inactive' %>
 </p>
 <% unless @projects.nil? %>
-    <table class="table">
-        <h4> Projects </h4>
+  <table class="table">
+    <h4> Projects </h4>
         <thead>
             <tr>
                 <th> Name</th>
@@ -33,9 +33,8 @@
                     <%= @project.active ? 'Active' : 'Inactive' %>
                 </td>
             </tr>
-        <tr>
-        <td>
-         <table class="table">
+           <td>
+           <table class="table" style="margin-left:40px" >
             <thead>
                 <tr>
                     <th> Node Name</th>
@@ -65,23 +64,19 @@
                     </tr>
                 <% end %>
             <% end %>
-        </tbody>
-    </table>
-    </td>
-    </tr>
-    
-    <tr>
-    <td>
-    <table class="table">
-        <thead>
+           </tbody>
+          </table>
+
+          <table class="table" style="margin-left:40px">
+           <thead>
             <tr>
                 <th> Database Name</th>
                 <th> Type</th>
                 <th> Server</th>
                 <th> Status</th>
             </tr>
-        </thead>
-        <tbody>
+           </thead>
+           <tbody>
             <% for db in @project.db_resources %>
                 <% if db.active %>
                  <tr>
@@ -100,12 +95,12 @@
                         <%= db.active ? 'Active' : 'Inactive' %>
                     </td>
                 </tr>
+              <% end %>
             <% end %>
-            <% end %>
-        </tbody>
-    </table>
-    </td>
-    </tr>
+          </tbody>
+         </table>
+         </td>
+         <br><br>
 
     <% end %>
     </tbody>
