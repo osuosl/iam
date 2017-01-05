@@ -14,12 +14,12 @@
          <% for @project in @projects %>
            <thead>
             <tr>
-                <th>
+                <th style="font-size: 1.5em;">
                     <a href="/projects/<%= @project.id %>" >
                         <%= @project.name %>
                     </a>
                 </th>
-                <th>
+                <th style="font-size: 1em;">
                     <%= @project.active ? 'Active' : 'Inactive' %>
                 </th>
             </tr>
