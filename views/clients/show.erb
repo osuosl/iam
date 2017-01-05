@@ -11,28 +11,21 @@
 <% unless @projects.nil? %>
   <table class="table">
     <h4> Projects </h4>
-        <thead>
-            <tr>
-                <th> Name</th>
-                <th> Description</th>
-                <th> Status</th>
-            </tr>
-        </thead>
-        <tbody>
          <% for @project in @projects %>
+           <thead>
             <tr>
-                <td>
+                <th>
                     <a href="/projects/<%= @project.id %>" >
                         <%= @project.name %>
                     </a>
-                </td>
-                <td>
-                    <%= @project.description %>
-                </td>
-                <td>
+                </th>
+                <th>
                     <%= @project.active ? 'Active' : 'Inactive' %>
-                </td>
+                </th>
             </tr>
+           </thead>
+          
+           <tr>
            <td>
            <table class="table">
             <h5>Nodes</h5>
@@ -103,8 +96,8 @@
          </table>
          <br>
          </td>
+         </tr>
     <% end %>
-    </tbody>
-  </table>
+   </table>
 <% end %>
 </div>
