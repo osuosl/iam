@@ -120,7 +120,6 @@ class Collectors
   end
 
   def collect_timesync(uri, user, password, auth_type)
-    puts "uri: #{uri}, user: #{user}, password: #{password}, auth_type: #{auth_type}"
     conn = TimeSync.new uri
     token = conn.authenticate(username: user, password: password, auth_type: auth_type)
     raise SocketError if token.key? 'rimesync error'

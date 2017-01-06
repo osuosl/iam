@@ -130,7 +130,6 @@ class Scheduler
     collector = Collectors.new
 
     servers = Iam.settings.timesync_collector_servers
-    puts servers
     servers.each do |v|
       collector.collect_timesync(v['uri'],
                                  v['user'],
