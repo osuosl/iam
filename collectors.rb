@@ -11,15 +11,23 @@ require_relative 'logging/logs'
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
 class Collectors
+  # rubocop:disable AbcSize, MethodLength
   def initialize
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
+    @ts_cache = Cache.new("#{Iam.settings.cache_path}/timesync_cache")
 
-    @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
-                           nil, '%'
-    @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
-                             nil, '%'
+    @db_template = ERB.new(
+      File.new('cache_templates/db_template.erb').read, nil, '%'
+    )
+    @node_template = ERB.new(
+      File.new('cache_templates/node_template.erb').read, nil, '%'
+    )
+    @ts_template = ERB.new(
+      File.new('cache_templates/timesync_template.erb').read, nil, '%'
+    )
   end
+  # rubocop:enable AbcSize, MethodLength
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
   #         RAPI. Stores the information in the file cache.
@@ -119,7 +127,8 @@ class Collectors
 
     times = conn.get_times
 
-    puts times
+    @ts_cache.set('times', times)
+    @ts_cache.write
   rescue JSON::ParserError, SocketError => e
     MyLog.log.fatal "Error getting timesync data from #{uri}: #{e}"
   end
