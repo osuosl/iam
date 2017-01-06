@@ -57,6 +57,7 @@ class Scheduler
     @rufus_scheduler = Rufus::Scheduler.new
   end
 
+  # rubocop:disable MethodLength
   def setup_jobs
     @rufus_scheduler.every '30m', first_in: 0.4 do
       db_collector_job
@@ -77,6 +78,7 @@ class Scheduler
       plugins_job
     end
   end
+  # rubocop:enable MethodLength
 
   # Run the store method of every registered plugin on all the collected data
   # in the cache
