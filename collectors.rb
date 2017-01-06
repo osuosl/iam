@@ -124,7 +124,9 @@ class Collectors
     token = conn.authenticate(username: user, password: password, auth_type: auth_type)
     raise SocketError if token.key? 'rimesync error'
 
-    times = conn.get_times
+    now = Time.now
+    start = (now - (30 * 60)).strftime('%Y-%m-%d')
+    times = conn.get_times('start' => [start])
 
     @ts_cache.set('times', times)
     @ts_cache.write
