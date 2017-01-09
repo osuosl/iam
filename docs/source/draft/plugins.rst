@@ -66,3 +66,8 @@ This is the general structure of a plugin:
 
 Notice that ``Class CPU`` is a subclass of ``Class Plugin``. This parent class
 provides helper methods to make building a plugin as easy as possible.
+
+The ``collect`` method is passed a ``resource_type`` parameter that identifies
+how the resource is managed. For example, if ``resource_type`` indicates that
+the resource is a Ganeti VM, then the resource information will be gathered
+by querying the cache data structure.

@@ -1,0 +1,10 @@
+AllCops:
+  Include:
+    - migrations/
+    - plugins/
+    - app.rb
+    - models.rb
+  Exclude:
+    - docs/
+    - public/
+    - views/

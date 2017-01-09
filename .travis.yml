@@ -1,0 +1,23 @@
+langauge: ruby
+
+rvm:
+  - '2.3.0'
+
+cache: bundler
+
+services:
+  - mysql
+
+install:
+  - bundle install
+
+env:
+  - TEST_MYSQL_DB='test_db' \
+    TEST_MYSQL_PASS='' \
+    TEST_MYSQL_ROOT_PASS='' \
+    TEST_MYSQL_HOST='localhost' \
+    TEST_MYSQL_USER='listener' \
+    TEST_CACHE_FILE='cachefile'
+
+script:
+  - ./run-tests.sh

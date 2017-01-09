@@ -1,0 +1,46 @@
+version: '2'
+services:
+
+  ###
+  # Base app container. Inherited by dev and eventually prod containers.
+  ###
+  app:
+    build:
+      context: .
+      dockerfile:  ./dockerfiles/app
+    command: /data/code/scripts/rake-app.sh
+    env_file:
+      - ./dockerfiles/app.env
+    working_dir: /data/code
+    volumes:
+      - .:/data/code
+
+  ###
+  # Dev container extends the base application.
+  ###
+  dev:
+    entrypoint: /wait-for-it.sh -q testing-mysql:3306 --
+    command: ./run-tests.sh
+    extends:
+      service: app
+    links:
+      - testing-psql
+      - testing-mysql
+    ports:
+      - "4567:4567"
+
+  ###
+  # Postgres database for testing.
+  ###
+  testing-psql:
+    image: postgres
+    env_file:
+      - ./dockerfiles/app.env
+
+  ###
+  # MYSQL database for testing.
+  ###
+  testing-mysql:
+    image: mysql
+    env_file:
+      - ./dockerfiles/app.env

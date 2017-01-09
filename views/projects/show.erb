@@ -1,0 +1,88 @@
+<div class="container">
+  <h2>Project: <%= @project.name %> -
+    <a href="/projects/<%= @project.id %>/edit">edit</a>
+  </h2>
+  <p>
+    <% if @clients[0].active %>
+      Client:
+        <a href="/clients/<%= @clients[0].id %>" >
+          <%= @clients[0].name %>
+        </a>
+    <% end %>
+
+    <br>
+    Description: <%= @project.description %> <br>
+    <%= @project.active ? "Active" : "Inactive" %>
+  <br>
+  <br>
+  <h4>Nodes</h4>
+ 
+  <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Cluster</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% if @nodes %>
+        <% for @node in @nodes %>
+          <tr>
+            <td>
+              <a href="/clients/<%= @node.id %>" >
+                <%= @node.name %>
+              </a>
+            </td>
+            <td>
+              <%= @node.type %>
+            </td>
+            <td>
+              <%= @node.cluster %>
+            </td>
+            <td>
+              <%= @node.active ? "Active" : "Inactive" %>
+            </td>
+          </tr>
+        <% end %>
+      <% end  %>
+      </tbody>
+  </table>
+  <br>
+  <h4>Databases</h4>
+  <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Server</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% if @dbs  %>
+        <% for @db in @dbs %>
+          <tr>
+            <td>
+              <a href="/clients/<%= @node.id %>" >
+                <%= @db.name %>
+              </a>
+            </td>
+            <td>
+              <%= @db.type %>
+            </td>
+            <td>
+              <%= @db.server %>
+            </td>
+            <td>
+              <%= @db.active ? "Active" : "Inactive" %>
+            </td>
+          </tr>
+        <% end %>
+      <% end  %>
+      </tbody>
+  </table>
+  <br>
+  <br>
+</div>

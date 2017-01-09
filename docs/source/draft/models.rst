@@ -53,6 +53,7 @@ id                          integer     true    Resources unique ID.
 project_id                  foreign key false   Project which owns this resource.
 resources_specific_field_1  var         false   Any specific metadata about
 resources_specific_field_2  var         false   |
+cluster                     string      false   Specifies ganeti cluster fqdn if applicable, null if not
 ...etc                      var         false   |
 =========================== =========== ======= =================================
 
