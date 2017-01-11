@@ -27,11 +27,12 @@ describe 'IaM Database Collector' do
       @DB[:root].run("CREATE DATABASE IF NOT EXISTS db#{i};")
       @DB[:root].run("GRANT ALL PRIVILEGES ON db#{i}.*
                       TO '#{ENV['TEST_MYSQL_USER']}'@'%'
+                      IDENTIFIED BY '#{ENV['TEST_MYSQL_USER_PASS']}'
                       WITH GRANT OPTION;")
 
       # Connect to each database individually
       @DB[i] = Sequel.mysql("db#{i}", user: ENV['TEST_MYSQL_USER'],
-                                      password: ENV['TEST_MYSQL_PASS'],
+                                      password: ENV['TEST_MYSQL_USER_PASS'],
                                       host: ENV['TEST_MYSQL_HOST'])
 
       # Create i*i tables on each database
@@ -62,13 +63,16 @@ describe 'IaM Database Collector' do
                   table_schema
                     'DB Name',
                   cast(round(sum(data_length+index_length),1) as binary)
-                    'Data Base Size in Bytes'
+                    'Size'
                   FROM information_schema.TABLES
                   GROUP BY table_schema") do |var|
       # @expected is populated like the hash is populated in
       # collectors.rb/collect_db.
       # It is later compared against the cache in the first test.
-      @expected.push(var[:"DB Name"] => var[:"Data Base Size in Bytes"])
+      @expected.push(var[:"DB Name"] => { 'db_size' => var[:Size].to_i,
+                                          'active' =>  'true',
+                                          'type' => 'mysql',
+                                          'server' => ENV['TEST_MYSQL_HOST'] })
     end
 
     # Uncomment this line to see what the above query gets us
@@ -89,7 +93,7 @@ describe 'IaM Database Collector' do
     c.collect_db('mysql',
                  ENV['TEST_MYSQL_HOST'],
                  ENV['TEST_MYSQL_USER'],
-                 ENV['TEST_MYSQL_PASSWORD'])
+                 ENV['TEST_MYSQL_USER_PASS'])
 
     # Reads values in from cache file
     cache = Cache.new("#{Iam.settings.cache_path}/db_cache")

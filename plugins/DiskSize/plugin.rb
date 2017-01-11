@@ -32,7 +32,8 @@ class DiskSize < BasePlugin
 
     # check if node resource exist, otherwise set it to default
     node_resource = @database[:node_resources].where(name: fqdn).get(:id)
-    node_resource = NodeResource.find(name: 'default').id unless node_resource
+    node_resource = default_node(fqdn, node_info['type'],
+                                 node_info['cluster']) unless node_resource
 
     # Insert data into disk_size_measurements table
     @database[@table].insert(

@@ -19,32 +19,36 @@ class DBSize < BasePlugin
     register
   end
 
-  # rubocop: disable MethodLength, AbcSize
+  # rubocop: disable MethodLength,AbcSize
   def store(db_host)
     # Pull node information from cache as a ruby hash
     db_info = @cache.get(db_host)
 
     # Check for valid data
-    if db_info.nil? || db_info == ''
+    if db_info['db_size'].nil? || db_info == ''
       MyLog.log.warn "DBSize: No DBSize information for #{db_host}"
       raise "No DBSize information for #{db_host}\n"
-    elsif !db_info.is_a? Numeric
+    elsif !db_info['db_size'].is_a? Numeric
       MyLog.log.warn "DBSize: DB information for #{db_host} \
         malformed (should be a number)"
       raise "DB information for #{db_host} malformed (should be a number)\n"
     end
 
-    # check if node resource exist, otherwise set it to default
-    db_resource = @database[:node_resources].where(name: db_host).get(:id)
-    db_resource = DBResource.find(name: 'default').id unless db_resource
+    # check if resource exists, otherwise create it for the default project
+    db_resource = @database[:db_resources].where(name: db_host).get(:id)
+
+    unless db_resource
+      db_resource = default_db(db_host, db_info['type'],
+                               db_info['server'])
+    end
 
     # Insert data into db_size_measurements table
     @database[@table].insert(
       db:            db_host,
-      value:         db_info,
-      active:        1,
+      value:         db_info['db_size'].to_i,
+      active:        db_info['active'],
       created:       DateTime.now,
-      db_resource: db_resource
+      db_resource:   db_resource
     )
   rescue => e # Don't crash on errors
     MyLog.log.error StandardError.new("DBSize:  #{e}: #{db_info}")

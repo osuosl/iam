@@ -4,6 +4,7 @@ require_relative '../logging/logs'
 # Our app
 module Sinatra
   # this is our routes for the main app and non-related to models
+  # rubocop:disable MethodLength
   module MainRoutes
     def self.registered(app)
       ##
@@ -19,6 +20,12 @@ module Sinatra
       ##
       app.get '/' do
         erb :index
+      end
+
+      app.get '/report/?' do
+        # get new client form
+        @clients = Client.all
+        erb :report
       end
     end
   end
