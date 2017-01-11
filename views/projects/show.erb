@@ -16,7 +16,7 @@
   <br>
   <br>
   <h4>Nodes</h4>
- 
+
   <table class="table">
       <thead>
         <tr>
@@ -31,7 +31,7 @@
         <% for @node in @nodes %>
           <tr>
             <td>
-              <a href="/clients/<%= @node.id %>" >
+              <a href="/node/<%= @node.id %>" >
                 <%= @node.name %>
               </a>
             </td>
@@ -65,7 +65,7 @@
         <% for @db in @dbs %>
           <tr>
             <td>
-              <a href="/clients/<%= @node.id %>" >
+              <a href="/db/<%= @db.id %>" >
                 <%= @db.name %>
               </a>
             </td>
