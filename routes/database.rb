@@ -13,7 +13,10 @@ module Sinatra
 
       app.get '/db/new/?' do
         # get new database form
+
         @projects = Project.all
+
+        puts @projects
         erb :'database/create'
       end
 
@@ -35,8 +38,8 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
           halt 404, 'database resource not found'
         end
-        @project = Project.filter(id: @db.project_id).all.first
         @projects = Project.all
+        @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
 

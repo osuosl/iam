@@ -36,6 +36,7 @@ module Sinatra
           halt 404, 'node not found'
         end
         @projects = Project.all
+        @project = @projects.find(@node.project_id).first
         erb :'nodes/edit'
       end
 
