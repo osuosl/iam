@@ -5,12 +5,11 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Database Name</th>
+          <th>Database</th>
           <th>Old</th>
           <th>New</th>
         </tr>
       </thead>
-      
       <tbody>
         <tr>
           <td>Name</td>
@@ -26,7 +25,7 @@
           </td>
         </tr>
         <tr>
-          <td>Project Id</td>
+          <td>Project Name</td>
           <td>
             <% if @db %>
               <%= @project.name %>
@@ -36,10 +35,12 @@
           </td>
           <td>
             <select  name="project_id">
-            <% if @project.active %>
-              <option value="<%= @project.id %>"><%= @project.name %></option>
+            <% for @project in @projects %>
+              <% if @project.active %>
+                <option value="<%= @project.id %>"><%= @project.name %></option>
+              <% end %>
             <% end %>
-            </select>
+           </select>
           </td>
         </tr>
         <tr>

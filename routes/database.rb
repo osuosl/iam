@@ -35,6 +35,7 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
           halt 404, 'database resource not found'
         end
+        @project = Project.filter(id: @db.project_id).all.first
         @projects = Project.all
         erb :'database/edit'
       end
