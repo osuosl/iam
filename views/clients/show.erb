@@ -23,7 +23,7 @@
                     <%= @project.active ? 'Active' : 'Inactive' %>
                 </th>
             </tr>
-           </thead> 
+           </thead>
            <tr><td>
              <table class="table">
                <h5>Nodes</h5>
@@ -36,22 +36,22 @@
                 </tr>
                </thead>
                <tbody>
-               <% for node in @project.node_resources %>
-                 <% if node.active %>
+               <% for @node in @project.node_resources %>
+                 <% if @node.active %>
                     <tr>
                         <td>
-                          <a href="/nodes/<%= node.id %>" >
-                            <%= node.name %>
+                          <a href="/node/<%= @node.id %>" >
+                            <%= @node.name %>
                           </a>
                         </td>
                         <td>
-                            <%= node.type %>
+                            <%= @node.type %>
                         </td>
                         <td>
-                            <%= node.cluster %>
+                            <%= @node.cluster %>
                         </td>
                         <td>
-                            <%= node.active ? 'Active' : 'Inactive' %>
+                            <%= @node.active ? 'Active' : 'Inactive' %>
                         </td>
                     </tr>
                   <% end %>
@@ -73,7 +73,7 @@
                   <% if db.active %>
                     <tr>
                       <td>
-                        <a href="/dbs/<%= db.id %>" >
+                        <a href="/db/<%= db.id %>" >
                             <%= db.name %>
                         </a>
                       </td>
