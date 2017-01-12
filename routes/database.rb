@@ -36,6 +36,7 @@ module Sinatra
           halt 404, 'database resource not found'
         end
         @projects = Project.all
+        @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
 
