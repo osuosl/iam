@@ -17,7 +17,7 @@ module Sinatra
         erb :'nodes/create'
       end
 
-      # rubocop:disable BlockLength, BracesAroundHashParameters
+      # rubocop:disable BracesAroundHashParameters
       app.get '/node/:id/?' do
         # view a node
         @node = NodeResource[id: params[:id]]
@@ -58,6 +58,7 @@ module Sinatra
         end
         erb :'nodes/show'
       end
+      # rubocop:enable BlockLength
 
       app.get '/node/:id/edit/?' do
         # get node edit form
