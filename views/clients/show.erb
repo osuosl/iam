@@ -8,10 +8,98 @@
     Description: <%= @client.description %> <br>
     <%= @client.active ? 'Active' : 'Inactive' %>
 </p>
+
 <% unless @projects.nil? %>
   <table class="table">
-    <h4> Projects </h4>
-         <% for @project in @projects %>
+    <h4>Summary</h4>
+     <tr>
+      <td>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nodes</th>
+              <th>Ram (GB)</th>
+              <th>VCPU </th>
+              <th>Disk Size (GB)</th>
+              <th>Project</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for @project in @projects %>
+              <% for @node in @project.node_resources %>
+                <% if @node.active %>
+                  <tr>
+                    <td>
+                      <a href="/node/<%= @node.id %>" >
+                        <%= @node.name %>
+                      </a>
+                    </td>
+                    <td>
+                      <% data = RamSize.new.report({node: @node.name}) %>
+                        <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <% data = VCPUCount.new.report({node: @node.name}) %>
+                        <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <% data = DiskSize.new.report({node: @node.name}) %>
+                        <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <a href="/projects/<%= @project.id %>" >
+                          <%= @project.name %>
+                      </a>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Database</th>
+              <th>Size (GB)</th>
+              <th>Project</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for @project in @projects %>
+              <% for @db in @project.db_resources %>
+                <% if @db.active %>
+                  <tr>
+                    <td>
+                      <a href="/db/<%= @db.id %>" >
+                        <%= @db.name %>
+                      </a>
+                    </td>
+                    <td>
+                      <% data = DBSize.new.report({db: @db.name}) %>
+                        <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <a href="/projects/<%= @project.id %>" >
+                          <%= @project.name %>
+                      </a>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+   </table>
+   <table class="table">
+     <h4> Projects </h4>
+       <% for @project in @projects %>
            <thead>
             <tr>
                 <th style="font-size: 1.5em;">
