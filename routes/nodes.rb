@@ -17,6 +17,7 @@ module Sinatra
         erb :'nodes/create'
       end
 
+      # rubocop:disable BlockLength, BracesAroundHashParameters
       app.get '/node/:id/?' do
         # view a node
         @node = NodeResource[id: params[:id]]
@@ -24,7 +25,37 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found'
           halt 404, 'node not found'
         end
+        # get data from plugins
         @projects = Project.filter(id: @node.project_id).all
+
+        # get data from plugins
+        @vcpu_data = VCPUCount.new.report({ node: @node.name })
+        @ramsize_data = RamSize.new.report({ node: @node.name })
+        @disksize_data = DiskSize.new.report({ node: @node.name })
+        @disktemplate_data = DiskTemplate.new.report({ node: @node.name })
+
+        # find most recent time and store into @update_time
+        @updated = Time.new(0)
+        if @vcpu_data.last
+          if @vcpu_data.last[:created] > @updated
+            @update_time = @vcpu_data.last[:created]
+          end
+        end
+        if @ramsize_data.last
+          if @ramsize_data.last[:created] > @updated
+            @update_time = @ramsize_data.last[:created]
+          end
+        end
+        if @disksize_data.last
+          if @disksize_data.last[:created] > @updated
+            @update_time = @disksize_data.last[:created]
+          end
+        end
+        if @disktemplate_data.last
+          if @disktemplate_data.last[:created] > @updated
+            @update_time = @disktemplate_data.last[:created]
+          end
+        end
         erb :'nodes/show'
       end
 

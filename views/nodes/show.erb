@@ -8,13 +8,12 @@
     Active: <%= @node.active %><br>
   </p>
   <br>
-  <h4>Projects</h4>
   <table class="table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Cluster</th>
+          <th>Project</th>
+          <th>Resources</th>
+          <th>Description</th>
           <th>Active</th>
         </tr>
       </thead>
@@ -41,6 +40,14 @@
   </table>
   <br>
   <h4>Node Data</h4>
+  <sub>
+    Last updated:
+    <% if @update_time %>
+      <%= @update_time %>
+    <% else %>
+      Unknown
+    <% end %>
+  </sub>
   <table class="table" >
     <thead>
       <tr>
@@ -52,28 +59,24 @@
     </thead>
     <tr>
       <td>
-        <% data = VCPUCount.new.report({node: @node.name}) %>
-        <%= DataUtil.average_value(data) %>
+        <%= DataUtil.average_value(@vcpu_data) %>
       </td>
       <td>
-        <% data = RamSize.new.report({node: @node.name}) %>
-        <%= DataUtil.average_value(data) %>
+        <%= DataUtil.average_value(@ramsize_data) %>
       </td>
       <td>
-        <% data = DiskSize.new.report({node: @node.name}) %>
-        <%= DataUtil.average_value(data) %>
+        <%= DataUtil.average_value(@disksize_data) %>
       </td>
       <td>
-        <% data = DiskTemplate.new.report({node: @node.name}) %>
-        <% if data != nil && data.last != nil %>
-          <%= data.last[:value] %>
+        <% if @disktemplate_data != nil && @disktemplate_data.last != nil %>
+          <%= @disktemplate_data.last[:value] %>
         <% else %>
           Not found
         <% end %>
       </td>
     </tr>
   </table>
-  
+
    <br>
   <br>
 </div>
