@@ -1,7 +1,7 @@
 .. _draft_config:
 
-Config and ENV vars
-===================
+Config and Environment Variables
+================================
 
 The following document outlines the usage of the config and ENV vars
 in basic terms.
