@@ -6,39 +6,8 @@
     Type: <%= @node.type %><br>
     Cluster: <%= @node.cluster %><br>
     Active: <%= @node.active %><br>
+    Project: <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
   </p>
-  <br>
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Project</th>
-          <th>Resources</th>
-          <th>Description</th>
-          <th>Active</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for @project in @projects %>
-          <tr>
-          <td>
-            <a href="/projects/<%= @project.id %>" >
-              <%= @project.name %>
-            </a>
-          </td>
-          <td>
-            <%= @project.resources %>
-          </td>
-          <td>
-            <%= @project.description %>
-          </td>
-          <td>
-            <%= @project.active %>
-          </td>
-        </tr>
-        <% end %>
-      </tbody>
-  </table>
-  <br>
   <h4>Node Data</h4>
   <sub>
     Last updated:

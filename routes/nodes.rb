@@ -26,7 +26,7 @@ module Sinatra
           halt 404, 'node not found'
         end
         # get data from plugins
-        @projects = Project.filter(id: @node.project_id).all
+        @projects = Project.filter(id: @node.project_id).first
 
         # get data from plugins
         @vcpu_data = VCPUCount.new.report({ node: @node.name })
