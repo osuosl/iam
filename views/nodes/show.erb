@@ -6,7 +6,11 @@
     Type: <%= @node.type %><br>
     Cluster: <%= @node.cluster %><br>
     Active: <%= @node.active %><br>
+    <% if @projects %>
     Project: <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <% else %>
+    Project: Unknown
+    <% end %>
   </p>
   <h4>Node Data</h4>
   <sub>
