@@ -79,3 +79,17 @@ class DbResource < Sequel::Model
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 end
+
+# Collector stats data model
+# String    :name
+# DateTime  :created
+# Time      :start
+# Time      :end
+# Time      :duration
+# Boolean   :success
+class CollectorStat < Sequel::Model
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
