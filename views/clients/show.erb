@@ -9,10 +9,14 @@
     <%= @client.active ? 'Active' : 'Inactive' %>
 </p>
 
-<% unless @projects.nil? %>
+<% if @projects.empty? %>
+  <p>
+    <%= @client.name %> has no projects
+  </p>
+<% else %>
   <table class="table">
     <h4>Summary</h4>
-     <tr>
+    <tr>
       <td>
         <table class="table">
           <thead>
@@ -42,161 +46,166 @@
                     <% end %>
                     <td>
                       <% data = RamSize.new.report({node: @node.name}) %>
-                        <%= DataUtil.average_value(data * drdb) %>
+                      <%= DataUtil.average_value(data * drdb) %>
                     </td>
                     <td>
                       <% data = VCPUCount.new.report({node: @node.name}) %>
-                        <%= DataUtil.average_value(data * drdb) %>
+                      <%= DataUtil.average_value(data * drdb) %>
                     </td>
                     <td>
                       <% data = DiskSize.new.report({node: @node.name}) %>
-                        <%= DataUtil.average_value(data * drdb) %>
+                      <%= DataUtil.average_value(data * drdb) %>
                     </td>
                     <td>
                       <a href="/projects/<%= @project.id %>" >
-                          <%= @project.name %>
+                        <%= @project.name %>
                       </a>
                     </td>
-                  </tr>
-                <% end %>
+                </tr>
               <% end %>
             <% end %>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Database</th>
-              <th>Size (GB)</th>
-              <th>Project</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for @project in @projects %>
-              <% for @db in @project.db_resources %>
-                <% if @db.active %>
-                  <tr>
-                    <td>
-                      <a href="/db/<%= @db.id %>" >
-                        <%= @db.name %>
-                      </a>
-                    </td>
-                    <td>
-                      <% data = DBSize.new.report({db: @db.name}) %>
-                        <%= DataUtil.average_value(data) %>
-                    </td>
-                    <td>
-                      <a href="/projects/<%= @project.id %>" >
-                          <%= @project.name %>
-                      </a>
-                    </td>
-                  </tr>
-                <% end %>
-              <% end %>
-            <% end %>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-   </table>
-   <table class="table">
-     <h4>Projects </h4>
-       <tr>
-         <td>
-           <table class="table">
-             <% for @project in @projects %>
-               <thead>
-                 <tr>
-                   <th style="font-size: 1.5em;">
-                     <a href="/projects/<%= @project.id %>" >
-                       <%= @project.name %>
-                     </a>
-                   </th>
-                 </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Database</th>
+            <th>Size (GB)</th>
+            <th>Project</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for @project in @projects %>
+          <% for @db in @project.db_resources %>
+          <% if @db.active %>
+          <tr>
+            <td>
+              <a href="/db/<%= @db.id %>" >
+                <%= @db.name %>
+              </a>
+            </td>
+            <td>
+              <% data = DBSize.new.report({db: @db.name}) %>
+              <%= DataUtil.average_value(data) %>
+            </td>
+            <td>
+              <a href="/projects/<%= @project.id %>" >
+                <%= @project.name %>
+              </a>
+            </td>
+          </tr>
+          <% end %>
+          <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <table class="table">
+        <h4>Projects</h4>
+        <tr>
+          <td>
+            <table class="table">
+              <% for @project in @projects %>
+              <thead>
+                <tr>
+                  <th style="font-size: 1.5em;">
+                    <a href="/projects/<%= @project.id %>" >
+                      <%= @project.name %>
+                    </a>
+                  </th>
+                </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>
                     <table class="table">
                       <h5>Nodes</h5>
-                        <thead>
-                          <tr>
-                            <th> Node Name</th>
-                            <th> Type</th>
-                            <th> Cluster</th>
-                            <th> Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% for @node in @project.node_resources %>
-                            <% if @node.active %>
-                              <tr>
-                                <td>
-                                  <a href="/node/<%= @node.id %>" >
-                                    <%= @node.name %>
-                                  </a>
-                                </td>
-                                <td>
-                                  <%= @node.type %>
-                                </td>
-                                <td>
-                                  <%= @node.cluster %>
-                                </td>
-                                <td>
-                                  <%= @node.active ? 'Active' : 'Inactive' %>
-                                </td>
-                             </tr>
-                          <% end %>
+                      <thead>
+                        <tr>
+                          <th> Node Name</th>
+                          <th> Type</th>
+                          <th> Cluster</th>
+                          <th> Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% for @node in @project.node_resources %>
+                        <% if @node.active %>
+                        <tr>
+                          <td>
+                            <a href="/node/<%= @node.id %>" >
+                              <%= @node.name %>
+                            </a>
+                          </td>
+                          <td>
+                            <%= @node.type %>
+                          </td>
+                          <td>
+                            <%= @node.cluster %>
+                          </td>
+                          <td>
+                            <%= @node.active ? 'Active' : 'Inactive' %>
+                          </td>
+                        </tr>
+                        <% end %>
                         <% end %>
                       </tbody>
-                  </table>
-               </td>
-             </tr>
-             <tr>
-               <td>
-                 <table class="table">
-                   <h5>Databases</h5>
-                     <thead>
-                       <tr>
-                         <th> Database Name</th>
-                         <th> Type</th>
-                         <th> Server</th>
-                         <th> Status</th>
-                       </tr>
-                    </thead>
-                    <tbody>
-                      <% for db in @project.db_resources %>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table class="table">
+                      <h5>Databases</h5>
+                      <thead>
+                        <tr>
+                          <th> Database Name</th>
+                          <th> Type</th>
+                          <th> Server</th>
+                          <th> Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% for db in @project.db_resources %>
                         <% if db.active %>
-                          <tr>
-                            <td>
-                              <a href="/db/<%= db.id %>" >
-                                <%= db.name %>
-                              </a>
-                            </td>
-                            <td>
-                              <%= db.type %>
-                            </td>
-                            <td>
-                              <%= db.server %>
-                            </td>
-                            <td>
-                              <%= db.active ? 'Active' : 'Inactive' %>
-                            </td>
-                          </tr>
+                        <tr>
+                          <td>
+                            <a href="/db/<%= db.id %>" >
+                              <%= db.name %>
+                            </a>
+                          </td>
+                          <td>
+                            <%= db.type %>
+                          </td>
+                          <td>
+                            <%= db.server %>
+                          </td>
+                          <td>
+                            <%= db.active ? 'Active' : 'Inactive' %>
+                          </td>
+                        </tr>
                         <% end %>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          <% end %>
-        </table>
-      </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+              <% end %>
+            </table>
+          </td>
+        </tr>
+      </table>
     </td>
-  <% end %>
+  </tr>
+</table>
+<% end %>
 </div>
