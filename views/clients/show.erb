@@ -15,7 +15,7 @@
   </p>
 <% else %>
   <table class="table">
-    <% if @client.name == 'default' %>
+    <% if @client.name != 'default' %>
     <h4>Summary</h4>
     (Last 30 days)
     <tr>
@@ -71,7 +71,6 @@
         </table>
       </td>
     </tr>
-    <% end %>
     <tr>
       <td>
         <table class="table">
@@ -109,6 +108,7 @@
         </table>
       </td>
     </tr>
+    <% end %>
     <tr>
       <td>
         <table class="table">
