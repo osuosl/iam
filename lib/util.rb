@@ -122,10 +122,9 @@ end
 
 # methods for gathering measurement data into hashes
 class Report
-
   # this method returns all the available resource type along with an array
   # of the measurment plugins available for that resource type
-  def self.plugin_matrix()
+  def self.plugin_matrix
     matrix = {}
     # query the plugins model to determine what measurements are available
     plugins = Plugin.all
@@ -136,40 +135,34 @@ class Report
     plugins.each do |plugin|
       (matrix[plugin.resource_name] ||= []) << plugin.name
     end
-    return matrix
   end
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
   def self.project_data(project)
     project_data = {}
-    resource_data = {}
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
-    self.plugin_matrix.each do |resource_type, measurements|
-
+    plugin_matrix.each do |resource_type, measurements|
+      resource_data = {}
       resources = project.send(resource_type + '_resources')
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       resources.each do |resource|
         resource_data[resource.name] ||= {}
         measurements.each do |measurement|
-          data = Object.const_get(measurement).new.report({node: resource.name})
-          if !data[0].nil?
-            if data[0][:value].number?
-              data_average = DataUtil.average_value(data)
-            else
-              data_average = data[-1][:value]
-            end
-            resource_data[resource.name].merge!(measurement => data_average)
-          end
+          data = Object.const_get(measurement).new.report(node: resource.name)
+          next unless data[0].nil?
+          data_average = if data[0][:value].number?
+                           DataUtil.average_value(data)
+                         else
+                           data[-1][:value]
+                         end
+          resource_data[resource.name].merge!(measurement => data_average)
         end
       end
       (project_data[resource_type] ||= []) << resource_data
     end
-
-    return project_data
-
   end
 end

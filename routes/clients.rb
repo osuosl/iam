@@ -29,7 +29,7 @@ module Sinatra
         @client_data = {}
         @projects.each do |project|
           data = Report.project_data(project)
-          (@client_data[project] ||= []) << data
+          (@client_data[project.name] ||= []) << data
         end
         erb :'clients/show'
       end
