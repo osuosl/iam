@@ -148,6 +148,7 @@ class Report
     plugin_matrix.each do |resource_type, measurements|
       resource_data = {}
       resources = project.send("#{resource_type}_resources")
+      next if resources.nil?
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       resources.each do |resource|

@@ -89,7 +89,7 @@ class TestingPlugin < BasePlugin
   #  super()
   def initialize
     name = 'TestingPlugin'
-    resource_name = 'resource'
+    resource_name = 'node'
     units = 'units'
     table = :test_plugin_measurements
     db_column = :test_plugin_ver
