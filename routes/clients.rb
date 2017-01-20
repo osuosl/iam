@@ -26,45 +26,11 @@ module Sinatra
 
         @projects = @client.projects
 
-        matrix = {}
-        # query the plugins model to determine what measurements are available
-        plugins = Plugin.all
-        # make a matrix of resource types and their plugins
-        # { 'node': ['DiskSize', 'VCPU', ...]
-        #   'db': ['Size', ...]
-        #   ...}
-        plugins.each do |plugin|
-          (matrix[plugin.resource_name] ||= []) << plugin.name
-        end
-
         @client_data = {}
-        resource_data = {}
-
-        matrix.each do |resource_type, measurements|
-          # for each resource type in the matrix, get a list of all that type
-          # of resource each project has
-          @projects.each do |project|
-            resources = project.send(resource_type + '_resources')
-            # for each of those resources, get all the measuremnts for that
-            # type of resource. Put it all in a big hash.
-            resources.each do |resource|
-              resource_data[resource.name] ||= {}
-              measurements.each do |measurement|
-                data = Object.const_get(measurement).new.report({node: resource.name})
-                if !data[0].nil?
-                  if data[0][:value].is_a? Numeric
-                    data_average = DataUtil.average_value(data)
-                  else
-                    data_average = data[-1][:value]
-                  end
-                  resource_data[resource.name].merge!(measurement => data_average)
-                end
-              end
-            end
-          end
-          (@client_data[resource_type] ||= []) << resource_data
+        @projects.each do |project|
+          data = Report.project_data(project)
+          (@client_data[project] ||= []) << data
         end
-
         erb :'clients/show'
       end
 
