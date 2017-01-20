@@ -135,6 +135,7 @@ class Report
     plugins.each do |plugin|
       (matrix[plugin.resource_name] ||= []) << plugin.name
     end
+    return matrix
   end
 
   # this method takes a project name and returns a nice hash of all its
@@ -154,13 +155,13 @@ class Report
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type => resource.name)
-          next if !data[0].nil?
-          data_average = if data[0][:value].number?
-                           DataUtil.average_value(data)
-                         else
-                           data[-1][:value]
-                         end
-
+          unless data.nil?
+            data_average = if data.first[:value].number?
+                             DataUtil.average_value(data)
+                           else
+                             data.last[:value]
+                           end
+          end
           resource_data[resource.name].merge!(measurement => data_average)
         end
       end
