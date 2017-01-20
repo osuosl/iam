@@ -85,7 +85,6 @@ end
 # DateTime  :created
 # Time      :start
 # Time      :end
-# Time      :duration
 # Boolean   :success
 class CollectorStat < Sequel::Model
   def validate

@@ -7,7 +7,6 @@ Sequel.migration do
       DateTime    :created
       Time        :start
       Time        :end
-      Integer     :duration
       Boolean     :success
     end
   end
