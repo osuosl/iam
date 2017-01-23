@@ -27,7 +27,7 @@ module Sinatra
 
         # get data from plugins
         @projects = Project.filter(id: @db.project_id).first
-        @db_size = DBSize.new.report({ db: @db.name })
+        @db_size = DBSize.new.report(db: @db.name)
 
         # find most recent time and store into @update_time
         @updated = Time.new(0)
