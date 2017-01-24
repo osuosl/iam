@@ -41,6 +41,7 @@ class BasePlugin
   def report(resource = { node: '*' },
              start_time = Time.now - (30 * SECONDS_IN_DAY),
              end_time = Time.now)
+
     MyLog.log.error StandardError.new(
       'BasePlugin: start_time and end_time should be Time objects'
     ) unless end_time.is_a?(Time) && start_time.is_a?(Time)
@@ -89,7 +90,7 @@ class TestingPlugin < BasePlugin
   #  super()
   def initialize
     name = 'TestingPlugin'
-    resource_name = 'node'
+    resource_name = 'resource'
     units = 'units'
     table = :test_plugin_measurements
     db_column = :test_plugin_ver

@@ -133,6 +133,7 @@ class Report
     #   'db': ['Size', ...]
     #   ...}
     plugins.each do |plugin|
+      next if plugin.name == 'TestingPlugin'
       (matrix[plugin.resource_name] ||= []) << plugin.name
     end
     matrix
