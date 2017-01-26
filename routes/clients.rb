@@ -26,6 +26,14 @@ module Sinatra
 
         @projects = @client.projects
 
+        unless @projects.nil?
+          @client_data = {}
+          @projects.each do |project|
+            data = Report.project_data(project)
+            (@client_data[project.name] ||= []) << data
+          end
+        end
+
         erb :'clients/show'
       end
 
