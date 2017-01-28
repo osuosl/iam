@@ -1,1 +1,46 @@
 /* This is the main CSS File */
+
+
+body {
+
+  background-color: #c7c3c2
+}
+
+.navbar{
+  background-color: #444444
+}
+
+
+
+
+.navbar .navbar-brand{
+  color: #ffffff;
+}
+
+.navbar .nav-link{
+  color: #ffffff;
+}
+.navbar .nav-link:hover{
+  color: #f87e2c;
+}
+
+
+
+
+/*
+  jumbo tron
+*/
+
+.jumbotron{
+  background-color: #444444
+}
+
+.jumbotron h1{
+  color: #ffffff
+}
+
+.jumbotron p{
+  color: #f87e2c
+}
+
+asdfasdf

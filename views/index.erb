@@ -1,5 +1,4 @@
 <!-- HOMEPAGE -->
-<div class="container">
   <br>
   <div class="jumbotron">
     <h1>Invoicing and Metrics</h1>
@@ -10,47 +9,50 @@
     <h4></h4>
     <br>
     <div class="row">
-      <div class="col-sm-4">
-        <span class="glyphicon glyphicon-user"></span>
-        <h4>
-          <%= Iam.settings.DB[:clients].count %>
-          Clients
-        </h4>
-        <p>Lorem ipsum dolor sit amet..</p>
+      <div class="col-sm-4 panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-user"></span>
+          <h4>
+            <%= Iam.settings.DB[:clients].count %>
+            Clients
+          </h4>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <span class="glyphicon glyphicon-th"></span>
-        <h4>
-          <%= Iam.settings.DB[:projects].count %>
-          Projects
-        </h4>
-        <p>Lorem ipsum dolor sit amet..</p>
+      <div class="col-sm-4 panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-th"></span>
+          <h4>
+            <%= Iam.settings.DB[:projects].count %>
+            Projects
+          </h4>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <span class="glyphicon glyphicon-cloud"></span>
-        <h4>
-          <%= Iam.settings.DB[:node_resources].count %>
-          Nodes
-        </h4>
-        <p>Lorem ipsum dolor sit amet..</p>
+      <div class="col-sm-4 panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-cloud"></span>
+          <h4>
+            <%= Iam.settings.DB[:node_resources].count %>
+            Nodes
+          </h4>
+        </div>
       </div>
       </div>
       <br><br>
     <div class="row">
-      <div class="col-sm-4">
-        <span class="glyphicon glyphicon-hdd"></span>
-        <h4>
-          <%= Iam.settings.DB[:db_resources].count %>   
-          Databases
-        </h4>
-        <p>Lorem ipsum dolor sit amet..</p>
+      <div class="col-sm-4 panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-hdd"></span>
+          <h4>
+            <%= Iam.settings.DB[:db_resources].count %>
+            Databases
+          </h4>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <span class="glyphicon glyphicon-wrench"></span>
-        <h4>More to come</h4>
-        <p>Lorem ipsum dolor sit amet..</p>
+      <div class="col-sm-4 panel panel-default">
+        <div class="panel-body">
+          <span class="glyphicon glyphicon-wrench"></span>
+          <h4>More to come</h4>
+        </div>
       </div>
     </div>
   </div>
-
-</div>
