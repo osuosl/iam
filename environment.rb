@@ -29,6 +29,7 @@ class Iam < Sinatra::Base
   Sequel.extension :migration, :core_extensions
 
   # Other tools we use
+  require 'will_paginate'
   require 'net/http'
   require 'uri'
   require 'openssl'
