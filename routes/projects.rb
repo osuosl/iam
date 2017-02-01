@@ -29,8 +29,17 @@ module Sinatra
           MyLog.log.fatal "routes/projects: Project's clients not found"
           halt 404, "Project's Client not found"
         end
+        # @pro_scope = Project.order(:id).page(params[:page])
+        # @users = @pro_scope.extend(Kaminari::PaginatableRelationToPaginatableArray).to_paginatable_array
+
         @nodes = @project.node_resources
+
+        @nodes = Kaminari.paginate_array(@nodes).page(params[:page]).per(10)
+        # @nodet = Kaminari.paginate_array(@nodes.first(10)).page(params[:page])
+
         @dbs = @project.db_resources
+
+
         erb :'projects/show'
       end
 
