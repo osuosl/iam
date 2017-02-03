@@ -16,7 +16,7 @@ project's root directory. These variables define pathways, databases,
 and passwords for the IAM to use in initialization process.
 
 Environment Variables
---------
+---------------------
 
 The environment variables that are currently in develop are:
 
