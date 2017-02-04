@@ -13,7 +13,6 @@ group :default do
   gem 'sinatra-sequel', '0.9.0'
 
   # Tools
-  gem 'will_paginate', '~> 3.1.0'
   gem 'dotenv', '2.1.1'
   gem 'thin', '1.7.0'
   gem 'json', '2.0.1'

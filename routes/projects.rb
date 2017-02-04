@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require_relative '../logging/logs'
-require 'will_paginate/array'
 
 # IAM
 module Sinatra
@@ -33,7 +32,20 @@ module Sinatra
 
         @nodes = @project.node_resources
 
-        @node_p = Project.all.paginate(:page => params[:page], :per_page => 10)
+        page_size = 10
+        record_count = Iam.settings.DB[:node_resources].count
+        total_pages = (record_count / page_size.to_f).ceil
+
+        (1..total_pages).each do |page_no|
+
+        page_count = (record_count / page_size.to_f).ceil
+        page_count = 1 if page_count == 0
+
+        limit(page_size, (page_no - 1) * page_size).
+          with_extend(Dataset::Pagination).
+          clone(:page_size=>page_size, :current_page=>page_no, :pagination_record_count=>record_count, :page_count=>page_count)
+        end
+
 
         @dbs = @project.db_resources
 
