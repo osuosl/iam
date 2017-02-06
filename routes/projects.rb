@@ -32,23 +32,14 @@ module Sinatra
 
         @nodes = @project.node_resources
 
-        page_size = 10
-        record_count = Iam.settings.DB[:node_resources].count
-        total_pages = (record_count / page_size.to_f).ceil
+        @nr = Iam.settings.DB[:node_resources]
+        @nr_count = Iam.settings.DB[:node_resources].count
 
-        (1..total_pages).each do |page_no|
+        @nr = @nr.extension(:pagination)
 
-        page_count = (record_count / page_size.to_f).ceil
-        page_count = 1 if page_count == 0
-
-        limit(page_size, (page_no - 1) * page_size).
-          with_extend(Dataset::Pagination).
-          clone(:page_size=>page_size, :current_page=>page_no, :pagination_record_count=>record_count, :page_count=>page_count)
-        end
-
+        @nr.paginate(5, 10, @nr_count)
 
         @dbs = @project.db_resources
-
 
         erb :'projects/show'
       end
