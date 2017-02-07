@@ -31,13 +31,16 @@ module Sinatra
         end
 
         @nodes = @project.node_resources
+        Sequel.extension(:pagination)
+        page = (params[:page] || 1).to_i
+        count = Iam.settings.DB[:node_resources].count
+        @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
 
-        @nr = Iam.settings.DB[:node_resources]
-        @nr_count = Iam.settings.DB[:node_resources].count
+        # @nr_count = Iam.settings.DB[:node_resources].count
 
-        @nr = @nr.extension(:pagination)
+        # @nr = @nr.extension(:pagination)
 
-        @nr.paginate(5, 10, @nr_count)
+        # @nr.paginate(5, 1, @nr_count)
 
         @dbs = @project.db_resources
 
