@@ -28,17 +28,6 @@
       </thead>
       <tbody>
       <% if @nodes %>
-      <% if @node_pages.respond_to?(:current_page) %>
-        <ul class="pagination">
-          <a href = "#">&laquo;</a>
-          <a href = "#">1</a>
-          <a href = "#">2</a>
-          <a href = "#">3</a>
-          <a href = "#">4</a>
-          <a href = "#">5</a>
-          <a href = "#">&raquo;</a>
-        </ul>
-        <% end %>
         <% for @node in @nodes %>
           <tr>
             <td>
@@ -58,8 +47,19 @@
           </tr>
         <% end %>
       <% end  %>
-    </tbody>
+      </tbody>
   </table>
+  <% if @node_pages.respond_to?(:current_page) %>
+  <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
+    <% end %>
   <br>
   <br>
   <h4>Databases</h4>
@@ -95,15 +95,15 @@
       <% end  %>
       </tbody>
   </table>
-  <ul class="pagination">
-     <a href = "#">&laquo;</a>
-     <a href = "#">1</a>
-     <a href = "#">2</a>
-     <a href = "#">3</a>
-     <a href = "#">4</a>
-     <a href = "#">5</a>
-     <a href = "#">&raquo;</a>
-  </ul>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+  </nav>
   <br>
   <br>
 </div>
