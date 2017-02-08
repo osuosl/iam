@@ -30,18 +30,15 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
-        @nodes = @project.node_resources
+
         Sequel.extension(:pagination)
         page = (params[:page] || 1).to_i
+
+        @nodes = @project.node_resources
         @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
 
-        # @nr_count = Iam.settings.DB[:node_resources].count
-
-        # @nr = @nr.extension(:pagination)
-
-        # @nr.paginate(5, 1, @nr_count)
-
         @dbs = @project.db_resources
+        @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
 
         erb :'projects/show'
       end

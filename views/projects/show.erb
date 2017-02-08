@@ -28,38 +28,32 @@
       </thead>
       <tbody>
       <% if @nodes %>
-        <% for @node in @nodes %>
+        <% for @node in @node_pages %>
+        <% puts @node.inspect %>
           <tr>
             <td>
-              <a href="/node/<%= @node.id %>" >
-                <%= @node.name %>
+              <a href="/node/<%= @node[:id] %>" >
+                <%= @node[:name] %>
               </a>
             </td>
             <td>
-              <%= @node.type %>
+              <%= @node[:type] %>
             </td>
             <td>
-              <%= @node.cluster %>
+              <%= @node[:cluster] %>
             </td>
             <td>
-              <%= @node.active ? "Active" : "Inactive" %>
+              <%= @node[:active] ? "Active" : "Inactive" %>
             </td>
           </tr>
         <% end %>
       <% end  %>
       </tbody>
   </table>
-  <% if @node_pages.respond_to?(:current_page) %>
-  <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  <ul class="pager">
+    <li class="previous"><a href="<%= @node_pages.prev_page %>">Previous</a></li>
+    <li class="next"><a href="<%= @node_pages.next_page %>">Next</a></li>
   </ul>
-</nav>
-    <% end %>
   <br>
   <br>
   <h4>Databases</h4>
@@ -74,36 +68,31 @@
       </thead>
       <tbody>
       <% if @dbs  %>
-        <% for @db in @dbs %>
+        <% for @db in @dbs_pages %>
           <tr>
             <td>
-              <a href="/db/<%= @db.id %>" >
-                <%= @db.name %>
+              <a href="/db/<%= @db[:id] %>" >
+                <%= @db[:name] %>
               </a>
             </td>
             <td>
-              <%= @db.type %>
+              <%= @db[:type] %>
             </td>
             <td>
-              <%= @db.server %>
+              <%= @db[:server] %>
             </td>
             <td>
-              <%= @db.active ? "Active" : "Inactive" %>
+              <%= @db[:active] ? "Active" : "Inactive" %>
             </td>
           </tr>
         <% end %>
       <% end  %>
       </tbody>
   </table>
-  <nav aria-label="Page navigation example">
-    <ul class="pagination">
-      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-      <li class="page-item"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item"><a class="page-link" href="#">Next</a></li>
-    </ul>
-  </nav>
+  <ul class="pager">
+    <li class="previous"><a href="<%= @dbs_pages.prev_page %>">Previous</a></li>
+    <li class="next"><a href="<%= @dbs_pages.next_page %>">Next</a></li>
+  </ul>
   <br>
   <br>
 </div>
