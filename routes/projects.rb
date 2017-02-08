@@ -30,7 +30,6 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
-
         Sequel.extension(:pagination)
         page = (params[:page] || 1).to_i
 
