@@ -33,7 +33,7 @@ module Sinatra
         @updated = Time.new(0)
         if @db_size.last
           if @db_size.last[:created] > @updated
-            @update_time = @@db_size.last[:created]
+            @update_time = @db_size.last[:created]
           end
         end
         erb :'database/show'
