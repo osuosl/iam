@@ -35,6 +35,9 @@ module Sinatra
 
         @nodes = @project.node_resources
         @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
+        #
+        # puts @node_pages.page_size
+        # puts @node_pages.page_count
 
         @dbs = @project.db_resources
         @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
