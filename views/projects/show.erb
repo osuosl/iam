@@ -49,13 +49,23 @@
       </tbody>
   </table>
   <ul class="pagination">
-    <li class="paginate_button previous disabled">
-      <a href="#">Previous</a></li><li class="paginate_button active">
-      <a href="#">1</a></li><li class="paginate_button">
-      <a href="#">2</a></li><li class="paginate_button">
-      <a href="#">3</a></li><li class="paginate_button">
-      <a href="#">4</a></li><li class="paginate_button">
-      <a href="#">Next</a>
+    <% if @node_pages.current_page == 1 %>
+      <li class="paginate_button previous disabled">
+      <a href="#">Previous</a></li>
+    <% else %>
+      <li class="paginate_button previous">
+      <a href="#">Previous</a>
+    <% end %>
+
+    <li class="paginate_button active">
+      <% for i in @node_pages.page_range %>
+        <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
+      <% end %>
+    <% if @node_pages.page_count == 1 || @node_pages.last_page? == true %>
+      <li class="paginate_button next disabled">
+      <a href="#">Next</a></li>
+    <% else %><a href="#">Next</a> <% end %>
+
     </li>
   </ul>
   <br>
@@ -94,13 +104,25 @@
       </tbody>
   </table>
   <ul class="pagination">
-    <li class="paginate_button previous disabled">
-      <a href="#">Previous</a></li><li class="paginate_button active">
-      <a href="#">1</a></li><li class="paginate_button">
-      <a href="#">2</a></li><li class="paginate_button">
-      <a href="#">3</a></li><li class="paginate_button">
-      <a href="#">4</a></li><li class="paginate_button">
-      <a href="#">Next</a>
+    <% if @dbs_pages.current_page == 1 %>
+      <li class="paginate_button previous disabled">
+      <a href="#">Previous</a></li>
+    <% else %>
+      <li class="paginate_button previous">
+      <a href="#">Previous</a>
+    <% end %>
+
+    <li class="paginate_button active">
+      <% for i in @dbs_pages.page_range %>
+        <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
+      <% end %>
+    <% if @dbs_pages.page_count == 1  || @dbs_pages.last_page? == true%>
+      <li class="paginate_button next disabled">
+      <a href="#">Next</a></li>
+    <% else %>
+    <a href="#">Next</a>
+    <% end %>
+
     </li>
   </ul>
   <br>
