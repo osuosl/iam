@@ -31,17 +31,22 @@ module Sinatra
         end
 
         Sequel.extension(:pagination)
-        page = (params[:page] || 1).to_i
+        page = 1
+        resource_pages = 10
 
         @nodes = @project.node_resources
-        @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
-        #
-        # puts @node_pages.page_size
-        # puts @node_pages.page_count
-
         @dbs = @project.db_resources
-        @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
+        @resources = @dbs + @nodes
 
+        unless @resources.nil?
+          @nod = {}
+          data = Report.get_data(@project)
+          (@nod[@project.name] ||= []) << data
+        end
+
+        # @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
+        # @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
+        puts @nod
         erb :'projects/show'
       end
 
