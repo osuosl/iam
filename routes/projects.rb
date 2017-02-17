@@ -24,8 +24,9 @@ module Sinatra
           MyLog.log.fatal 'routes/projects: Project not found'
           halt 404, 'Project not found'
         end
-        @clients = Client.filter(id: @project.client_id).all
-        if @clients.nil?
+        @client = Client.filter(id: @project.client_id).first
+
+        if @client.nil?
           MyLog.log.fatal "routes/projects: Project's clients not found"
           halt 404, "Project's Client not found"
         end
@@ -38,15 +39,15 @@ module Sinatra
         @dbs = @project.db_resources
         @resources = @dbs + @nodes
 
+        @nod = {}
         unless @resources.nil?
-          @nod = {}
-          data = Report.get_data(@project)
-          (@nod[@project.name] ||= []) << data
+          @data = Report.get_data(@project)
+          # (@nod[@project.name] ||= []) << data
         end
 
         # @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
         # @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
-        puts @nod
+       puts @data
         erb :'projects/show'
       end
 

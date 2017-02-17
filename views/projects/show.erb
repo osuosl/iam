@@ -3,21 +3,44 @@
     <a href="/projects/<%= @project.id %>/edit">edit</a>
   </h2>
   <p>
-    <% if @clients[0].active %>
+    <% if @client.active %>
       Client:
-        <a href="/clients/<%= @clients[0].id %>" >
-          <%= @clients[0].name %>
+        <a href="/clients/<%= @client.id %>" >
+          <%= @client.name %>
         </a>
     <% end %>
 
     <br>
     Description: <%= @project.description %> <br>
     <%= @project.active ? "Active" : "Inactive" %>
-  <br>
-  <br>
-  <h4>Nodes</h4>
 
-  <table class="table">
+    <% if @data.empty? %>
+      <p>
+        <%= @project.name %> has no resources
+      </p>
+    <% else %>
+      <% for @val in @data %>
+        <h4> <%= @val[0].capitalize %> </h4>
+          <table class="table">
+            <thead>
+              <% if @val[0] == "db" %>
+                <th>Size</th><th>Type</th><th>Server</th>
+              <% elsif @val[0] == "node" %>
+                <th>VCPUCount</th><th>RamSize</th>
+                <th>DiskSize</th><th>DiskTemplate</th>
+              <% end %>
+           </thead>
+           <% @val.each do |k, v| %>
+
+           <% end %>
+        </table>
+      <% end %>
+    <% end %>
+  <!-- <br>
+  <br>
+  <h4>Nodes</h4> -->
+
+  <!-- <table class="table">
       <thead>
         <tr>
           <th>Name</th>
@@ -28,46 +51,26 @@
       </thead>
       <tbody>
       <% if @nodes %>
-        <% for @node in @node_pages %>
+        <% for @node in @nodes %>
           <tr>
             <td>
               <a href="/node/<%= @node[:id] %>" >
-                <%= @node[:name] %>
+                <%= @node.name %>
               </a>
             </td>
             <td>
-              <%= @node[:type] %>
+              <%= @node.type %>
             </td>
             <td>
-              <%= @node[:cluster] %>
+              <%= @node.cluster %>
             </td>
             <td>
-              <%= @node[:active] ? "Active" : "Inactive" %>
+              <%= @node.active ? "Active" : "Inactive" %>
             </td>
         <% end %>
       <% end  %>
       </tbody>
   </table>
-  <ul class="pagination">
-    <% if @node_pages.current_page == 1 %>
-      <li class="paginate_button previous disabled">
-      <a href="#">Previous</a></li>
-    <% else %>
-      <li class="paginate_button previous">
-      <a href="#">Previous</a>
-    <% end %>
-
-    <li class="paginate_button active">
-      <% for i in @node_pages.page_range %>
-        <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
-      <% end %>
-    <% if @node_pages.page_count == 1 || @node_pages.last_page? == true %>
-      <li class="paginate_button next disabled">
-      <a href="#">Next</a></li>
-    <% else %><a href="#">Next</a> <% end %>
-
-    </li>
-  </ul>
   <br>
   <br>
   <h4>Databases</h4>
@@ -82,7 +85,7 @@
       </thead>
       <tbody>
       <% if @dbs  %>
-        <% for @db in @dbs_pages %>
+        <% for @db in @dbs %>
           <tr>
             <td>
               <a href="/db/<%= @db[:id] %>" >
@@ -103,28 +106,7 @@
       <% end  %>
       </tbody>
   </table>
-  <ul class="pagination">
-    <% if @dbs_pages.current_page == 1 %>
-      <li class="paginate_button previous disabled">
-      <a href="#">Previous</a></li>
-    <% else %>
-      <li class="paginate_button previous">
-      <a href="#">Previous</a>
-    <% end %>
-
-    <li class="paginate_button active">
-      <% for i in @dbs_pages.page_range %>
-        <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
-      <% end %>
-    <% if @dbs_pages.page_count == 1  || @dbs_pages.last_page? == true%>
-      <li class="paginate_button next disabled">
-      <a href="#">Next</a></li>
-    <% else %>
-    <a href="#">Next</a>
-    <% end %>
-
-    </li>
-  </ul>
   <br>
-  <br>
+  <br> -->
+</p>
 </div>

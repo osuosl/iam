@@ -163,7 +163,7 @@ class Report
                         else
                           data[-1][:value]
                         end
-          plugin_data[resource_type.name].merge!(measurement => data_average)
+          plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
       (resource_data[resource_type] ||= []) << plugin_data
