@@ -32,8 +32,8 @@ module Sinatra
         end
 
         Sequel.extension(:pagination)
-        page = 1
-        resource_pages = 10
+        # page = 1
+        # resource_pages = 10
 
         @nodes = @project.node_resources
         @dbs = @project.db_resources
@@ -47,7 +47,7 @@ module Sinatra
 
         # @node_pages = Iam.settings.DB[:node_resources].extension(:pagination).paginate(page, 1)
         # @dbs_pages = Iam.settings.DB[:db_resources].extension(:pagination).paginate(page, 1)
-       puts @data
+        # puts @data
         erb :'projects/show'
       end
 

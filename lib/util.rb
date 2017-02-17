@@ -148,21 +148,20 @@ class Report
     # of resource each project has
     plugin_matrix.each do |resource_type, measurements|
       plugin_data = {}
-      allResources = project.send("#{resource_type}_resources")
-      # next if resources.nil?
+      all_resources = project.send("#{resource_type}_resources")
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
-       allResources.each do |resource|
+      all_resources.each do |resource|
         plugin_data[resource.name] ||= {}
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
           next if data[0].nil?
           data_average = if data[0][:value].number?
-                          DataUtil.average_value(data)
-                        else
-                          data[-1][:value]
-                        end
+                           DataUtil.average_value(data)
+                         else
+                           data[-1][:value]
+                         end
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
