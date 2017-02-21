@@ -12,28 +12,44 @@
 
     <br>
     Description: <%= @project.description %> <br>
-    <%= @project.active ? "Active" : "Inactive" %>
+    <%= @project.active ? "Active" : "Inactive" %><br>
 
     <% if @data.empty? %>
       <p>
         <%= @project.name %> has no resources
       </p>
     <% else %>
-      <% for @val in @data %>
-        <h4> <%= @val[0].capitalize %> </h4>
-          <table class="table">
-            <thead>
-              <% if @val[0] == "db" %>
-                <th>Size</th><th>Type</th><th>Server</th>
-              <% elsif @val[0] == "node" %>
-                <th>VCPUCount</th><th>RamSize</th>
-                <th>DiskSize</th><th>DiskTemplate</th>
-              <% end %>
-           </thead>
-           <% @val.each do |k, v| %>
+    <% @data.each do |k1, v1| %>
+      <% # k1 is the resource type; v1 is the array-hash of the resource %>
+      <h4> <%= k1.capitalize %> </h4>
+      <table class="table">
+        <thead>
+          <% if k1 == "db" %>
+            <th>Name</th><th>Size</th>
+            <th>Type</th><th>Server</th>
+          <% elsif k1 == "node" %>
+            <th>Name</th><th>DiskSize</th><th>RamSize</th>
+            <th>VCPUCount</th><th>DiskTemplate</th>
+          <% end %>
+        </thead>
+        <tbody>
+          <% v1.each do |resource| %>
 
-           <% end %>
-        </table>
+            <% resource.each do |k2, v2| %>
+            <% # k2 is the resource's name; v2 is hash of measurments %>
+              <tr>
+                <td> <%= k2 %> </td>
+                <% v2.each do |k3, v3| %>
+                  <td> <%= v3 %> </td>
+                <% end %>
+                <% if k1 == "db" %>
+
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
       <% end %>
     <% end %>
   <!-- <br>
