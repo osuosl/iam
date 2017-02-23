@@ -152,9 +152,9 @@ class Report
     #   ...}
     plugins.each do |plugin|
       next if plugin.name == 'TestingPlugin'
-      if plugin.resource_name == "db"
-        (matrix[plugin.resource_name] ||= []) << "Type"
-        (matrix[plugin.resource_name] ||= []) << "Server"
+      if plugin.resource_name == 'db'
+        (matrix[plugin.resource_name] ||= []) << 'Type'
+        (matrix[plugin.resource_name] ||= []) << 'Server'
       end
       (matrix[plugin.resource_name] ||= []) << plugin.name
     end
@@ -163,7 +163,6 @@ class Report
 
   def self.get_data(project)
     resource_data = {}
-    per_page = 10
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
@@ -182,9 +181,9 @@ class Report
             data_average = 0
           else
             data_average = if data[0][:value].number?
-                            DataUtil.average_value(data)
+                             DataUtil.average_value(data)
                            else
-                            data[-1][:value]
+                             data[-1][:value]
                            end
           end
           if resource_type == 'db'

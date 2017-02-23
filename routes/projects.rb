@@ -32,11 +32,8 @@ module Sinatra
         end
 
         Sequel.extension(:pagination)
-        page = 1
-        # resource_pages = 10
-
         @data = Report.get_data(@project)
-        
+
         erb :'projects/show'
       end
 

@@ -21,14 +21,14 @@
     <% else %>
       <% Report.plugin_matrix_with_db.each do |resource , measurements| %>
         <table class="table">
-          <th>
+          <thead>
             <h4><%= "#{resource}".capitalize %></h4>
             <tr>
               <% measurements.each do |meas| %>
-                <td><%= "#{meas}" %></td>
+                <th><%= "#{meas}" %></th>
               <% end %>
             </tr>
-          </th>
+          </thead>
           <tbody>
             <tr>
               <% @data[resource].each do |resource_hash| %>
