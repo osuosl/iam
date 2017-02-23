@@ -19,11 +19,12 @@
         <%= @project.name %> has no resources
       </p>
     <% else %>
-      <% Report.plugin_matrix_with_db.each do |resource , measurements| %>
+      <% Report.plugin_matrix.each do |resource , measurements| %>
         <table class="table">
           <thead>
             <h4><%= "#{resource}".capitalize %></h4>
             <tr>
+              <th>Name</th>
               <% measurements.each do |meas| %>
                 <th><%= "#{meas}" %></th>
               <% end %>
@@ -32,9 +33,18 @@
           <tbody>
             <tr>
               <% @data[resource].each do |resource_hash| %>
-                <% resource_hash.each do |resource_meas| %>
-                  <% resource_meas[1].each do |r_meas| %>
-                    <td><%= r_meas[1] %></td>
+                <% resource_hash.each do |resource_name, resource_meas| %>
+                  <td>
+                      <a href="/<%= resource %>/<%= resource_meas['id']%>" >
+                        <%= resource_name %>
+                      </a>
+                  </td>
+                  <% resource_meas.each do |r_meas| %>
+                    <% if r_meas[0] != 'id' %>
+                      <td>
+                        <%= r_meas[1] %>
+                      </td>
+                    <%end %>
                   <% end %>
                 <% end %>
               <% end %>

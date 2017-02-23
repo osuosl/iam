@@ -140,27 +140,6 @@ class Report
     matrix
   end
 
-  # this method returns all the available resource type along with an array
-  # of the measurment plugins available for that resource type
-  def self.plugin_matrix_with_db
-    matrix = {}
-    # query the plugins model to determine what measurements are available
-    plugins = Plugin.all
-    # make a matrix of resource types and their plugins
-    # { 'node': ['DiskSize', 'VCPU', ...]
-    #   'db': ['Size', ...]
-    #   ...}
-    plugins.each do |plugin|
-      next if plugin.name == 'TestingPlugin'
-      if plugin.resource_name == 'db'
-        (matrix[plugin.resource_name] ||= []) << 'Type'
-        (matrix[plugin.resource_name] ||= []) << 'Server'
-      end
-      (matrix[plugin.resource_name] ||= []) << plugin.name
-    end
-    matrix
-  end
-
   def self.get_data(project)
     resource_data = {}
 
@@ -174,6 +153,7 @@ class Report
       # type of resource. Put it all in a big hash.
       all_resources.each do |resource|
         plugin_data[resource.name] ||= {}
+        plugin_data[resource.name].merge!("id" => resource[:id])
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
@@ -185,10 +165,6 @@ class Report
                            else
                              data[-1][:value]
                            end
-          end
-          if resource_type == 'db'
-            plugin_data[resource.name]['type'] = resource[:type]
-            plugin_data[resource.name]['server'] = resource[:server]
           end
           plugin_data[resource.name].merge!(measurement => data_average)
         end
