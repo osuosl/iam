@@ -128,6 +128,7 @@ class Report
     matrix = {}
     # query the plugins model to determine what measurements are available
     plugins = Plugin.all
+    # puts plugins.inspect
     # make a matrix of resource types and their plugins
     # { 'node': ['DiskSize', 'VCPU', ...]
     #   'db': ['Size', ...]
@@ -138,30 +139,31 @@ class Report
     end
     matrix
   end
-  #
-  # this method takes a project name and returns a nice hash of all its
-  # resources and their measurments
-  # def self.get_data(project)
-  #   resource_data = {}
-  #
-  #   # for each resource type in the matrix, get a list of all that type
-  #   # of resource each project has
-  #   plugin_matrix.each do |resource_type, measurements|
-  #     plugin_data = {}
-  #     all_resources = project.send("#{resource_type}_resources")
-  #     # for each of those resources, get all the measuremnts for that
-  #     # type of resource. Put it all in a big hash.
-  #     all_resources.each do |resource|
-  #       plugin_data[resource.name] ||= {}
-  #       (resource_data[resource_type] ||= []) << resource
-  #     end
-  #   end
-  #   puts resource_data
-  #   resource_data
-  # end
+
+  # this method returns all the available resource type along with an array
+  # of the measurment plugins available for that resource type
+  def self.plugin_matrix_with_db
+    matrix = {}
+    # query the plugins model to determine what measurements are available
+    plugins = Plugin.all
+    # make a matrix of resource types and their plugins
+    # { 'node': ['DiskSize', 'VCPU', ...]
+    #   'db': ['Size', ...]
+    #   ...}
+    plugins.each do |plugin|
+      next if plugin.name == 'TestingPlugin'
+      if plugin.resource_name == "db"
+        (matrix[plugin.resource_name] ||= []) << "Type"
+        (matrix[plugin.resource_name] ||= []) << "Server"
+      end
+      (matrix[plugin.resource_name] ||= []) << plugin.name
+    end
+    matrix
+  end
 
   def self.get_data(project)
     resource_data = {}
+    per_page = 10
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
@@ -176,12 +178,15 @@ class Report
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
-          next if data[0].nil?
-          data_average = if data[0][:value].number?
-                           DataUtil.average_value(data)
-                         else
-                           data[-1][:value]
-                         end
+          if data[0].nil?
+            data_average = 0
+          else
+            data_average = if data[0][:value].number?
+                            DataUtil.average_value(data)
+                           else
+                            data[-1][:value]
+                           end
+          end
           if resource_type == 'db'
             plugin_data[resource.name]['type'] = resource[:type]
             plugin_data[resource.name]['server'] = resource[:server]
@@ -189,9 +194,7 @@ class Report
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
-      puts plugin_data
       (resource_data[resource_type] ||= []) << plugin_data
-      # puts resource_data
     end
     resource_data
   end

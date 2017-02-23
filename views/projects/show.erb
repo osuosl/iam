@@ -14,115 +14,34 @@
     Description: <%= @project.description %> <br>
     <%= @project.active ? "Active" : "Inactive" %><br>
 
-    <% if @data.empty? %>
+    <% if @data.nil? %>
       <p>
         <%= @project.name %> has no resources
       </p>
     <% else %>
-    <% @data.each do |k1, v1| %>
-      <% # k1 is the resource type; v1 is the array-hash of the resource %>
-      <h4> <%= k1.capitalize %> </h4>
-      <table class="table">
-        <thead>
-          <% if k1 == "db" %>
-            <th>Name</th><th>Type</th>
-            <th>Server</th><th>Size (GB)</th>
-          <% elsif k1 == "node" %>
-            <th>Name</th><th>DiskSize (GB)</th><th>RamSize (GB)</th>
-            <th>VCPUCount</th><th>DiskTemplate</th>
-          <% end %>
-        </thead>
-        <tbody>
-          <% v1.each do |resource| %>
-
-            <% resource.each do |k2, v2| %>
-            <% # k2 is the resource's name; v2 is hash of measurments %>
-              <tr>
-                <td> <%= k2 %> </td>
-                <% v2.each do |k3, v3| %>
-                  <td> <%= v3 %> </td>
+      <% Report.plugin_matrix_with_db.each do |resource , measurements| %>
+        <table class="table">
+          <th>
+            <h4><%= "#{resource}".capitalize %></h4>
+            <tr>
+              <% measurements.each do |meas| %>
+                <td><%= "#{meas}" %></td>
+              <% end %>
+            </tr>
+          </th>
+          <tbody>
+            <tr>
+              <% @data[resource].each do |resource_hash| %>
+                <% resource_hash.each do |resource_meas| %>
+                  <% resource_meas[1].each do |r_meas| %>
+                    <td><%= r_meas[1] %></td>
+                  <% end %>
                 <% end %>
-                <% if k1 == "db" %>
-
-                <% end %>
-              </tr>
-            <% end %>
-          <% end %>
-        </tbody>
-      </table>
+              <% end %>
+            </tr>
+          </tbody>
+        </table>
       <% end %>
     <% end %>
-  <!-- <br>
-  <br>
-  <h4>Nodes</h4> -->
-
-  <!-- <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Cluster</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% if @nodes %>
-        <% for @node in @nodes %>
-          <tr>
-            <td>
-              <a href="/node/<%= @node[:id] %>" >
-                <%= @node.name %>
-              </a>
-            </td>
-            <td>
-              <%= @node.type %>
-            </td>
-            <td>
-              <%= @node.cluster %>
-            </td>
-            <td>
-              <%= @node.active ? "Active" : "Inactive" %>
-            </td>
-        <% end %>
-      <% end  %>
-      </tbody>
-  </table>
-  <br>
-  <br>
-  <h4>Databases</h4>
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Server</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% if @dbs  %>
-        <% for @db in @dbs %>
-          <tr>
-            <td>
-              <a href="/db/<%= @db[:id] %>" >
-                <%= @db[:name] %>
-              </a>
-            </td>
-            <td>
-              <%= @db[:type] %>
-            </td>
-            <td>
-              <%= @db[:server] %>
-            </td>
-            <td>
-              <%= @db[:active] ? "Active" : "Inactive" %>
-            </td>
-          </tr>
-        <% end %>
-      <% end  %>
-      </tbody>
-  </table>
-  <br>
-  <br> -->
-</p>
+  </p>
 </div>
