@@ -153,7 +153,7 @@ class Report
       # type of resource. Put it all in a big hash.
       all_resources.each do |resource|
         plugin_data[resource.name] ||= {}
-        plugin_data[resource.name].merge!("id" => resource[:id])
+        plugin_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
