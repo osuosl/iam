@@ -19,7 +19,7 @@
         <%= @project.name %> has no resources
       </p>
     <% else %>
-      <% Report.plugin_matrix.each do |resource , measurements| %>
+      <% Report.plugin_matrix.each do |resource, measurements| %>
         <table class="table">
           <thead>
             <h4><%= "#{resource}".capitalize %></h4>
@@ -31,24 +31,43 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
               <% @data[resource].each do |resource_hash| %>
                 <% resource_hash.each do |resource_name, resource_meas| %>
+                <tr>
                   <td>
                       <a href="/<%= resource %>/<%= resource_meas['id']%>" >
                         <%= resource_name %>
                       </a>
                   </td>
                   <% resource_meas.each do |r_meas| %>
-                    <% if r_meas[0] != 'id' %>
+
+                    <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
                       <td>
                         <%= r_meas[1] %>
                       </td>
                     <%end %>
                   <% end %>
+                 </tr>
                 <% end %>
               <% end %>
-            </tr>
+              <% puts @data[resource][0]["page_count"] %> 
+              <ul class="pagination pagination-sm">
+                <% if @page == 1 %>
+                  <li class="paginate_button previous disabled">
+                    <a href="#">&laquo;</a>
+                  </li>
+                <% else %>
+                  <li class="paginate_button previous">
+                    <a href="#">&laquo;</a>
+                <% end %>
+
+                <li class="paginate_button active">
+                  <% (1..3).each do |i| %>
+                    <a href="#"> <%= "#{i}" %></a>
+                  <% end %>
+                </li>
+
+              </ul>
           </tbody>
         </table>
       <% end %>

@@ -140,20 +140,25 @@ class Report
     matrix
   end
 
-  def self.get_data(project)
+  def self.get_data(project, page, per_page)
     resource_data = {}
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
     plugin_matrix.each do |resource_type, measurements|
       plugin_data = {}
-      all_resources = project.send("#{resource_type}_resources")
+      page_count = project.send("#{resource_type}_resources").count
+
+      all_resources = project.send("#{resource_type}_resources")[((
+        page - 1) * per_page...(page * per_page))]
       next if all_resources.nil?
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       all_resources.each do |resource|
         plugin_data[resource.name] ||= {}
         plugin_data[resource.name]['id'] = resource[:id]
+        plugin_data[resource.name]['page_count'] = (
+          page_count / per_page.to_f).ceil
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
