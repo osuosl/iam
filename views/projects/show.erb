@@ -12,14 +12,14 @@
 
     <br>
     Description: <%= @project.description %> <br>
-    <%= @project.active ? "Active" : "Inactive" %><br>
+    <%= @project.active ? "Active" : "Inactive" %><br><br>
 
-    <% if @data.nil? %>
-      <p>
-        <%= @project.name %> has no resources
-      </p>
-    <% else %>
-      <% Report.plugin_matrix.each do |resource, measurements| %>
+    <% Report.plugin_matrix.each do |resource, measurements| %>
+      <% if @data[resource][0] == 0 %>
+        <p>
+          <%= @project.name %> has no  <%= resource %> resources
+        </p><br>
+      <% else %>
         <table class="table">
           <thead>
             <h4><%= "#{resource}".capitalize %></h4>
@@ -54,12 +54,13 @@
           </tbody>
         </table>
         <ul class="pagination pagination-sm">
-
-          <li class="paginate_button active">
+          <li class="paginate_button">
             <% 1.upto(@data[resource][0]) do |i| %>
-              <a href="/projects/<%= @project.id %>/<%= i %>"> <%= "#{i}" %></a></li><li class="paginate_button">
+              <a href="/projects/<%= @project.id %>/<%= i %>"> <%= "#{i}" %></a>
+              <li class="paginate_button">
             <% end %>
           </li>
+        </li>
         </ul>
       <% end %>
     <% end %>

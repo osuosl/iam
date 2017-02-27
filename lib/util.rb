@@ -172,7 +172,7 @@ class Report
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
-      (resource_data[resource_type] ||= []) << @page_count
+      (resource_data[resource_type] ||= []) << (@page_count/per_page.to_f).ceil
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data
