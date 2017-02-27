@@ -17,7 +17,7 @@ module Sinatra
         erb :'projects/create'
       end
 
-      app.get '/projects/:id/?' do
+      app.get '/projects/:id/page/?:page?' do
         # view a project
         @project = Project[id: params[:id]]
         if @project.nil?
@@ -31,36 +31,8 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
-        Sequel.extension(:pagination)
-
-        @page = 1 if @page.nil?
-        @page_count = 1 if @page_count.nil?
-        @per_page = 1
-
-        @data = Report.get_data(@project, @page, @per_page)
-
-        erb :'projects/show'
-      end
-
-      app.get '/projects/:id/:page' do
-        # view a project's pagination
-        @project = Project[id: params[:id]]
-        if @project.nil?
-          MyLog.log.fatal 'routes/projects: Project not found'
-          halt 404, 'Project not found'
-        end
-        @client = Client.filter(id: @project.client_id).first
-
-        if @client.nil?
-          MyLog.log.fatal "routes/projects: Project's clients not found"
-          halt 404, "Project's Client not found"
-        end
-
-        Sequel.extension(:pagination)
         @page = params[:page].to_f
-        puts @page.class
-        @page = 1 if @page.nil?
-        @page_count = 1 if @page_count.nil?
+        @page = 1 if @page == 0
         @per_page = 1
 
         @data = Report.get_data(@project, @page, @per_page)
