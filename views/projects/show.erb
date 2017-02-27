@@ -54,24 +54,10 @@
           </tbody>
         </table>
         <ul class="pagination pagination-sm">
-          <% if @page == 1 %>
-            <li class="paginate_button previous disabled">
-              <a href="#">&laquo;</a>
-            </li>
-          <% else %>
-            <li class="paginate_button previous">
-              <a href="#">&laquo;</a>
-          <% end %>
 
           <li class="paginate_button active">
-            <% @data[resource][0].times do |i| %>
-              <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
-            <% end %>
-            <% if @page_count == 1 %>
-              <li class="paginate_button next disabled">
-                <a href="#">Next</a></li>
-            <% else %>
-              <a href="#">Next</a>
+            <% 1.upto(@data[resource][0]) do |i| %>
+              <a href="/projects/<%= @project.id %>/<%= i %>"> <%= "#{i}" %></a></li><li class="paginate_button">
             <% end %>
           </li>
         </ul>

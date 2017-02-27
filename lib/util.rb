@@ -147,7 +147,7 @@ class Report
     # of resource each project has
     plugin_matrix.each do |resource_type, measurements|
       plugin_data = {}
-      page_count = project.send("#{resource_type}_resources").count
+      @page_count = project.send("#{resource_type}_resources").count
 
       all_resources = project.send("#{resource_type}_resources")[((
         page - 1) * per_page...(page * per_page))]
@@ -172,7 +172,7 @@ class Report
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
-      (resource_data[resource_type] ||= []) << page_count
+      (resource_data[resource_type] ||= []) << @page_count
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data
