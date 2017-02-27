@@ -157,8 +157,6 @@ class Report
       all_resources.each do |resource|
         plugin_data[resource.name] ||= {}
         plugin_data[resource.name]['id'] = resource[:id]
-        plugin_data[resource.name]['page_count'] = (
-          page_count / per_page.to_f).ceil
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
@@ -174,6 +172,7 @@ class Report
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
+      (resource_data[resource_type] ||= []) << page_count
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data

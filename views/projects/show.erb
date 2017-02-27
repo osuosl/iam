@@ -31,16 +31,18 @@
             </tr>
           </thead>
           <tbody>
-              <% @data[resource].each do |resource_hash| %>
-                <% resource_hash.each do |resource_name, resource_meas| %>
+            <% @data[resource][1].each do |resource_hash| %>
                 <tr>
                   <td>
-                      <a href="/<%= resource %>/<%= resource_meas['id']%>" >
-                        <%= resource_name %>
-                      </a>
+                    <% resource_hash[1].each do |k, v| %>
+                      <% if k == 'id' %>
+                        <a href="/<%= resource %>/<%= v %>" >
+                          <%= resource_hash[0] %>
+                        </a>
+                      <% end %>
+                    <% end %>
                   </td>
-                  <% resource_meas.each do |r_meas| %>
-
+                  <% resource_hash[1].each do |r_meas| %>
                     <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
                       <td>
                         <%= r_meas[1] %>
@@ -48,28 +50,31 @@
                     <%end %>
                   <% end %>
                  </tr>
-                <% end %>
-              <% end %>
-              <% puts @data[resource][0]["page_count"] %> 
-              <ul class="pagination pagination-sm">
-                <% if @page == 1 %>
-                  <li class="paginate_button previous disabled">
-                    <a href="#">&laquo;</a>
-                  </li>
-                <% else %>
-                  <li class="paginate_button previous">
-                    <a href="#">&laquo;</a>
-                <% end %>
-
-                <li class="paginate_button active">
-                  <% (1..3).each do |i| %>
-                    <a href="#"> <%= "#{i}" %></a>
-                  <% end %>
-                </li>
-
-              </ul>
+            <% end %>
           </tbody>
         </table>
+        <ul class="pagination pagination-sm">
+          <% if @page == 1 %>
+            <li class="paginate_button previous disabled">
+              <a href="#">&laquo;</a>
+            </li>
+          <% else %>
+            <li class="paginate_button previous">
+              <a href="#">&laquo;</a>
+          <% end %>
+
+          <li class="paginate_button active">
+            <% @data[resource][0].times do |i| %>
+              <a href="#"> <%= "#{i}" %></a></li><li class="paginate_button">
+            <% end %>
+            <% if @page_count == 1 %>
+              <li class="paginate_button next disabled">
+                <a href="#">Next</a></li>
+            <% else %>
+              <a href="#">Next</a>
+            <% end %>
+          </li>
+        </ul>
       <% end %>
     <% end %>
   </p>
