@@ -11,6 +11,13 @@ module Sinatra
       # Node Resource
       ##
 
+
+      app.get '/node/summary/?' do
+        # view list of node resources and their measurements
+        @nodes = NodeResource.all
+        erb :'nodes/summary'
+      end
+
       app.get '/node/new/?' do
         # get new node form
         @projects = Project.all

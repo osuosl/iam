@@ -14,55 +14,43 @@
     Description: <%= @project.description %> <br>
     <%= @project.active ? "Active" : "Inactive" %><br><br>
 
-    <% Report.plugin_matrix.each do |resource, measurements| %>
-      <% if @data[resource][0] == 0 %>
-        <p>
-          <%= @project.name %> has no  <%= resource %> resources
-        </p><br>
-      <% else %>
-        <table class="table">
-          <thead>
-            <h4><%= "#{resource}".capitalize %></h4>
+    <% Report.plugin_matrix. each do |resource_type, resource_meas| %>
+      <table class="table">
+        <h3>
+          <a href="/<%=resource_type%>/summary">
+            <%=resource_type.capitalize%>
+          </a>
+        </h3>
+        <% @res = @project.send("#{resource_type}_resources") %>
+        <thead>
+          <% @res[0].each do |key, value| %>
+            <% unless key==:id || key==:project_id || key==:created || key==:modified || key==:active %>
+              <th>
+                <%= key %>
+              </th>
+            <% end %>
+          <% end %>
+        </thead>
+        <tbody>
+          <% @res.each do |key, value| %>
             <tr>
-              <th>Name</th>
-              <% measurements.each do |meas| %>
-                <th><%= "#{meas}" %></th>
-              <% end %>
-            </tr>
-          </thead>
-          <tbody>
-            <% @data[resource][1].each do |resource_hash| %>
-                <tr>
+            <% key.each do |k, v| %>
+                <% unless k==:id || k==:project_id || k==:created || k==:modified || k==:active %>
                   <td>
-                    <% resource_hash[1].each do |k, v| %>
-                      <% if k == 'id' %>
-                        <a href="/<%= resource %>/<%= v %>" >
-                          <%= resource_hash[0] %>
-                        </a>
-                      <% end %>
+                    <% if k==:name %>
+                     <a href="/<%=resource_type%>/<%=key[:id]%>">
+                      <%= v %>
+                     </a>
+                    <% else %>
+                      <%= v %>
                     <% end %>
                   </td>
-                  <% resource_hash[1].each do |r_meas| %>
-                    <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
-                      <td>
-                        <%= r_meas[1] %>
-                      </td>
-                    <%end %>
-                  <% end %>
-                 </tr>
+                <% end %>
             <% end %>
-          </tbody>
-        </table>
-        <ul class="pagination pagination-sm">
-          <li class="paginate_button">
-            <% 1.upto(@data[resource][0]) do |i| %>
-              <a href="/projects/<%= @project.id %>/<%= i %>"> <%= "#{i}" %></a>
-              <li class="paginate_button">
-            <% end %>
-          </li>
-        </li>
-        </ul>
-      <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     <% end %>
   </p>
 </div>

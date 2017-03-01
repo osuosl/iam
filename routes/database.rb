@@ -11,6 +11,12 @@ module Sinatra
       # Database Resource
       ##
 
+      app.get '/db/summary/?' do
+        # view list of db resources and their measurements
+        @dbs = DbResource.all
+        erb :'database/summary'
+      end
+
       app.get '/db/new/?' do
         # get new database form
         @projects = Project.all
@@ -52,6 +58,7 @@ module Sinatra
         @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
+
 
       app.get '/dbs/?' do
         # get a list of all database
