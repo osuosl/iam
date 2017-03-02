@@ -11,12 +11,6 @@ module Sinatra
       # Database Resource
       ##
 
-      app.get '/db/summary/?' do
-        # view list of db resources and their measurements
-        @dbs = DbResource.all
-        erb :'database/summary'
-      end
-
       app.get '/db/new/?' do
         # get new database form
         @projects = Project.all
@@ -43,6 +37,20 @@ module Sinatra
           end
         end
         erb :'database/show'
+      end
+
+      app.get '/db/summary/:id' do
+        # view list of db resources and their measurements
+        @project = Project.filter(id: params[:id]).first
+        @dbs = DbResource[project_id: params[:id]]
+
+        @page = params[:page].to_f
+        @page = 1 if @page == 0
+        @per_page = 10
+
+        @data = Report.get_data(@project, @page, @per_page, "db")
+
+        erb :'database/summary'
       end
 
       app.get '/db/:id/edit/?' do

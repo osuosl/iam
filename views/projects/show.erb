@@ -17,7 +17,7 @@
     <% Report.plugin_matrix. each do |resource_type, resource_meas| %>
       <table class="table">
         <h3>
-          <a href="/<%=resource_type%>/summary">
+          <a href="/<%= resource_type %>/summary/<%= @project.id %>">
             <%=resource_type.capitalize%>
           </a>
         </h3>

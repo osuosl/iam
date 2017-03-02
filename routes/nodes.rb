@@ -11,13 +11,6 @@ module Sinatra
       # Node Resource
       ##
 
-
-      app.get '/node/summary/?' do
-        # view list of node resources and their measurements
-        @nodes = NodeResource.all
-        erb :'nodes/summary'
-      end
-
       app.get '/node/new/?' do
         # get new node form
         @projects = Project.all
@@ -66,6 +59,20 @@ module Sinatra
         erb :'nodes/show'
       end
       # rubocop:enable BlockLength
+
+      app.get '/node/summary/:id?' do
+        # view list of node resources and their measurements
+        @project = Project.filter(id: params[:id]).first
+        @nodes = NodeResource[project_id: params[:id]]
+
+        @page = params[:page].to_f
+        @page = 1 if @page == 0
+        @per_page = 10
+
+        @data = Report.get_data(@project, @page, @per_page, "node")
+        puts @data
+        erb :'nodes/summary'
+      end
 
       app.get '/node/:id/edit/?' do
         # get node edit form

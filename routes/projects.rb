@@ -17,29 +17,6 @@ module Sinatra
         erb :'projects/create'
       end
 
-      app.get '/projects/:id/page/?:page?' do
-        # view a project
-        @project = Project[id: params[:id]]
-        if @project.nil?
-          MyLog.log.fatal 'routes/projects: Project not found'
-          halt 404, 'Project not found'
-        end
-        @client = Client.filter(id: @project.client_id).first
-
-        if @client.nil?
-          MyLog.log.fatal "routes/projects: Project's clients not found"
-          halt 404, "Project's Client not found"
-        end
-
-        @page = params[:page].to_f
-        @page = 1 if @page == 0
-        @per_page = 1
-
-        @data = Report.get_data(@project, @page, @per_page)
-
-        erb :'projects/show'
-      end
-
       app.get '/projects/:id/edit/?' do
         # get project edit form
         @project = Project[id: params[:id]]
@@ -54,6 +31,29 @@ module Sinatra
         # get a list of all projects
         @projects = Project.all
         erb :'projects/index'
+      end
+
+      app.get '/projects/:id/?' do
+        # view a project
+        @project = Project[id: params[:id]]
+        if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found'
+          halt 404, 'Project not found'
+        end
+        @client = Client.filter(id: @project.client_id).first
+
+        if @client.nil?
+          MyLog.log.fatal "routes/projects: Project's clients not found"
+          halt 404, "Project's Client not found"
+        end
+
+        # @page = params[:page].to_f
+        # @page = 1 if @page == 0
+        # @per_page = 1
+
+        # @data = Report.get_data(@project, @page, @per_page)
+
+        erb :'projects/show'
       end
 
       # This could also be PUT
