@@ -49,7 +49,7 @@ module Sinatra
         @page = 1 if @page.zero?
 
         # The number of resources displayed on a page
-        @per_page = 1
+        @per_page = 10
 
         @data = Report.get_data(@project, @page, @per_page, 'db')
 
