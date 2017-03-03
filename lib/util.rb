@@ -157,12 +157,15 @@ class Report
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
-          next if data[0].nil?
-          data_average = if data[0][:value].number?
+          if data[0].nil?
+            data_average = 0
+          else
+            data_average = if data[0][:value].number?
                            DataUtil.average_value(data)
                          else
                            data[-1][:value]
                          end
+          end
           resource_data[resource.name].merge!(measurement => data_average)
         end
       end
@@ -170,4 +173,24 @@ class Report
     end
     project_data
   end
+
+  def self.sum_data(input_hash)
+    data = {}
+
+    input_hash.each do |project_name, project_resource|
+     project_resource.each do |resource|
+      resource.each do |resource_type, resource_array|
+        unless resource_array[0].empty?
+          resource_array[0].each do |resource_name, meas_hash|
+            meas_hash.each do |meas, value|
+              value = 0 if meas_hash.empty?
+              # puts meas
+              # puts value
+            end # end meas_hash
+          end #end resource_array
+        end #end unless
+      end #end resource
+     end #edn project_resource
+    end # end input_hash
+  end # end function
 end
