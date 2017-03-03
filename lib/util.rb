@@ -150,7 +150,7 @@ class Report
       @page_count = project.send("#{res}_resources").count
 
       all_resources = project.send("#{res}_resources")[
-            (( page - 1) * per_page...(page * per_page))
+            ((page - 1) * per_page...(page * per_page))
           ]
 
       next unless resource_type == res
@@ -174,7 +174,8 @@ class Report
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
-      (resource_data[resource_type] ||= []) << (@page_count / per_page.to_f).ceil
+      (resource_data[resource_type] ||= []) << (
+                        @page_count / per_page.to_f).ceil
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data

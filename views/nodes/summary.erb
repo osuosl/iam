@@ -3,38 +3,42 @@
   <table class="table">
     <h3>
       <%= @project.name %> - Node Summary
-    </h3>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>DiskSize</th>
-        <th>RamSize</th>
-        <th>VCPUCount</th>
-        <th>DiskTemplate</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @data["node"][1].each do |resource_hash| %>
-      <tr>
-        <td>
-          <% resource_hash[1].each do |k, v| %>
-          <% if k == 'id' %>
-          <a href="/node/<%= v %>" >
-            <%= resource_hash[0] %>
-          </a>
-          <% end %>
-          <% end %>
-        </td>
-        <% resource_hash[1].each do |r_meas| %>
-        <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
-        <td>
-          <%= r_meas[1] %>
-        </td>
-        <%end %>
-        <% end %>
-      </tr>
+    </h3><br>
+    <% if @data['node'][0].zero? %>
+      <h4><%= @project.name %> has no node resources</h4>
+    <% else %>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>DiskSize</th>
+          <th>RamSize</th>
+          <th>VCPUCount</th>
+          <th>DiskTemplate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @data["node"][1].each do |resource_hash| %>
+          <tr>
+            <td>
+              <% resource_hash[1].each do |k, v| %>
+                <% if k == 'id' %>
+                  <a href="/node/<%= v %>" >
+                    <%= resource_hash[0] %>
+                  </a>
+                <% end %>
+              <% end %>
+            </td>
+            <% resource_hash[1].each do |r_meas| %>
+              <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
+                <td>
+                  <%= r_meas[1] %>
+                </td>
+              <%end %>
+            <% end %>
+          </tr>
       <% end %>
     </tbody>
+    <% end %>
   </table>
   <ul class="pagination pagination-sm">
     <li class="paginate_button">

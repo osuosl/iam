@@ -3,35 +3,39 @@
   <table class="table">
     <h3>
       <%= @project.name %> - Database Summary
-    </h3>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>DBSize</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @data["db"][1].each do |resource_hash| %>
-      <tr>
-        <td>
-          <% resource_hash[1].each do |k, v| %>
-          <% if k == 'id' %>
-          <a href="/db/<%= v %>" >
-            <%= resource_hash[0] %>
-          </a>
-          <% end %>
-          <% end %>
-        </td>
-        <% resource_hash[1].each do |r_meas| %>
-        <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
-        <td>
-          <%= r_meas[1] %>
-        </td>
-        <%end %>
+    </h3><br>
+      <% if @data['db'][0].zero? %>
+        <h4><%= @project.name %> has no database resources</h4>
+      <% else %>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>DBSize</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @data["db"][1].each do |resource_hash| %>
+            <tr>
+              <td>
+                <% resource_hash[1].each do |k, v| %>
+                  <% if k == 'id' %>
+                    <a href="/db/<%= v %>" >
+                      <%= resource_hash[0] %>
+                    </a>
+                  <% end %>
+                <% end %>
+              </td>
+              <% resource_hash[1].each do |r_meas| %>
+                <% if r_meas[0] != 'id' && r_meas[0] != 'page_count' %>
+                  <td>
+                    <%= r_meas[1] %>
+                  </td>
+                <%end %>
+              <% end %>
+          </tr>
         <% end %>
-      </tr>
-      <% end %>
-    </tbody>
+      </tbody>
+    <% end %>
   </table>
   <ul class="pagination pagination-sm">
     <li class="paginate_button">

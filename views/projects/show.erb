@@ -14,43 +14,47 @@
     Description: <%= @project.description %> <br>
     <%= @project.active ? "Active" : "Inactive" %><br><br>
 
-    <% Report.plugin_matrix. each do |resource_type, resource_meas| %>
-      <table class="table">
-        <h3>
-          <a href="/<%= resource_type %>/summary/<%= @project.id %>">
-            <%=resource_type.capitalize%>
-          </a>
-        </h3>
-        <% @res = @project.send("#{resource_type}_resources") %>
+    <% Report.plugin_matrix.each do |resource_type, _resource_meas| %>
+    <table class="table">
+      <h3>
+        <a href="/<%= resource_type %>/summary/<%= @project.id %>">
+          <%=resource_type.capitalize%>
+        </a>
+      </h3>
+      <% @resource = @project.send("#{resource_type}_resources") %>
+      <% if @resource[0].nil? %>
+        <%= @project.name %> has no <%= resource_type %> resources
+      <% else %>
         <thead>
-          <% @res[0].each do |key, value| %>
-            <% unless key==:id || key==:project_id || key==:created || key==:modified || key==:active %>
+          <% @resource[0].each do |res_key, _value| %>
+            <% unless res_key==:id || res_key==:project_id || res_key==:created || res_key==:modified || res_key==:active %>
               <th>
-                <%= key %>
+                <%= res_key %>
               </th>
             <% end %>
           <% end %>
         </thead>
         <tbody>
-          <% @res.each do |key, value| %>
-            <tr>
-            <% key.each do |k, v| %>
-                <% unless k==:id || k==:project_id || k==:created || k==:modified || k==:active %>
-                  <td>
-                    <% if k==:name %>
-                     <a href="/<%=resource_type%>/<%=key[:id]%>">
+          <% @resource.each do |res_hash, _value| %>
+          <tr>
+            <% res_hash.each do |k, v| %>
+              <% unless k==:id || k==:project_id || k==:created || k==:modified || k==:active %>
+                <td>
+                  <% if k==:name %>
+                    <a href="/<%=resource_type%>/<%=res_hash[:id]%>">
                       <%= v %>
-                     </a>
-                    <% else %>
-                      <%= v %>
-                    <% end %>
-                  </td>
-                <% end %>
+                    </a>
+                  <% else %>
+                    <%= v %>
+                  <% end %>
+                </td>
+              <% end %>
             <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tr>
+        <% end %>
+      </tbody>
+      <% end %>
+    </table>
     <% end %>
   </p>
 </div>
