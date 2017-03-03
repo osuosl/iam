@@ -32,7 +32,7 @@ module Sinatra
         end
         erb :'projects/edit'
       end
-      
+
       app.get '/projects/:id/?' do
         # view a project
         @project = Project[id: params[:id]]
