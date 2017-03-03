@@ -39,16 +39,19 @@ module Sinatra
         erb :'database/show'
       end
 
-      app.get '/db/summary/:id' do
+      app.get '/db/summary/:id/?:page?' do
         # view list of db resources and their measurements
         @project = Project.filter(id: params[:id]).first
         @dbs = DbResource[project_id: params[:id]]
 
+        # current page
         @page = params[:page].to_f
-        @page = 1 if @page == 0
-        @per_page = 10
+        @page = 1 if @page.zero?
 
-        @data = Report.get_data(@project, @page, @per_page, "db")
+        # The number of resources displayed on a page
+        @per_page = 1
+
+        @data = Report.get_data(@project, @page, @per_page, 'db')
 
         erb :'database/summary'
       end
@@ -66,7 +69,6 @@ module Sinatra
         @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
-
 
       app.get '/dbs/?' do
         # get a list of all database

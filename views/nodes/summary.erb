@@ -36,4 +36,15 @@
       <% end %>
     </tbody>
   </table>
+  <ul class="pagination pagination-sm">
+    <li class="paginate_button">
+      <% 1.upto(@data['node'][0]) do |i| %>
+        <a href="/node/summary/<%= @project.id %>/<%= i %>">
+          <%= "#{i}" %>
+        </a>
+        <li class="paginate_button">
+      <% end %>
+        </li>
+    </li>
+  </ul>
 </div>

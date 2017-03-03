@@ -60,17 +60,20 @@ module Sinatra
       end
       # rubocop:enable BlockLength
 
-      app.get '/node/summary/:id?' do
+      app.get '/node/summary/:id/?:page?' do
         # view list of node resources and their measurements
         @project = Project.filter(id: params[:id]).first
         @nodes = NodeResource[project_id: params[:id]]
 
+        # current page
         @page = params[:page].to_f
-        @page = 1 if @page == 0
-        @per_page = 10
+        @page = 1 if @page.zero?
 
-        @data = Report.get_data(@project, @page, @per_page, "node")
-        puts @data
+        # The number of resources displayed on a page
+        @per_page = 1
+
+        @data = Report.get_data(@project, @page, @per_page, 'node')
+
         erb :'nodes/summary'
       end
 
