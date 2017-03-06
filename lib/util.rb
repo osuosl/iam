@@ -155,6 +155,11 @@ class Report
       resources.each do |resource|
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
+        if resource_type == 'node'
+          drbd = DiskTemplate.new.report({node: resource.name})
+          drdb = 0 if drdb.nil?
+          resource_data[resource.name]['drdb'] = drdb
+        end
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
@@ -175,30 +180,41 @@ class Report
     project_data
   end
 
-  # def self.sum_data(input_hash)
-  #   data = {}
-  #   resource_data = {}
-  #   total_value = 0
-  #   total = 0
-  #
-  #   input_hash.each do |_project_name, project_resource|
-  #     project_resource.each do |resource|
-  #       resource.each do |resource_type, resource_array|
-  #         unless resource_array[0].empty?
-  #           resource_array[0].each do |resource_name, meas_hash|
-  #             meas_hash.each do |meas, value|
-  #               value = 0 if meas_hash.empty?
-  #               total_value = total_value + value
-  #             # puts meas
-  #             # puts value
-  #           end # end meas_hash
-  #         end #end resource_array
-  #       end #end unless
-  #       resource_data['total'] = total_value
-  #     end #end resource
-  #     data =resource_data
-  #    end #edn project_resource
-  #   end # end input_hash
-  #   data
-  # end # end function
+  def self.sum_data(input_hash)
+    sum = {}
+
+    input_hash.each do |project_name, project_resource|
+      project_resource.each do |resource|
+       resource.each do |res_type, resource_hash|
+         sum[res_type] ||= {}
+         resource_hash.each do |res_hash, _values_hash|
+           res_hash.each do |name, data|
+             data.each do |key, value|
+               unless key == 'id'
+                 if data.has_key?('drdb')
+                   drdb = data['drdb'] + 1
+                   if sum[res_type].has_key?(key)
+                     sum[res_type][key] = sum[res_type][key] + (data[key] * drdb)
+                   else
+                     sum[res_type].store(key, value)
+                     sum[res_type].delete('drdb')
+                   end # if sum
+                 else
+                   if sum[res_type].has_key?(key)
+                     sum[res_type][key] = sum[res_type][key] + data[key]
+                   else
+                     sum[res_type].store(key, value)
+                   end# if sum
+                 end #if
+               end #unless
+             end #data
+           end #res_hash
+         end #resource_hash
+        end #resource
+      end #project_resource
+    end #input_hash
+    sum
+  end # end function
+
+
 end

@@ -21,8 +21,8 @@
         <thead>
           <h4><%= resource_type.capitalize%></h4>
           <th>Name</th>
-          <%resource_measurements.each do |title| %>
-            <th><%= title %></th>
+          <%resource_measurements.each do |header| %>
+            <th><%= header %></th>
           <% end %>
         </thead>
         <tbody>
@@ -35,19 +35,19 @@
                     <td>
                       <a href="/<%= resource_type %>/<%=value%>"><%= name %></a>
                     </td>
-                  <% else %>
+                  <% elsif key != 'drdb'%>
                     <td>
                       <%= value %>
                     </td>
-                  <% end #if %>
-                <% end #res_hash%>
+                  <% end %>
+                <% end %>
                 </tr>
-              <% end # resource[resource]%>
-            <% end #project_resource%>
-          <% end #client data%>
+              <% end %>
+            <% end %>
+          <% end %>
         </tbody>
       </table>
-  <% end %>
+    <% end %>
   <% end %>
 <% end %>
 </div>

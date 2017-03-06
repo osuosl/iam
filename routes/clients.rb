@@ -33,18 +33,10 @@ module Sinatra
             (@client_data[project.name] ||= []) << data
           end
         end
-        @data = Report.sum_data(@client_data)
 
         erb :'clients/show'
       end
 
-      app.get '/clients/:id/billing/?' do
-        @client = Client[id: params[:id]]
-
-        @projects = @client.projects
-
-        erb :'clients/billing'
-      end
       app.get '/clients/:id/edit/?' do
         # get client edit form
         @client = Client[id: params[:id]]
@@ -53,6 +45,23 @@ module Sinatra
           halt 404, 'routes/clients: Client not found'
         end
         erb :'clients/edit'
+      end
+
+      app.get '/clients/:id/billing/?' do
+        @client = Client[id: params[:id]]
+
+        @projects = @client.projects
+
+        unless @projects.nil?
+          @client_data = {}
+          @projects.each do |project|
+            data = Report.project_data(project)
+            (@client_data[project.name] ||= []) << data
+          end
+        end
+        @data = Report.sum_data(@client_data)
+        puts @data
+        erb :'clients/billing'
       end
 
       app.get '/clients/?' do
