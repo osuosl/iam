@@ -154,6 +154,7 @@ class Report
       # type of resource. Put it all in a big hash.
       resources.each do |resource|
         resource_data[resource.name] ||= {}
+        resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
@@ -161,10 +162,10 @@ class Report
             data_average = 0
           else
             data_average = if data[0][:value].number?
-                           DataUtil.average_value(data)
-                         else
-                           data[-1][:value]
-                         end
+                             DataUtil.average_value(data)
+                           else
+                             data[-1][:value]
+                           end
           end
           resource_data[resource.name].merge!(measurement => data_average)
         end
@@ -174,23 +175,30 @@ class Report
     project_data
   end
 
-  def self.sum_data(input_hash)
-    data = {}
-
-    input_hash.each do |project_name, project_resource|
-     project_resource.each do |resource|
-      resource.each do |resource_type, resource_array|
-        unless resource_array[0].empty?
-          resource_array[0].each do |resource_name, meas_hash|
-            meas_hash.each do |meas, value|
-              value = 0 if meas_hash.empty?
-              # puts meas
-              # puts value
-            end # end meas_hash
-          end #end resource_array
-        end #end unless
-      end #end resource
-     end #edn project_resource
-    end # end input_hash
-  end # end function
+  # def self.sum_data(input_hash)
+  #   data = {}
+  #   resource_data = {}
+  #   total_value = 0
+  #   total = 0
+  #
+  #   input_hash.each do |_project_name, project_resource|
+  #     project_resource.each do |resource|
+  #       resource.each do |resource_type, resource_array|
+  #         unless resource_array[0].empty?
+  #           resource_array[0].each do |resource_name, meas_hash|
+  #             meas_hash.each do |meas, value|
+  #               value = 0 if meas_hash.empty?
+  #               total_value = total_value + value
+  #             # puts meas
+  #             # puts value
+  #           end # end meas_hash
+  #         end #end resource_array
+  #       end #end unless
+  #       resource_data['total'] = total_value
+  #     end #end resource
+  #     data =resource_data
+  #    end #edn project_resource
+  #   end # end input_hash
+  #   data
+  # end # end function
 end

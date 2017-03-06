@@ -20,6 +20,7 @@
       <table class="table">
         <thead>
           <h4><%= resource_type.capitalize%></h4>
+          <th>Name</th>
           <%resource_measurements.each do |title| %>
             <th><%= title %></th>
           <% end %>
@@ -27,23 +28,26 @@
         <tbody>
           <% @client_data.each do |project_name, project_resource|%>
             <% project_resource.each do |resource|%>
-              <% resource.each do |resource_type, resource_array|%>
-                <% unless resource_array[0].empty?%>
-                <tr>
-                  <% resource_array[0].each do |resource_name, meas_hash|%>
-                    <% meas_hash.each do |meas, value|%>
-                      <% value = 0 if meas_hash.empty?%>
-                      <td><%= value%></td>
-                    <% end # end meas_hash%>
-                  <% end #end resource_array%>
+              <% resource[resource_type][0].each do |name, res_hash| %>
+              <tr>
+                <% res_hash.each do |key, value| %>
+                  <% if key == 'id' %>
+                    <td>
+                      <a href="/<%= resource_type %>/<%=value%>"><%= name %></a>
+                    </td>
+                  <% else %>
+                    <td>
+                      <%= value %>
+                    </td>
+                  <% end #if %>
+                <% end #res_hash%>
                 </tr>
-                <% end #end unless%>
-              <% end #end resource%>
-            <% end #edn project_resource%>
-          <% end # end input_hash%>
+              <% end # resource[resource]%>
+            <% end #project_resource%>
+          <% end #client data%>
         </tbody>
       </table>
-  <% end %><!-- end Report-->
-  <% end %> <!-- end if client is def -->
-<% end %><!-- end if projecys -->
+  <% end %>
+  <% end %>
+<% end %>
 </div>
