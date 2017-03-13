@@ -156,8 +156,8 @@ class Report
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
         if resource_type == 'node'
-          drbd = DiskTemplate.new.report({node: resource.name})
-          drdb = 0 if drdb.nil?
+          drdb = DiskTemplate.new.report(node: resource.name )
+          drdb = 0 if drdb.empty?
           resource_data[resource.name]['drdb'] = drdb
         end
         measurements.each do |measurement|
@@ -191,30 +191,42 @@ class Report
            res_hash.each do |name, data|
              data.each do |key, value|
                unless key == 'id'
+                 # If the resource is a node
                  if data.has_key?('drdb')
-                   drdb = data['drdb'] + 1
+                   # Change the bool from 0 and 1 to 1 and 2
+                   drdb = data.fetch('drdb') + 1
                    if sum[res_type].has_key?(key)
+                     # If this measurement is already present in sum, multiply the
+                     # measurement from data by the drdb(1 or 2) then add it to
+                     # the measurement that is already in sum
                      sum[res_type][key] = sum[res_type][key] + (data[key] * drdb)
                    else
+                     # The measurement is not present in sum, add it and remove
+                     # the key drdb
                      sum[res_type].store(key, value)
                      sum[res_type].delete('drdb')
-                   end # if sum
-                 else
+                   end
+                 # The resource is not a node
+               else
                    if sum[res_type].has_key?(key)
+                     # If the measurement is already present in sum, add the
+                     # number from data to the number in sum
                      sum[res_type][key] = sum[res_type][key] + data[key]
                    else
+                     # The measurement is not present in sum, add it for the first
+                     # time
                      sum[res_type].store(key, value)
-                   end# if sum
-                 end #if
-               end #unless
-             end #data
-           end #res_hash
-         end #resource_hash
-        end #resource
-      end #project_resource
-    end #input_hash
+                   end
+                 end
+               end
+             end
+           end
+         end
+        end
+      end
+    end
     sum
-  end # end function
+  end
 
 
 end

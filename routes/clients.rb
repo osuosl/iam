@@ -59,8 +59,8 @@ module Sinatra
             (@client_data[project.name] ||= []) << data
           end
         end
+
         @data = Report.sum_data(@client_data)
-        puts @data
         erb :'clients/billing'
       end
 
@@ -79,7 +79,7 @@ module Sinatra
                                  contact_email: params[:contact_name] || '',
                                  contact_name: params[:contact_email] || '')
         end
-        redirect "/clients/#{client.id}"
+        redirect "/clients/new/#{client.id}"
       end
 
       app.patch '/clients/?' do
