@@ -9,11 +9,16 @@
              </tr>
            </thead>
            <tbody>
-             <tr>
-               <td>
-                 <%= @error.class %>
-              </td>
-             </tr>
+             <% if @error %>
+              <tr>
+                <td>
+                   <p style="color:red"> Error:</p>
+                </td>
+                <td>
+                  <p style="color:red"><%= @error %></p>
+                </td>
+              </tr>
+             <% end %>
              <tr>
                <td>name</td>
                <td>

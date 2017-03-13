@@ -10,8 +10,10 @@ module Sinatra
       ##
       # Clients
       ##
-      app.get '/clients/new/?' do
+      app.get '/clients/new/?:error?' do
         # get new client form
+
+        @error = 'That client already exists' if params[:error]
         erb :'clients/create'
       end
 
@@ -72,14 +74,19 @@ module Sinatra
 
       # This could also be PUT
       app.post '/clients/?' do
-        # recieve new client
+        # recieve new client if it is valid
         if params[:name]
-          client = Client.create(name: params[:name],
-                                 description: params[:description] || '',
-                                 contact_email: params[:contact_name] || '',
-                                 contact_name: params[:contact_email] || '')
+          begin
+            client = Client.create(name: params[:name],
+                                   description: params[:description] || '',
+                                   contact_email: params[:contact_name] || '',
+                                   contact_name: params[:contact_email] || '')
+          rescue StandardError
+            @err = 1
+            redirect "/clients/new/#{@err}"
+          end
+          redirect "/clients/#{client.id}"
         end
-        redirect "/clients/new/#{client.id}"
       end
 
       app.patch '/clients/?' do

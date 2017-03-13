@@ -156,7 +156,7 @@ class Report
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
         if resource_type == 'node'
-          drdb = DiskTemplate.new.report(node: resource.name )
+          drdb = DiskTemplate.new.report(node: resource.name)
           drdb = 0 if drdb.empty?
           resource_data[resource.name]['drdb'] = drdb
         end
@@ -183,50 +183,49 @@ class Report
   def self.sum_data(input_hash)
     sum = {}
 
-    input_hash.each do |project_name, project_resource|
+    input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
-       resource.each do |res_type, resource_hash|
-         sum[res_type] ||= {}
-         resource_hash.each do |res_hash, _values_hash|
-           res_hash.each do |name, data|
-             data.each do |key, value|
-               unless key == 'id'
-                 # If the resource is a node
-                 if data.has_key?('drdb')
-                   # Change the bool from 0 and 1 to 1 and 2
-                   drdb = data.fetch('drdb') + 1
-                   if sum[res_type].has_key?(key)
-                     # If this measurement is already present in sum, multiply the
-                     # measurement from data by the drdb(1 or 2) then add it to
-                     # the measurement that is already in sum
-                     sum[res_type][key] = sum[res_type][key] + (data[key] * drdb)
-                   else
-                     # The measurement is not present in sum, add it and remove
-                     # the key drdb
-                     sum[res_type].store(key, value)
-                     sum[res_type].delete('drdb')
-                   end
-                 # The resource is not a node
-               else
-                   if sum[res_type].has_key?(key)
-                     # If the measurement is already present in sum, add the
-                     # number from data to the number in sum
-                     sum[res_type][key] = sum[res_type][key] + data[key]
-                   else
-                     # The measurement is not present in sum, add it for the first
-                     # time
-                     sum[res_type].store(key, value)
-                   end
-                 end
-               end
-             end
-           end
-         end
+        resource.each do |res_type, resource_hash|
+          sum[res_type] ||= {}
+          resource_hash.each do |res_hash, _values_hash|
+            res_hash.each do |_name, data|
+              data.each do |key, value|
+                unless key == 'id'
+                  # If the resource is a node
+                  if data.key?('drdb')
+                    # Change the bool from 0 and 1 to 1 and 2
+                    drdb = data.fetch('drdb') + 1
+                    if sum[res_type].key?(key)
+                      # If this measurement is already present in sum, multiply
+                      # the measurement from data by the drdb(1 or 2) then add
+                      # it to the measurement that is already in sum
+                      sum[res_type][key] = sum[res_type][key] + (
+                                                              data[key] * drdb)
+                    else
+                      # The measurement is not present in sum, add it and remove
+                      # the key drdb
+                      sum[res_type].store(key, value)
+                      sum[res_type].delete('drdb')
+                    end
+                    # The resource is not a node
+                  else
+                    if sum[res_type].key?(key)
+                      # If the measurement is already present in sum, add the
+                      # number from data to the number in sum
+                      sum[res_type][key] = sum[res_type][key] + data[key]
+                    else
+                      # The measurement is not present in sum, add it for the
+                      # first time
+                      sum[res_type].store(key, value)
+                    end
+                  end
+                end
+              end
+            end
+          end
         end
       end
     end
     sum
   end
-
-
 end
