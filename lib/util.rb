@@ -128,7 +128,6 @@ class Report
     matrix = {}
     # query the plugins model to determine what measurements are available
     plugins = Plugin.all
-    # puts plugins.inspect
     # make a matrix of resource types and their plugins
     # { 'node': ['DiskSize', 'VCPU', ...]
     #   'db': ['Size', ...]
