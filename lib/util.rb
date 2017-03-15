@@ -122,6 +122,7 @@ end
 
 # methods for gathering measurement data into hashes
 class Report
+  # rubocop:disable PerceivedComplexity
   # this method returns all the available resource type along with an array
   # of the measurment plugins available for that resource type
   def self.plugin_matrix
@@ -180,43 +181,43 @@ class Report
     project_data
   end
 
-  def self.sum_data(input_hash)
+  def self.sum_data(input_hash, date_selection)
     sum = {}
+    info = {}
 
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
         resource.each do |res_type, resource_hash|
+          # Add hashes for each resource into the main sum hash
           sum[res_type] ||= {}
-          resource_hash.each do |res_hash, _values_hash|
-            res_hash.each do |_name, data|
-              data.each do |key, value|
-                unless key == 'id'
-                  # If the resource is a node
-                  if data.key?('drdb')
-                    # Change the bool from 0 and 1 to 1 and 2
-                    drdb = data.fetch('drdb') + 1
-                    if sum[res_type].key?(key)
-                      # If this measurement is already present in sum, multiply
-                      # the measurement from data by the drdb(1 or 2) then add
-                      # it to the measurement that is already in sum
-                      sum[res_type][key] = sum[res_type][key] + (
-                                                              data[key] * drdb)
-                    else
-                      # The measurement is not present in sum, add it and remove
-                      # the key drdb
-                      sum[res_type].store(key, value)
-                      sum[res_type].delete('drdb')
-                    end
-                    # The resource is not a node
+          # Isolate each projects resource then get those that fall between the
+          # date_selection. Then add their hashes back to the info hash
+          resource_hash.each do |hash, _value|
+            hash.each do |resource_name, meas_hash|
+              meas_hash.each do |meas_key, meas_value|
+                if meas_key != 'id' && meas_key != 'drdb'
+                  # Turn the key string into a class
+                  meas_class = meas_key.constantize
+                  if date_selection.nil?
+                    h = meas_class.new.report({"#{res_type}": resource_name})
                   else
-                    if sum[res_type].key?(key)
-                      # If the measurement is already present in sum, add the
-                      # number from data to the number in sum
-                      sum[res_type][key] = sum[res_type][key] + data[key]
-                    else
-                      # The measurement is not present in sum, add it for the
-                      # first time
-                      sum[res_type].store(key, value)
+                    h = meas_class.new.report(
+                                 {"#{res_type}": resource_name}, date_selection)
+                  end
+                  # Transform array to hash
+                  hash = h[0]
+                  unless hash.nil?
+                    hash.each do |k, v|
+                      if k == :value
+                        # If the measurement already exists in sum, add the new
+                        # measurement value to the one in sum
+                        if sum[res_type].key?(meas_key)
+                          sum[res_type][meas_key] = v + sum[res_type][meas_key]
+                        else
+                          # Add the measurement value for the first time
+                          sum[res_type][meas_key] =  v
+                        end
+                      end
                     end
                   end
                 end

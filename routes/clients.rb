@@ -49,7 +49,7 @@ module Sinatra
         erb :'clients/edit'
       end
 
-      app.get '/clients/:id/billing/?' do
+      app.get '/clients/:id/billing/?:date_selection?' do
         @client = Client[id: params[:id]]
 
         @projects = @client.projects
@@ -62,7 +62,9 @@ module Sinatra
           end
         end
 
-        @data = Report.sum_data(@client_data)
+        @date_selection = params[:date_selection]
+
+        @data = Report.sum_data(@client_data, @date_selection)
         erb :'clients/billing'
       end
 
