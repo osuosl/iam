@@ -122,7 +122,6 @@ end
 
 # methods for gathering measurement data into hashes
 class Report
-  # rubocop:disable PerceivedComplexity
   # this method returns all the available resource type along with an array
   # of the measurment plugins available for that resource type
   def self.plugin_matrix
@@ -183,7 +182,6 @@ class Report
 
   def self.sum_data(input_hash, date_selection)
     sum = {}
-    info = {}
 
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
@@ -207,17 +205,20 @@ class Report
                   # Transform array to hash
                   hash = h[0]
                   unless hash.nil?
-                    hash.each do |k, v|
-                      if k == :value
-                        # If the measurement already exists in sum, add the new
-                        # measurement value to the one in sum
-                        if sum[res_type].key?(meas_key)
-                          sum[res_type][meas_key] = v + sum[res_type][meas_key]
-                        else
-                          # Add the measurement value for the first time
-                          sum[res_type][meas_key] =  v
-                        end
-                      end
+                    value = hash.fetch(:value)
+                    if meas_hash.key?('drdb')
+                       drdb = meas_hash.fetch('drdb') + 1
+                    else
+                       drdb = 1
+                    end
+                    # If the measurement already exists in sum, add the new
+                    # measurement value to the one in sum
+                    if sum[res_type].key?(meas_key)
+                      sum[res_type][meas_key] = (value * drdb) +
+                            sum[res_type][meas_key]
+                    else
+                      # Add the measurement value for the first time
+                      sum[res_type][meas_key] =  value
                     end
                   end
                 end
