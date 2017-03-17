@@ -189,37 +189,41 @@ class Report
           # Add hashes for each resource into the main sum hash
           sum[res_type] ||= {}
           # Isolate each projects resource then get those that fall between the
-          # date_selection. Then add their hashes back to the info hash
+          # date_selection. Then add their values to the sum hash
           resource_hash.each do |hash, _value|
             hash.each do |resource_name, meas_hash|
               meas_hash.each do |meas_key, meas_value|
                 if meas_key != 'id' && meas_key != 'drdb'
-                  # Turn the key string into a class
+                  # Turn the key string into a class and use it to call to the
+                  # BasePlugin report method
                   meas_class = meas_key.constantize
                   if date_selection.nil?
                     h = meas_class.new.report({"#{res_type}": resource_name})
                   else
                     h = meas_class.new.report(
-                                 {"#{res_type}": resource_name}, date_selection)
+                      {"#{res_type}": resource_name}, date_selection)
                   end
-                  # Transform array to hash
+                  # Transform array to hash. Insures all hashes are not nil,
+                  # then adds up all the resources
                   hash = h[0]
-                  unless hash.nil?
-                    value = hash.fetch(:value)
-                    if meas_hash.key?('drdb')
-                       drdb = meas_hash.fetch('drdb') + 1
-                    else
-                       drdb = 1
-                    end
-                    # If the measurement already exists in sum, add the new
-                    # measurement value to the one in sum
-                    if sum[res_type].key?(meas_key)
-                      sum[res_type][meas_key] = (value * drdb) +
-                            sum[res_type][meas_key]
-                    else
-                      # Add the measurement value for the first time
-                      sum[res_type][meas_key] =  value
-                    end
+                  if hash.nil?
+                    hash = Hash.new
+                    hash[:value] = 0
+                  end
+                  value = hash.fetch(:value)
+                  if meas_hash.key?('drdb')
+                    drdb = meas_hash.fetch('drdb') + 1
+                  else
+                    drdb = 1
+                  end
+                  # If the measurement already exists in sum, add the new
+                  # measurement value to the one in sum
+                  if sum[res_type].key?(meas_key)
+                    sum[res_type][meas_key] = (value * drdb) +
+                                              sum[res_type][meas_key]
+                  else
+                    # Add the measurement value for the first time
+                    sum[res_type][meas_key] =  value
                   end
                 end
               end
