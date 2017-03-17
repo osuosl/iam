@@ -1,4 +1,3 @@
-<div class="container">
   <br>
   <div class="title">
     <h2>Project List</h2>
@@ -21,7 +20,7 @@
       <tr>
         <th scope="row"><%= @project.id %></th>
           <td>
-            <a href="/projects/<%= @project.id %>">
+            <a href="/projects/<%= @project.id %>/">
               <%= @project.name %>
             </a>
           </td>
@@ -41,4 +40,3 @@
     <% end %>
     </tbody>
   </table>
-</div>

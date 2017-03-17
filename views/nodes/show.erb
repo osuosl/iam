@@ -3,44 +3,53 @@
     <a href="/node/<%= @node.id %>/edit">edit</a>
   </h2>
   <p>
-    Project Id: <%= @node.project_id %> <br>
-    Type: <%= @node.type %> <br>
-    Cluster: <%= @node.cluster %> <br>
+    Type: <%= @node.type %><br>
+    Cluster: <%= @node.cluster %><br>
     Active: <%= @node.active %><br>
+    <% if @projects %>
+    Project: <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <% else %>
+    Project: Unknown
+    <% end %>
   </p>
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Project Id</th>
-          <th>Type</th>
-          <th>Cluster</th>
-          <th>Active</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for @project in @projects %>
-          <% if @project.active %>
-          <tr>
-            <th scope="row"><%= @project.id %></th>
-          <td>
-            <a href="/projects/<%= @project.id %>" >
-              <%= @project.name %>
-            </a>
-          </td>
-          <td>
-            <%= @project.resources %>
-          </td>
-          <td>
-            <%= @project.description %>
-          </td>
-          <td>
-            <%= @project.active %>
-          </td>
-        </tr>
+  <h4>Node Data</h4>
+  <sub>
+    Last updated:
+    <% if @update_time %>
+      <%= @update_time %>
+    <% else %>
+      Unknown
+    <% end %>
+  </sub>
+  <table class="table" >
+    <thead>
+      <tr>
+        <th>VCPUCount</th>
+        <th>RamSize</th>
+        <th>DiskSize</th>
+        <th>DiskTemplate</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>
+        <%= DataUtil.average_value(@vcpu_data) %>
+      </td>
+      <td>
+        <%= DataUtil.average_value(@ramsize_data) %>
+      </td>
+      <td>
+        <%= DataUtil.average_value(@disksize_data) %>
+      </td>
+      <td>
+        <% if @disktemplate_data != nil && @disktemplate_data.last != nil %>
+          <%= @disktemplate_data.last[:value] %>
+        <% else %>
+          Not found
         <% end %>
-        <% end %>
-      </tbody>
+      </td>
+    </tr>
   </table>
-  <br>
+
+   <br>
   <br>
 </div>

@@ -119,3 +119,96 @@ class DataUtil
     ((latest - earliest + day) / day).round(2)
   end
 end
+
+# methods for gathering measurement data into hashes
+class Report
+  # this method returns all the available resource type along with an array
+  # of the measurment plugins available for that resource type
+  def self.plugin_matrix
+    matrix = {}
+    # query the plugins model to determine what measurements are available
+    plugins = Plugin.all
+    # make a matrix of resource types and their plugins
+    # { 'node': ['DiskSize', 'VCPU', ...]
+    #   'db': ['Size', ...]
+    #   ...}
+    plugins.each do |plugin|
+      next if plugin.name == 'TestingPlugin'
+      (matrix[plugin.resource_name] ||= []) << plugin.name
+    end
+    matrix
+  end
+
+  def self.get_data(project, page, per_page, res)
+    resource_data = {}
+
+    # for each resource type in the matrix, get a list of all that type
+    # of resource each project has
+    plugin_matrix.each do |resource_type, measurements|
+      plugin_data = {}
+      @page_count = project.send("#{res}_resources").count
+
+      all_resources = project.send("#{res}_resources")[
+            ((page - 1) * per_page...(page * per_page))
+          ]
+
+      next unless resource_type == res
+      # for each of those resources, get all the measuremnts for that
+      # type of resource. Put it all in a big hash.
+      all_resources.each do |resource|
+        plugin_data[resource.name] ||= {}
+        plugin_data[resource.name]['id'] = resource[:id]
+        measurements.each do |measurement|
+          plugin = Object.const_get(measurement).new
+          data = plugin.report(resource_type.to_sym => resource.name)
+          if data[0].nil?
+            data_average = 0
+          else
+            data_average = if data[0][:value].number?
+                             DataUtil.average_value(data)
+                           else
+                             data[-1][:value]
+                           end
+          end
+          plugin_data[resource.name].merge!(measurement => data_average)
+        end
+      end
+      (resource_data[resource_type] ||= []) << (
+                        @page_count / per_page.to_f).ceil
+      (resource_data[resource_type] ||= []) << plugin_data
+    end
+    resource_data
+  end
+
+  # this method takes a project name and returns a nice hash of all its
+  # resources and their measurments
+  def self.project_data(project)
+    project_data = {}
+
+    # for each resource type in the matrix, get a list of all that type
+    # of resource each project has
+    plugin_matrix.each do |resource_type, measurements|
+      resource_data = {}
+      resources = project.send("#{resource_type}_resources")
+      next if resources.nil?
+      # for each of those resources, get all the measuremnts for that
+      # type of resource. Put it all in a big hash.
+      resources.each do |resource|
+        resource_data[resource.name] ||= {}
+        measurements.each do |measurement|
+          plugin = Object.const_get(measurement).new
+          data = plugin.report(resource_type.to_sym => resource.name)
+          next if data[0].nil?
+          data_average = if data[0][:value].number?
+                           DataUtil.average_value(data)
+                         else
+                           data[-1][:value]
+                         end
+          resource_data[resource.name].merge!(measurement => data_average)
+        end
+      end
+      (project_data[resource_type] ||= []) << resource_data
+    end
+    project_data
+  end
+end

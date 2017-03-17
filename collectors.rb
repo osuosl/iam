@@ -104,6 +104,7 @@ class Collectors
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
     @db_cache.write
+    db.disconnect
   end
 
   def collect_postgres(host, user, password)

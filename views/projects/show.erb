@@ -3,86 +3,58 @@
     <a href="/projects/<%= @project.id %>/edit">edit</a>
   </h2>
   <p>
-    <% if @clients[0].active %>
+    <% if @client.active %>
       Client:
-        <a href="/clients/<%= @clients[0].id %>" >
-          <%= @clients[0].name %>
+        <a href="/clients/<%= @client.id %>" >
+          <%= @client.name %>
         </a>
     <% end %>
 
     <br>
     Description: <%= @project.description %> <br>
-    <%= @project.active ? "Active" : "Inactive" %>
-  <br>
-  <br>
-  <h4>Nodes</h4>
- 
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Cluster</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% if @nodes %>
-        <% for @node in @nodes %>
+    <%= @project.active ? "Active" : "Inactive" %><br><br>
+
+    <% Report.plugin_matrix.each do |resource_type, _resource_meas| %>
+    <table class="table">
+      <h3>
+        <a href="/<%= resource_type %>/summary/<%= @project.id %>">
+          <%=resource_type.capitalize%>
+        </a>
+      </h3>
+      <% @resource = @project.send("#{resource_type}_resources") %>
+      <% if @resource[0].nil? %>
+        <%= @project.name %> has no <%= resource_type %> resources
+      <% else %>
+        <thead>
+          <% @resource[0].each do |res_key, _value| %>
+            <% unless res_key==:id || res_key==:project_id || res_key==:created || res_key==:modified || res_key==:active %>
+              <th>
+                <%= res_key %>
+              </th>
+            <% end %>
+          <% end %>
+        </thead>
+        <tbody>
+          <% @resource.each do |res_hash, _value| %>
           <tr>
-            <td>
-              <a href="/clients/<%= @node.id %>" >
-                <%= @node.name %>
-              </a>
-            </td>
-            <td>
-              <%= @node.type %>
-            </td>
-            <td>
-              <%= @node.cluster %>
-            </td>
-            <td>
-              <%= @node.active ? "Active" : "Inactive" %>
-            </td>
+            <% res_hash.each do |k, v| %>
+              <% unless k==:id || k==:project_id || k==:created || k==:modified || k==:active %>
+                <td>
+                  <% if k==:name %>
+                    <a href="/<%=resource_type%>/<%=res_hash[:id]%>">
+                      <%= v %>
+                    </a>
+                  <% else %>
+                    <%= v %>
+                  <% end %>
+                </td>
+              <% end %>
+            <% end %>
           </tr>
         <% end %>
-      <% end  %>
       </tbody>
-  </table>
-  <br>
-  <h4>Databases</h4>
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Server</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% if @dbs  %>
-        <% for @db in @dbs %>
-          <tr>
-            <td>
-              <a href="/clients/<%= @node.id %>" >
-                <%= @db.name %>
-              </a>
-            </td>
-            <td>
-              <%= @db.type %>
-            </td>
-            <td>
-              <%= @db.server %>
-            </td>
-            <td>
-              <%= @db.active ? "Active" : "Inactive" %>
-            </td>
-          </tr>
-        <% end %>
-      <% end  %>
-      </tbody>
-  </table>
-  <br>
-  <br>
+      <% end %>
+    </table>
+    <% end %>
+  </p>
 </div>

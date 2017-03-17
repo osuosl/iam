@@ -41,6 +41,7 @@ class BasePlugin
   def report(resource = { node: '*' },
              start_time = Time.now - (30 * SECONDS_IN_DAY),
              end_time = Time.now)
+
     MyLog.log.error StandardError.new(
       'BasePlugin: start_time and end_time should be Time objects'
     ) unless end_time.is_a?(Time) && start_time.is_a?(Time)

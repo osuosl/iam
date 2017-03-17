@@ -17,21 +17,10 @@ module Sinatra
         erb :'projects/create'
       end
 
-      app.get '/projects/:id/?' do
-        # view a project
-        @project = Project[id: params[:id]]
-        if @project.nil?
-          MyLog.log.fatal 'routes/projects: Project not found'
-          halt 404, 'Project not found'
-        end
-        @clients = Client.filter(id: @project.client_id).all
-        if @clients.nil?
-          MyLog.log.fatal "routes/projects: Project's clients not found"
-          halt 404, "Project's Client not found"
-        end
-        @nodes = @project.node_resources
-        @dbs = @project.db_resources
-        erb :'projects/show'
+      app.get '/projects/?' do
+        # get a list of all projects
+        @projects = Project.all
+        erb :'projects/index'
       end
 
       app.get '/projects/:id/edit/?' do
@@ -44,10 +33,21 @@ module Sinatra
         erb :'projects/edit'
       end
 
-      app.get '/projects/?' do
-        # get a list of all projects
-        @projects = Project.all
-        erb :'projects/index'
+      app.get '/projects/:id/?' do
+        # view a project
+        @project = Project[id: params[:id]]
+        if @project.nil?
+          MyLog.log.fatal 'routes/projects: Project not found'
+          halt 404, 'Project not found'
+        end
+        @client = Client.filter(id: @project.client_id).first
+
+        if @client.nil?
+          MyLog.log.fatal "routes/projects: Project's clients not found"
+          halt 404, "Project's Client not found"
+        end
+
+        erb :'projects/show'
       end
 
       # This could also be PUT

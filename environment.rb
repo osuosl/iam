@@ -121,7 +121,7 @@ class Iam < Sinatra::Base
         h = h.split(':')
         db_hash[h[0]] = h[1]
       end
-      db_collector_dbs.append(db_hash)
+      db_collector_dbs.push(db_hash)
     end
   else
     db_collector_dbs = config['db_collector_dbs']

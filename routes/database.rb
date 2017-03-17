@@ -24,8 +24,36 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found'
           halt 404, 'database resource not found'
         end
-        @projects = Project.filter(id: @db.project_id).all
+
+        # get data from plugins
+        @projects = Project.filter(id: @db.project_id).first
+        @db_size = DBSize.new.report(db: @db.name)
+
+        # find most recent time and store into @update_time
+        @updated = Time.new(0)
+        if @db_size.last
+          if @db_size.last[:created] > @updated
+            @update_time = @db_size.last[:created]
+          end
+        end
         erb :'database/show'
+      end
+
+      app.get '/db/summary/:id/?:page?' do
+        # view list of db resources and their measurements
+        @project = Project.filter(id: params[:id]).first
+        @dbs = DbResource[project_id: params[:id]]
+
+        # current page
+        @page = params[:page].to_f
+        @page = 1 if @page.zero?
+
+        # The number of resources displayed on a page
+        @per_page = 10
+
+        @data = Report.get_data(@project, @page, @per_page, 'db')
+
+        erb :'database/summary'
       end
 
       app.get '/db/:id/edit/?' do
@@ -35,7 +63,10 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
           halt 404, 'database resource not found'
         end
+
+        # get data from plugins
         @projects = Project.all
+        @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
 

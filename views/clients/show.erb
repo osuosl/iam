@@ -8,92 +8,105 @@
     Description: <%= @client.description %> <br>
     <%= @client.active ? 'Active' : 'Inactive' %>
 </p>
-<% unless @projects.nil? %>
+
+<% if @projects.empty? %>
+  <p>
+    <%= @client.name %> has no projects
+  </p>
+<% else %>
   <table class="table">
-    <h4> Projects </h4>
-         <% for @project in @projects %>
-           <thead>
+    <% if @client.name != 'default' %>
+    <h4>Summary</h4>
+    (Last 30 days)
+    <tr>
+      <td>
+        <table class="table">
+          <thead>
             <tr>
-                <th style="font-size: 1.5em;">
-                    <a href="/projects/<%= @project.id %>" >
-                        <%= @project.name %>
-                    </a>
-                </th>
-                <th style="font-size: 1em;">
-                    <%= @project.active ? 'Active' : 'Inactive' %>
-                </th>
+              <th>Nodes</th>
+              <th>Ram (GB)</th>
+              <th>VCPU </th>
+              <th>Disk Size (GB)</th>
+              <th>DRBD</th>
             </tr>
-           </thead> 
-           <tr><td>
-             <table class="table">
-               <h5>Nodes</h5>
-               <thead>
+          </thead>
+          <tbody>
+            <% for @project in @projects %>
+              <% for @node in @project.node_resources %>
+                <% if @node.active %>
+                  <tr>
+                    <td>
+                      <a href="/node/<%= @node.id %>" >
+                        <%= @node.name %>
+                      </a>
+                    </td>
+                    <% data = DiskTemplate.new.report({node: @node.name}) %>
+                    <% if data != nil && data.last != nil %>
+                      <% disk_template = 'Yes' if data.last[:value] == 'drbd' %>
+                    <% else %>
+                      <% disk_template = 'No' %>
+                    <% end %>
+                    <td>
+                      <% data = RamSize.new.report({node: @node.name}) %>
+                      <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <% data = VCPUCount.new.report({node: @node.name}) %>
+                      <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <% data = DiskSize.new.report({node: @node.name}) %>
+                      <%= DataUtil.average_value(data) %>
+                    </td>
+                    <td>
+                      <%= disk_template %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Database</th>
+              <th>Size (GB)</th>
+              <th>Project</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for @project in @projects %>
+              <% for @db in @project.db_resources %>
+                <% if @db.active %>
                 <tr>
-                    <th> Node Name</th>
-                    <th> Type</th>
-                    <th> Cluster</th>
-                    <th> Status</th>
+                  <td>
+                    <a href="/db/<%= @db.id %>" >
+                      <%= @db.name %>
+                    </a>
+                  </td>
+                  <td>
+                    <% data = DBSize.new.report({db: @db.name}) %>
+                    <%= DataUtil.average_value(data) %>
+                  </td>
+                  <td>
+                    <a href="/projects/<%= @project.id %>" >
+                      <%= @project.name %>
+                    </a>
+                  </td>
                 </tr>
-               </thead>
-               <tbody>
-               <% for node in @project.node_resources %>
-                 <% if node.active %>
-                    <tr>
-                        <td>
-                          <a href="/nodes/<%= node.id %>" >
-                            <%= node.name %>
-                          </a>
-                        </td>
-                        <td>
-                            <%= node.type %>
-                        </td>
-                        <td>
-                            <%= node.cluster %>
-                        </td>
-                        <td>
-                            <%= node.active ? 'Active' : 'Inactive' %>
-                        </td>
-                    </tr>
-                  <% end %>
-               <% end %>
-             </tbody>
-            </table>
-            <table class="table">
-              <h5>Databases</h5>
-              <thead>
-                <tr>
-                  <th> Database Name</th>
-                  <th> Type</th>
-                  <th> Server</th>
-                  <th> Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% for db in @project.db_resources %>
-                  <% if db.active %>
-                    <tr>
-                      <td>
-                        <a href="/dbs/<%= db.id %>" >
-                            <%= db.name %>
-                        </a>
-                      </td>
-                      <td>
-                        <%= db.type %>
-                      </td>
-                      <td>
-                        <%= db.server %>
-                      </td>
-                      <td>
-                        <%= db.active ? 'Active' : 'Inactive' %>
-                      </td>
-                   </tr>
-                 <% end %>
-               <% end %>
-             </tbody>
-           </table>
-         <br>
-      </td></tr>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </td>
+    </tr>
     <% end %>
-   </table>
+  </table>
 <% end %>
 </div>
