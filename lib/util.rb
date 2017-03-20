@@ -96,7 +96,6 @@ class DataUtil
   end
 
   # Return the number of days in a range of hashes
-  # rubocop:disable MethodLength, AbcSize
   def self.days_in_range(data)
     # an empty range is 0 days
     return 0 if data.empty?
@@ -180,7 +179,7 @@ class Report
     project_data
   end
 
-  def self.sum_data(input_hash, date_selection)
+  def self.sum_data(input_hash, start_date, end_date)
     sum = {}
 
     input_hash.each do |_project_name, project_resource|
@@ -189,7 +188,7 @@ class Report
           # Add hashes for each resource into the main sum hash
           sum[res_type] ||= {}
           # Isolate each projects resource then get those that fall between the
-          # date_selection. Then add their values to the sum hash
+          # start and end date.
           resource_hash.each do |hash, _value|
             hash.each do |resource_name, meas_hash|
               meas_hash.each do |meas_key, meas_value|
@@ -197,11 +196,11 @@ class Report
                   # Turn the key string into a class and use it to call to the
                   # BasePlugin report method
                   meas_class = meas_key.constantize
-                  if date_selection.nil?
+                  if start_date.nil? || end_date
                     h = meas_class.new.report({"#{res_type}": resource_name})
                   else
-                    h = meas_class.new.report(
-                      {"#{res_type}": resource_name}, date_selection)
+                    h = meas_class.new.report({"#{res_type}": resource_name},
+                                              start_date, end_date)
                   end
                   # Transform array to hash. Insures all hashes are not nil,
                   # then adds up all the resources
@@ -234,4 +233,5 @@ class Report
     end
     sum
   end
+  
 end

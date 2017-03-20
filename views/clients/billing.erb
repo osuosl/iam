@@ -1,74 +1,91 @@
 <div class="container">
-  <h2>
-    <a href="/clients/<%= @client.id %>">
-      <%= @client.name %>
-    </a>- Billing
-  </h2>
-
+  <form action='/clients/<%= @client.id %>/billing' name="changeDate" method='post' onsubmit="return validateForm()">
+    <h2>
+      <a href="/clients/<%= @client.id %>">
+        <%= @client.name %>
+      </a>- Billing
+    </h2>
     <div class="row">
-        <div class="col-sm-4">
-          <label class="control-label">Start Date</label>
-            <div class="form-group">
-                <div class="input-group date" id="mydatetimepicker1">
-                    <input type="text" class="form-control" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
+      <div class="col-sm-4">
+        <label class="control-label">Start Date</label>
+        <div class="form-group">
+          <div class="input-group date" id="startdate">
+            <input type="text" name="startdate" class="form-control" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
         </div>
+      </div>
 
-        <div class="col-sm-4">
-          <label class="control-label">End Date</label>
-            <div class="form-group">
-                <div class="input-group date" id="mydatetimepicker2">
-                    <input type="text" class="form-control" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
+      <div class="col-sm-4">
+        <label class="control-label">End Date</label>
+        <div class="form-group">
+          <div class="input-group date" id="enddate">
+            <input type="text" name="enddate" class="form-control" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
         </div>
+      </div>
+      <input type="submit" value="Search" class="btn btn-primary">
     </div>
 
-  <% if @projects.empty? %>
-    <p>
-      <%= @client.name %> has no projects
-    </p>
-  <% else %>
-    <% if @client.name != 'default' %>
-      <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
-        <table class="table">
-          <thead>
-            <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
-            <%resource_measurements.each do |title| %>
-              <th><%= title %></th>
-            <% end %>
-          </thead>
-          <tbody>
-            <tr>
-              <% @data[resource_type].each do |_measurement, totals|%>
-                <td>
-                  <%= totals %>
-                </td>
+    <% if @projects.empty? %>
+      <p>
+        <%= @client.name %> has no projects
+      </p>
+    <% else %>
+      <% if @client.name != 'default' %>
+        <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
+          <table class="table">
+            <thead>
+              <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
+              <%resource_measurements.each do |title| %>
+                <th><%= title %></th>
               <% end %>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <tr>
+                <% @data[resource_type].each do |_measurement, totals|%>
+                  <td>
+                    <%= totals %>
+                  </td>
+                <% end %>
+              </tr>
+            </tbody>
+          </table>
+        <% end %>
       <% end %>
     <% end %>
-  <% end %>
+  </form>
 </div>
 
 <script>
-$("#mydatetimepicker1").datetimepicker({
-  useCurrent: false
-}).on('dp.show', function() {
-  return $(this).data('DateTimePicker').defaultDate(new Date());
-});
-$("#mydatetimepicker2").datetimepicker({
-  useCurrent: false
-}).on('dp.show', function() {
-  return $(this).data('DateTimePicker').defaultDate(new Date());
-});
+  $("#startdate").datetimepicker({
+    useCurrent: false
+  }).on('dp.show', function() {
+    return $(this).data('DateTimePicker').defaultDate(new Date());
+  });
+  $("#enddate").datetimepicker({
+    useCurrent: false
+  }).on('dp.show', function() {
+    return $(this).data('DateTimePicker').defaultDate(new Date());
+  });
+
+  function validateForm(){
+    var x = document.forms["changeDate"]["startdate"].value;
+    var y = document.forms["changeDate"]["enddate"].value;
+
+    if (x == null || x == "" || y == null || y == ""){
+      alert("Please enter a start date and an end date")
+      return false;
+    }
+    if (x > y) {
+      alert("Invalid Date Range:\n Start Date must be before End Date");
+      return false;
+    }
+
+  }
 </script>

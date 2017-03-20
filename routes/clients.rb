@@ -49,7 +49,7 @@ module Sinatra
         erb :'clients/edit'
       end
 
-      app.get '/clients/:id/billing/?:date_selection?' do
+      app.get '/clients/:id/billing/?:startdate?/?:enddate?' do
         @client = Client[id: params[:id]]
 
         @projects = @client.projects
@@ -62,9 +62,10 @@ module Sinatra
           end
         end
 
-        @date_selection = params[:date_selection]
+        start_date = params[:startdate]
+        end_date = params[:enddate]
 
-        @data = Report.sum_data(@client_data, @date_selection)
+        @data = Report.sum_data(@client_data, start_date, end_date)
         erb :'clients/billing'
       end
 
@@ -72,6 +73,23 @@ module Sinatra
         # get a list of all clients
         @clients = Client.all
         erb :'clients/index'
+      end
+
+      app.post '/clients/:id/billing/?' do
+        @client = Client[id: params[:id]]
+
+        startdate = params[:startdate]
+        startdate = startdate.gsub('/','-')
+        startTime = Date.strptime(startdate,"%m-%d-%Y %H:%M").to_time
+        start_in_seconds = startTime.to_i
+
+        enddate = params[:enddate]
+        enddate = enddate.gsub('/','-')
+        endTime = Date.strptime(enddate,"%m-%d-%Y %H:%M").to_time
+        end_in_seconds = endTime.to_i
+
+        redirect "/clients/#{@client.id}/billing/#{start_in_seconds}/"\
+                                                "#{end_in_seconds}"
       end
 
       # This could also be PUT
