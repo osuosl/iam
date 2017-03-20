@@ -11,8 +11,9 @@ module Sinatra
       # Database Resource
       ##
 
-      app.get '/db/new/?' do
+      app.get '/db/new/?:error?' do
         # get new database form
+        @error = 'That database already exists' if params[:error]
         @projects = Project.all
         erb :'database/create'
       end
@@ -62,13 +63,20 @@ module Sinatra
       # This could also be PUT
       app.post '/dbs/?' do
         # recieve new database
-        db = DbResource.create(project_id:  params[:project_id] || '',
-                               name:       params[:name],
-                               type:       params[:type] || '',
-                               server:    params[:server] || '',
-                               created:    DateTime.now || '',
-                               modified:   DateTime.now || '')
+        if params[:name]
+          begin
+            db = DbResource.create(project_id:  params[:project_id] || '',
+                                   name:       params[:name],
+                                   type:       params[:type] || '',
+                                   server:    params[:server] || '',
+                                   created:    DateTime.now || '',
+                                   modified:   DateTime.now || '')
+          rescue StandardError
+            @err = 1
+            redirect "db/new/#{@err}"
+          end
         redirect "/db/#{db.id}"
+        end
       end
 
       app.patch '/dbs/?' do

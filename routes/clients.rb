@@ -78,15 +78,15 @@ module Sinatra
       app.post '/clients/:id/billing/?' do
         @client = Client[id: params[:id]]
 
-        startdate = params[:startdate]
-        startdate = startdate.gsub('/','-')
-        startTime = Date.strptime(startdate,"%m-%d-%Y %H:%M").to_time
-        start_in_seconds = startTime.to_i
+        start_date = params[:startdate]
+        start_date = start_date.tr('/', '-')
+        start_time = Date.strptime(start_date, '%m-%d-%Y %H:%M').to_time
+        start_in_seconds = start_time.to_i
 
-        enddate = params[:enddate]
-        enddate = enddate.gsub('/','-')
-        endTime = Date.strptime(enddate,"%m-%d-%Y %H:%M").to_time
-        end_in_seconds = endTime.to_i
+        end_date = params[:enddate]
+        end_date = end_date.tr('/', '-')
+        end_time = Date.strptime(end_date, '%m-%d-%Y %H:%M').to_time
+        end_in_seconds = end_time.to_i
 
         redirect "/clients/#{@client.id}/billing/#{start_in_seconds}/"\
                                                 "#{end_in_seconds}"
