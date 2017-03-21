@@ -92,7 +92,7 @@ class DataUtil
 
   def self.average_value(data)
     return 0 if data.empty?
-    (data.reduce(0) { |a, e| a + e[:value] }) / data.length
+    (data.reduce(0) { |a, e| a + e[:value].to_i }) / data.length
   end
 
   # Return the number of days in a range of hashes
@@ -156,7 +156,12 @@ class Report
         resource_data[resource.name]['id'] = resource[:id]
         if resource_type == 'node'
           drdb = DiskTemplate.new.report(node: resource.name)
-          drdb = 0 if drdb.empty?
+          if drdb.empty?
+            drdb = 0
+          else
+            drdb = drdb[0]
+            drdb = drdb.fetch(:value).to_i
+          end
           resource_data[resource.name]['drdb'] = drdb
         end
         measurements.each do |measurement|
@@ -181,6 +186,8 @@ class Report
 
   def self.sum_data(input_hash, start_date, end_date)
     sum = {}
+    start_date = Time.at(start_date.to_i)
+    end_date = Time.at(end_date.to_i)
 
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
@@ -191,16 +198,16 @@ class Report
           # start and end date.
           resource_hash.each do |hash, _value|
             hash.each do |resource_name, meas_hash|
-              meas_hash.each do |meas_key, meas_value|
+              meas_hash.each do |meas_key, _meas_value|
                 if meas_key != 'id' && meas_key != 'drdb'
                   # Turn the key string into a class and use it to call to the
                   # BasePlugin report method
                   meas_class = meas_key.constantize
-                  if start_date.nil? || end_date
-                    h = meas_class.new.report({"#{res_type}": resource_name})
-                  else
-                    h = meas_class.new.report({"#{res_type}": resource_name},
+                  if start_date != end_date
+                    h = meas_class.new.report({ "#{res_type}": resource_name },
                                               start_date, end_date)
+                  else
+                    h = meas_class.new.report({ "#{res_type}": resource_name })
                   end
                   # Transform array to hash. Insures all hashes are not nil,
                   # then adds up all the resources
@@ -209,9 +216,9 @@ class Report
                     hash = Hash.new
                     hash[:value] = 0
                   end
-                  value = hash.fetch(:value)
+                  value = hash.fetch(:value).to_i
                   if meas_hash.key?('drdb')
-                    drdb = meas_hash.fetch('drdb') + 1
+                    drdb = meas_hash.fetch('drdb').to_i + 1
                   else
                     drdb = 1
                   end
@@ -233,5 +240,4 @@ class Report
     end
     sum
   end
-  
 end
