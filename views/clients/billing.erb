@@ -40,23 +40,29 @@
     <% else %>
       <% if @client.name != 'default' %>
         <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
-          <table class="table">
-            <thead>
-              <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
-              <%resource_measurements.each do |title| %>
-                <th><%= title %></th>
-              <% end %>
-            </thead>
-            <tbody>
-              <tr>
-                <% @data[resource_type].each do |_measurement, totals|%>
-                  <td>
-                    <%= totals %>
-                  </td>
-                <% end %>
-              </tr>
-            </tbody>
-          </table>
+          <% if @data[resource_type].any? %>
+            <table class="table">
+              <thead>
+                <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
+                <%resource_measurements.each do |title| %>
+                  <th><%= title %></th>
+                  <% end %>
+              </thead>
+              <tbody>
+                <tr>
+                  <% @data[resource_type].each do |_measurement, totals|%>
+                    <td>
+                      <%= totals %>
+                    </td>
+                  <% end %>
+                </tr>
+              </tbody>
+            </table>
+          <% else %>
+            <h4>
+              <%= @client.name %> has no <%= resource_type.capitalize %> resources
+            </h4><br>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>

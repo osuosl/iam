@@ -94,7 +94,7 @@ module Sinatra
             @err = 1
             redirect "node/new/#{@err}"
           end
-        redirect "/node/#{node.id}"
+          redirect "/node/#{node.id}"
         end
       end
 

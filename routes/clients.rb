@@ -65,7 +65,7 @@ module Sinatra
         start_date = params[:startdate]
         end_date = params[:enddate]
 
-        @data = Report.sum_data(@client_data, start_date, end_date)
+        @data = Report.data_in_date_range(@client_data, start_date, end_date)
         erb :'clients/billing'
       end
 
@@ -94,7 +94,7 @@ module Sinatra
 
       # This could also be PUT
       app.post '/clients/?' do
-        # recieve new client if it is valid
+        # recieve new client
         if params[:name]
           begin
             client = Client.create(name: params[:name],

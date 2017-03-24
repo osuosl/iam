@@ -75,7 +75,7 @@ module Sinatra
             @err = 1
             redirect "db/new/#{@err}"
           end
-        redirect "/db/#{db.id}"
+          redirect "/db/#{db.id}"
         end
       end
 

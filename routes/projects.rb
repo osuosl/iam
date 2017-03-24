@@ -64,7 +64,7 @@ module Sinatra
             @err = 1
             redirect "/projects/new/#{@err}"
           end
-        redirect "/projects/#{project.id}"
+          redirect "/projects/#{project.id}"
         end
       end
 
