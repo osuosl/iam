@@ -80,13 +80,11 @@ module Sinatra
 
         start_date = params[:startdate]
         start_date = start_date.tr('/', '-')
-        start_time = Date.strptime(start_date, '%m-%d-%Y %H:%M').to_time
-        start_in_seconds = start_time.to_i
+        start_in_seconds = Date.strptime(start_date, '%m-%d-%Y %H:%M').to_time.to_i
 
         end_date = params[:enddate]
         end_date = end_date.tr('/', '-')
-        end_time = Date.strptime(end_date, '%m-%d-%Y %H:%M').to_time
-        end_in_seconds = end_time.to_i
+        end_in_seconds = Date.strptime(end_date, '%m-%d-%Y %H:%M').to_time.to_i
 
         redirect "/clients/#{@client.id}/billing/#{start_in_seconds}/"\
                                                 "#{end_in_seconds}"

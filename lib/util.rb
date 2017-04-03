@@ -181,26 +181,19 @@ class Report
         resource_data[resource.name]['id'] = resource[:id]
         if resource_type == 'node'
           drdb = DiskTemplate.new.report(node: resource.name)
-          if drdb.empty?
-            drdb = 0
-          else
-            drdb = drdb[0]
-            drdb = drdb.fetch(:value).to_i
-          end
+          drdb = drdb.empty? ? 0 : drdb[0].fetch(:value).to_i
           resource_data[resource.name]['drdb'] = drdb
         end
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
-          if data[0].nil?
-            data_average = 0
-          else
-            data_average = if data[0][:value].number?
-                             DataUtil.average_value(data)
-                           else
-                             data[-1][:value]
-                           end
-          end
+          data_average = if data.nil?
+                           0
+                         elsif data[0][:value].number?
+                           DataUtil.average_value(data)
+                         else
+                           data[-1][:value]
+                         end
           resource_data[resource.name].merge!(measurement => data_average)
         end
       end
