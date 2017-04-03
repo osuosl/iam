@@ -96,6 +96,7 @@ class DataUtil
   end
 
   # Return the number of days in a range of hashes
+  # rubocop:disable MethodLength, AbcSize
   def self.days_in_range(data)
     # an empty range is 0 days
     return 0 if data.empty?
@@ -136,6 +137,30 @@ class Report
       (matrix[plugin.resource_name] ||= []) << plugin.name
     end
     matrix
+  end
+
+  # Turn the key string into a class and use it to call to the
+  # BasePlugin report method
+  def self.data_from_range(measurement, resource_type, resource_name,
+                           start_date, end_date)
+    meas_class = measurement.constantize
+    if start_date != end_date
+      hash = meas_class.new.report(
+        { resource_type.to_sym => resource_name }, start_date, end_date
+      )
+    else
+      hash = meas_class.new.report(resource_type.to_sym => resource_name)
+    end
+    hash
+  end
+
+  def self.sum_data(input_hash, key, value, drdb)
+    input_hash[key] = if input_hash.key?(key)
+                        (value * drdb) + input_hash[key]
+                      else
+                        # Add the measurement value for the first time
+                        input_hash[key] = value
+                      end
   end
 
   # this method takes a project name and returns a nice hash of all its
@@ -184,11 +209,10 @@ class Report
     project_data
   end
 
-  def self.sum_data(input_hash, start_date, end_date)
+  def self.data_in_date_range(input_hash, start_date, end_date)
     sum = {}
     start_date = Time.at(start_date.to_i)
     end_date = Time.at(end_date.to_i)
-
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
         resource.each do |res_type, resource_hash|
@@ -199,39 +223,23 @@ class Report
           resource_hash.each do |hash, _value|
             hash.each do |resource_name, meas_hash|
               meas_hash.each do |meas_key, _meas_value|
-                if meas_key != 'id' && meas_key != 'drdb'
-                  # Turn the key string into a class and use it to call to the
-                  # BasePlugin report method
-                  meas_class = meas_key.constantize
-                  if start_date != end_date
-                    h = meas_class.new.report({ "#{res_type}": resource_name },
-                                              start_date, end_date)
-                  else
-                    h = meas_class.new.report({ "#{res_type}": resource_name })
-                  end
-                  # Transform array to hash. Insures all hashes are not nil,
-                  # then adds up all the resources
-                  hash = h[0]
-                  if hash.nil?
-                    hash = Hash.new
-                    hash[:value] = 0
-                  end
-                  value = hash.fetch(:value).to_i
-                  if meas_hash.key?('drdb')
-                    drdb = meas_hash.fetch('drdb').to_i + 1
-                  else
-                    drdb = 1
-                  end
-                  # If the measurement already exists in sum, add the new
-                  # measurement value to the one in sum
-                  if sum[res_type].key?(meas_key)
-                    sum[res_type][meas_key] = (value * drdb) +
-                                              sum[res_type][meas_key]
-                  else
-                    # Add the measurement value for the first time
-                    sum[res_type][meas_key] =  value
-                  end
-                end
+                next if meas_key == 'id' || meas_key == 'drdb'
+                data_array = data_from_range(meas_key, res_type, resource_name,
+                                             start_date, end_date)
+
+                # Transform array to hash. Insures all hashes are not nil,
+                # then adds up all the resources
+                data_hash = data_array[0]
+                data_hash = { value: 0 } if data_hash.nil?
+                value = data_hash.fetch(:value).to_i
+                drdb = if meas_hash.key?('drdb')
+                         meas_hash.fetch('drdb').to_i + 1
+                       else
+                         1
+                       end
+                # If the measurement already exists in sum, add the new
+                # measurement value to the one in sum
+                sum_data(sum[res_type], meas_key, value, drdb)
               end
             end
           end
