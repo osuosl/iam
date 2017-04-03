@@ -139,8 +139,8 @@ class Report
     matrix
   end
 
-  # Turn the key string into a class and use it to call to the
-  # BasePlugin report method
+  # this method uses a class and resource type to call the report function to
+  # get data that falls between two given dates
   def self.data_from_range(measurement, resource_type, resource_name,
                            start_date, end_date)
     meas_class = measurement.constantize
@@ -154,13 +154,16 @@ class Report
     hash
   end
 
-  def self.sum_data(input_hash, key, value, drdb)
-    input_hash[key] = if input_hash.key?(key)
-                        (value * drdb) + input_hash[key]
-                      else
-                        # Add the measurement value for the first time
-                        input_hash[key] = value
-                      end
+  # this method takes a hash of  measurments and performs calculations based on
+  # the type of data, then adds their value to the final hash of sums
+  def self.sum_data(sums, key, value, drdb)
+    # if sums already contains this key, add the value to the existing value;
+    # else add the key and value to sums
+    sums[key] = if sums.key?(key)
+                  (value * drdb) + sums[key]
+                else
+                  sums[key] = value
+                end
   end
 
   # this method takes a project name and returns a nice hash of all its
@@ -202,6 +205,8 @@ class Report
     project_data
   end
 
+  # this method takes a hash of data and two dates. It takes the data that falls
+  # between the two dates, then returns the sum of their measurements
   def self.data_in_date_range(input_hash, start_date, end_date)
     sum = {}
     start_date = Time.at(start_date.to_i)
@@ -220,7 +225,7 @@ class Report
                 data_array = data_from_range(meas_key, res_type, resource_name,
                                              start_date, end_date)
 
-                # Transform array to hash. Insures all hashes are not nil,
+                # Transform array to hash. Insures the hashes are not nil,
                 # then adds up all the resources
                 data_hash = data_array[0]
                 data_hash = { value: 0 } if data_hash.nil?
@@ -230,8 +235,6 @@ class Report
                        else
                          1
                        end
-                # If the measurement already exists in sum, add the new
-                # measurement value to the one in sum
                 sum_data(sum[res_type], meas_key, value, drdb)
               end
             end
