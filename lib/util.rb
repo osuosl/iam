@@ -118,26 +118,6 @@ class DataUtil
     day = 60 * 60 * 24
     ((latest - earliest + day) / day).round(2)
   end
-end
-
-# methods for gathering measurement data into hashes
-class Report
-  # this method returns all the available resource type along with an array
-  # of the measurment plugins available for that resource type
-  def self.plugin_matrix
-    matrix = {}
-    # query the plugins model to determine what measurements are available
-    plugins = Plugin.all
-    # make a matrix of resource types and their plugins
-    # { 'node': ['DiskSize', 'VCPU', ...]
-    #   'db': ['Size', ...]
-    #   ...}
-    plugins.each do |plugin|
-      next if plugin.name == 'TestingPlugin'
-      (matrix[plugin.resource_name] ||= []) << plugin.name
-    end
-    matrix
-  end
 
   # this method uses a class and resource type to call the report function to
   # get data that falls between two given dates
@@ -164,6 +144,61 @@ class Report
                 else
                   sums[key] = value
                 end
+  end
+end
+
+# methods for gathering measurement data into hashes
+class Report
+  # this method returns all the available resource type along with an array
+  # of the measurment plugins available for that resource type
+  def self.plugin_matrix
+    matrix = {}
+    # query the plugins model to determine what measurements are available
+    plugins = Plugin.all
+    # make a matrix of resource types and their plugins
+    # { 'node': ['DiskSize', 'VCPU', ...]
+    #   'db': ['Size', ...]
+    #   ...}
+    plugins.each do |plugin|
+      next if plugin.name == 'TestingPlugin'
+      (matrix[plugin.resource_name] ||= []) << plugin.name
+    end
+    matrix
+  end
+
+  # this method takes a project and resource type then returns a specific number
+  # of measurements according to how many were specified by per_page
+  def self.get_data(project, page, per_page, res)
+    resource_data = {}
+
+    # for each resource type in the matrix, get a list of all that type
+    # of resource each project has
+    plugin_matrix.each do |resource_type, measurements|
+      plugin_data = {}
+      @page_count = project.send("#{res}_resources").count
+
+      all_resources = project.send("#{res}_resources")[
+            ((page - 1) * per_page...(page * per_page))
+          ]
+
+      next unless resource_type == res
+      # for each of those resources, get all the measuremnts for that
+      # type of resource. Put it all in a big hash.
+      all_resources.each do |resource|
+        plugin_data[resource.name] ||= {}
+        plugin_data[resource.name]['id'] = resource[:id]
+        measurements.each do |measurement|
+          plugin = Object.const_get(measurement).new
+          data = plugin.report(resource_type.to_sym => resource.name)
+          data_average = data.nil? ? 0 : DataUtil.average_value(data)
+          plugin_data[resource.name].merge!(measurement => data_average)
+        end
+      end
+      (resource_data[resource_type] ||= []) << (
+                                              @page_count / per_page.to_f).ceil
+      (resource_data[resource_type] ||= []) << plugin_data
+    end
+    resource_data
   end
 
   # this method takes a project name and returns a nice hash of all its
@@ -222,8 +257,9 @@ class Report
             hash.each do |resource_name, meas_hash|
               meas_hash.each do |meas_key, _meas_value|
                 next if meas_key == 'id' || meas_key == 'drdb'
-                data_array = data_from_range(meas_key, res_type, resource_name,
-                                             start_date, end_date)
+                data_array = DataUtil.data_from_range(meas_key, res_type,
+                                                      resource_name, start_date,
+                                                      end_date)
 
                 # Transform array to hash. Insures the hashes are not nil,
                 # then adds up all the resources
@@ -235,7 +271,7 @@ class Report
                        else
                          1
                        end
-                sum_data(sum[res_type], meas_key, value, drdb)
+                DataUtil.sum_data(sum[res_type], meas_key, value, drdb)
               end
             end
           end
