@@ -5,7 +5,7 @@ require_relative '../logging/logs'
 module Sinatra
   # Our Node Routing
   module NodeRoutes
-    # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
+    # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity, BlockLength
     def self.registered(app)
       ##
       # Node Resource
@@ -18,7 +18,7 @@ module Sinatra
         erb :'nodes/create'
       end
 
-      # rubocop:disable BracesAroundHashParameters, BlockLength
+      # rubocop:disable BracesAroundHashParameters
       app.get '/node/:id/?' do
         # view a node
         @node = NodeResource[id: params[:id]]
