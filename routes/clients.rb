@@ -50,6 +50,7 @@ module Sinatra
       app.get '/clients/?' do
         # get a list of all clients
         @clients = Client.all
+        puts @clients.inspect
         erb :'clients/index'
       end
 
@@ -82,7 +83,19 @@ module Sinatra
                       active: params[:active] || client.active)
 
         unless client.active
-          client.delete unless client.nil?
+          if client.projects.empty?
+            client.delete
+          else
+            projects = client.projects
+            
+            for project in projects do
+              project.db_resources.each(&:delete) unless project.db_resources.empty?
+              project.node_resources.each(&:delete) unless project.node_resources.empty?
+            end
+            projects.each(&:delete) unless projects.empty?
+
+            client.delete
+          end
           redirect '/clients' unless client.nil?
           404
         end

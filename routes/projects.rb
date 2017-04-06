@@ -72,7 +72,17 @@ module Sinatra
                        active: params[:active] || project.active)
 
         unless project.active
-          project.delete unless project.nil?
+          if project.node_resources.empty? && project.node_resources.empty?
+            project.delete
+          else
+            nodes = project.node_resources
+            dbs = project.db_resources
+
+            nodes.each(&:delete) unless nodes.empty?
+            dbs.each(&:delete) unless dbs.empty?
+
+            project.delete
+          end
           redirect '/projects' unless project.nil?
           404
         end
