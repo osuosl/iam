@@ -80,15 +80,13 @@ module Sinatra
                       contact_email: params[:contact_email] || client.contact_email,
                       contact_name: params[:contact_name] || client.contact_name,
                       active: params[:active] || client.active)
-        redirect "/clients/#{params[:id]}"
-      end
 
-      app.delete '/clients/:id/?' do
-        # delete a client
-        client = Client[id: params[:id]]
-        client.delete unless client.nil?
-        redirect '/clients' unless client.nil?
-        404
+        unless client.active
+          client.delete unless client.nil?
+          redirect '/clients' unless client.nil?
+          404
+        end
+        redirect "/clients/#{params[:id]}"
       end
     end
   end

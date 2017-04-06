@@ -123,15 +123,13 @@ module Sinatra
                     cluster:    params[:cluster] || node.cluster,
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
-        redirect "/node/#{params[:id]}"
-      end
 
-      app.delete '/node/:id/?' do
-        # delete a node
-        node = NodeResource[id: params[:id]]
-        node.delete unless node.nil?
-        redirect '/nodes/?' unless node.nil?
-        404
+        unless node.active
+          node.delete unless node.nil?
+          redirect '/nodes/?' unless node.nil?
+          404
+        end
+        redirect "/node/#{params[:id]}"
       end
     end
   end

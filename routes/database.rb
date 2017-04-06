@@ -104,15 +104,13 @@ module Sinatra
                   server:    params[:server] || db.server,
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
-        redirect "/db/#{params[:id]}"
-      end
 
-      app.delete '/db/:id/?' do
-        # delete a database
-        db = DbResource[id: params[:id]]
-        db.delete unless db.nil?
-        redirect '/dbs/?' unless db.nil?
-        404
+        unless db.active
+          db.delete unless db.nil?
+          redirect '/dbs' unless db.nil?
+          404
+        end
+        redirect "/db/#{params[:id]}"
       end
     end
   end

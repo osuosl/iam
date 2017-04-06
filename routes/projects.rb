@@ -70,15 +70,13 @@ module Sinatra
         project.update(name:  params[:name] || project.name,
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
-        redirect "/projects/#{params[:id]}"
-      end
 
-      app.delete '/projects/:id/?' do
-        # delete a project
-        project = Project[id: params[:id]]
-        project.delete unless project.nil?
-        redirect '/projects' unless project.nil?
-        404
+        unless project.active
+          project.delete unless project.nil?
+          redirect '/projects' unless project.nil?
+          404
+        end
+        redirect "/projects/#{params[:id]}"
       end
     end
   end
