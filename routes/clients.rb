@@ -83,19 +83,17 @@ module Sinatra
                       active: params[:active] || client.active)
 
         unless client.active
-          if client.projects.empty?
-            client.delete
-          else
+          unless client.projects.empty?
             projects = client.projects
-            
-            for project in projects do
+
+            projects.each do |project|
               project.db_resources.each(&:delete) unless project.db_resources.empty?
               project.node_resources.each(&:delete) unless project.node_resources.empty?
             end
-            projects.each(&:delete) unless projects.empty?
 
-            client.delete
+            projects.each(&:delete) unless projects.empty?
           end
+          client.delete
           redirect '/clients' unless client.nil?
           404
         end
