@@ -73,7 +73,7 @@ module Sinatra
 
         # if project is set to inactive, disassociate this projects' resources
         # to the default project and delete this project
-        unless project.active && project.name == 'default'
+        unless project.active || project.name == 'default'
           resources = Report.get_resources(project)
           unless resources.empty?
             resources.each do |resource_type|

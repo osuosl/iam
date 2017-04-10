@@ -83,18 +83,19 @@ module Sinatra
 
         # if the active state is false, all projects are deleted and resources
         # are re-assigned to the default project.
-        unless client.active && client.name == 'default' && client.projects.empty?
-          projects = client.projects
-          projects.each do |project|
-            resources = Report.get_resources(project)
-            unless resources.empty?
-              resources.each { |resource_type| resource_type.update(project_id: 1) }
+        unless client.active || client.name == 'default'
+          unless client.projects.empty?
+            projects = client.projects
+            projects.each do |project|
+              resources = Report.get_resources(project)
+              unless resources.empty?
+                resources.each { |resource_type| resource_type.update(project_id: 1) }
+              end
             end
+            projects.each(&:delete) unless projects.empty?
           end
-          projects.each(&:delete) unless projects.empty?
           client.delete
           redirect '/clients' unless client.nil?
-          404
         end
         redirect "/clients/#{params[:id]}"
       end
