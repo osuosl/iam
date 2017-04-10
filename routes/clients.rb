@@ -96,6 +96,7 @@ module Sinatra
           end
           client.delete
           redirect '/clients' unless client.nil?
+          404
         end
         redirect "/clients/#{params[:id]}"
       end

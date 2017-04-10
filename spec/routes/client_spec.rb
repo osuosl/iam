@@ -113,6 +113,68 @@ describe 'The Clients endpoint' do
     expect(last_response.body).to include('Not Boring!')
   end
 
+ it 'allows us to delete a client with no projects, redirects to the list' do
+   client = Client.create(name: 'Delete me', active: true)
+
+   edited_client = { id: client.id,
+                     name: client.name,
+                     description: client.description,
+                     contact_name: client.contact_name,
+                     contact_email: client.contact_email,
+                     active: false}
+
+   patch '/clients', edited_client
+   follow_redirect!
+   expect(last_request.path).to eq("/clients")
+   expect(last_response.status).to eq(200)
+
+   get "/clients/#{client.id}"
+   expect(last_response.status).to eq(404)
+ end
+
+ it 'allows us to delete a client with a project, redirects to the list' do
+   client = Client.create(name: 'Delete client')
+   project = Project.create(name: 'Delete project', client_id: client.id)
+
+   edited_client = { id: client.id,
+                     name: client.name,
+                     active: false}
+
+   patch '/clients', edited_client
+   follow_redirect!
+   expect(last_request.path).to eq("/clients")
+   expect(last_response.status).to eq(200)
+
+   get "/clients/#{client.id}"
+   expect(last_response.status).to eq(404)
+   get "projects/#{project.id}"
+   expect(last_response.status).to eq(404)
+ end
+
+  it 'allows us to delete a client with project, node/db; redirect to list' do
+    client = Client.create(name: 'Delete client')
+    project = Project.create(name: 'Delete project', client_id: client.id)
+    node = NodeResource.create(name: 'Delete Node')
+    db = DbResource.create(name: 'Delete Db')
+
+    edited_client = { id: client.id,
+                      name: client.name,
+                      active: false}
+
+    patch '/clients', edited_client
+    follow_redirect!
+    expect(last_request.path).to eq("/clients")
+    expect(last_response.status).to eq(200)
+
+    get "/clients/#{client.id}"
+    expect(last_response.status).to eq(404)
+    get "projects/#{project.id}"
+    expect(last_response.status).to eq(404)
+    get "node/#{node.id}"
+    expect(last_response.status).to eq(200)
+    get "db/#{db.id}"
+    expect(last_response.status).to eq(200)
+  end
   # sinatra has no way of checking which template is rendered, so we will
   # check for HTML code
   it '/clients renders the index template' do
