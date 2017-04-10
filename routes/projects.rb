@@ -71,14 +71,14 @@ module Sinatra
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
 
-        unless project.active
-          unless project.node_resources.empty? && project.node_resources.empty?
-            nodes = project.node_resources
-            dbs = project.db_resources
-
-            nodes.each(&:delete) unless nodes.empty?
-            dbs.each(&:delete) unless dbs.empty?
-
+        # if project is set to inactive, disassociate this projects' resources
+        # to the default project and delete this project
+        unless project.active && project.name == 'default'
+          resources = Report.get_resources(project)
+          unless resources.empty?
+            resources.each do |resource_type|
+              resource_type.update(project_id: 1)
+            end
           end
           project.delete
           redirect '/projects' unless project.nil?

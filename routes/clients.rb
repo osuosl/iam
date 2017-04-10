@@ -50,7 +50,6 @@ module Sinatra
       app.get '/clients/?' do
         # get a list of all clients
         @clients = Client.all
-        puts @clients.inspect
         erb :'clients/index'
       end
 
@@ -82,17 +81,17 @@ module Sinatra
                       contact_name: params[:contact_name] || client.contact_name,
                       active: params[:active] || client.active)
 
-        unless client.active
-          unless client.projects.empty?
-            projects = client.projects
-
-            projects.each do |project|
-              project.db_resources.each(&:delete) unless project.db_resources.empty?
-              project.node_resources.each(&:delete) unless project.node_resources.empty?
+        # if the active state is false, all projects are deleted and resources
+        # are re-assigned to the default project.
+        unless client.active && client.name == 'default' && client.projects.empty?
+          projects = client.projects
+          projects.each do |project|
+            resources = Report.get_resources(project)
+            unless resources.empty?
+              resources.each { |resource_type| resource_type.update(project_id: 1) }
             end
-
-            projects.each(&:delete) unless projects.empty?
           end
+          projects.each(&:delete) unless projects.empty?
           client.delete
           redirect '/clients' unless client.nil?
           404

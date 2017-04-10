@@ -106,7 +106,7 @@ module Sinatra
                   active: params[:active] || db.active)
 
         unless db.active
-          db.delete unless db.nil?
+          db.update(project_id: 1) unless db.nil?
           redirect '/dbs' unless db.nil?
           404
         end

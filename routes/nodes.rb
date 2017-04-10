@@ -125,7 +125,7 @@ module Sinatra
                     active: params[:active] || node.active)
 
         unless node.active
-          node.delete unless node.nil?
+          node.update(project_id: 1) unless node.nil?
           redirect '/nodes/?' unless node.nil?
           404
         end

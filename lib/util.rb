@@ -122,6 +122,17 @@ end
 
 # methods for gathering measurement data into hashes
 class Report
+  # this method returns an array of all the resources (without their
+  # measurements) a project has associated with it
+  def self.get_resources(project)
+    all_resources = []
+    plugin_matrix.each do |resource_type, _measurements|
+      all_resources.push(project.send("#{resource_type}_resources"))
+      all_resources = all_resources.flatten
+    end
+    all_resources
+  end
+
   # this method returns all the available resource type along with an array
   # of the measurment plugins available for that resource type
   def self.plugin_matrix
