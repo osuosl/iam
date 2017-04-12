@@ -105,11 +105,6 @@ module Sinatra
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
 
-        unless db.active
-          db.update(project_id: 1) unless db.nil?
-          redirect '/dbs' unless db.nil?
-          404
-        end
         redirect "/db/#{params[:id]}"
       end
     end

@@ -80,7 +80,11 @@
              </tr>
            </tbody>
          </table>
+         <% unless @client.active %>
+          <input type="hidden" name="_method" value="delete">
+         <% end %>
          <input type="submit" value="Update" class="btn btn-primary">
+         <%= puts @client.active %>
        </form>
      </div>
    </div>

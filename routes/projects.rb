@@ -75,10 +75,9 @@ module Sinatra
         # to the default project and delete this project
         unless project.active || project.name == 'default'
           resources = Report.get_resources(project)
-          unless resources.empty?
-            resources.each do |resource_type|
-              resource_type.update(project_id: 1)
-            end
+          next if resources.empty?
+          resources.each do |resource_type|
+            resource_type.update(project_id: Project.find(name: 'default').id)
           end
           project.delete
           redirect '/projects' unless project.nil?

@@ -124,11 +124,6 @@ module Sinatra
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
 
-        unless node.active
-          node.update(project_id: 1) unless node.nil?
-          redirect '/nodes/?' unless node.nil?
-          404
-        end
         redirect "/node/#{params[:id]}"
       end
     end
