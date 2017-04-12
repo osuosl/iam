@@ -87,11 +87,7 @@ module Sinatra
           unless client.projects.empty?
             projects = client.projects
             projects.each do |project|
-              resources = Report.get_resources(project)
-              next if resources.empty?
-              resources.each do |resource_type|
-                resource_type.update(project_id: Project.find(name: 'default').id)
-              end
+              Report.reassign_resources(project)
             end
             projects.each(&:delete) unless projects.empty?
           end

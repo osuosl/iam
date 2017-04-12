@@ -124,13 +124,20 @@ end
 class Report
   # this method returns an array of all the resources (without their
   # measurements) a project has associated with it
-  def self.get_resources(project)
+  def self.reassign_resources(project)
     all_resources = []
     plugin_matrix.each do |resource_type, _measurements|
-      all_resources.push(project.send("#{resource_type}_resources"))
-      all_resources = all_resources.flatten
+      data = project.send("#{resource_type}_resources")
+      unless data.empty?
+        all_resources.push(data)
+        all_resources = all_resources.flatten
+      end
     end
-    all_resources
+    # reassign the projects' resources to the default project
+    return if all_resources.empty?
+    all_resources.each do |resource_type|
+      resource_type.update(project_id: Project.find(name: 'default').id)
+    end
   end
 
   # this method returns all the available resource type along with an array
