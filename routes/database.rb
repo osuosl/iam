@@ -73,6 +73,7 @@ module Sinatra
       app.get '/dbs/?' do
         # get a list of all database
         @dbs = DbResource.all
+        puts @dbs.inspect
         erb :'database/index'
       end
 
@@ -106,6 +107,14 @@ module Sinatra
                   active: params[:active] || db.active)
 
         redirect "/db/#{params[:id]}"
+      end
+
+      app.delete '/dbs/?' do
+        # delete a database
+        db = DbResource[id: params[:id]]
+        db.update(active: false)
+        redirect '/dbs/?' unless db.nil?
+        404
       end
     end
   end

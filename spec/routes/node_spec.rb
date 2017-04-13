@@ -104,4 +104,17 @@ describe 'The NodeResource endpoint' do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('Not Boring!')
   end
+
+  it 'allows us to set a node to inactive, redirects to the list' do
+    node = NodeResource.create(name: 'Edit Type', type: 'Delete Me')
+
+    inactive_node = { id: node.id,
+                      name: node.name,
+                      active: false }
+
+    delete '/nodes/', inactive_node
+    follow_redirect!
+    expect(last_request.path).to eq('/nodes/')
+    expect(last_response.status).to eq(200)
+  end
 end

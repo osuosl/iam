@@ -116,17 +116,16 @@ describe 'The Clients endpoint' do
   it 'allows us to delete a client with no projects, redirects to the list' do
     client = Client.create(name: 'Delete me', active: true)
 
-    edited_client = { id: client.id,
-                      name: client.name,
-                      description: client.description,
-                      contact_name: client.contact_name,
-                      contact_email: client.contact_email,
-                      active: false }
+    deleted_client = { id: client.id,
+                       name: client.name,
+                       description: client.description,
+                       contact_name: client.contact_name,
+                       contact_email: client.contact_email,
+                       active: false }
 
-    patch '/clients', edited_client
-    follow_redirect!
+    delete '/clients', deleted_client
     expect(last_request.path).to eq('/clients')
-    expect(last_response.status).to eq(200)
+    expect(last_response.status).to eq(302)
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(404)
@@ -136,11 +135,11 @@ describe 'The Clients endpoint' do
     client = Client.create(name: 'Delete client')
     project = Project.create(name: 'Delete project', client_id: client.id)
 
-    edited_client = { id: client.id,
-                      name: client.name,
-                      active: false }
+    deleted_client = { id: client.id,
+                       name: client.name,
+                       active: false }
 
-    patch '/clients', edited_client
+    delete '/clients', deleted_client
     follow_redirect!
     expect(last_request.path).to eq('/clients')
     expect(last_response.status).to eq(200)
@@ -157,11 +156,11 @@ describe 'The Clients endpoint' do
     node = NodeResource.create(name: 'Delete Node')
     db = DbResource.create(name: 'Delete Db')
 
-    edited_client = { id: client.id,
-                      name: client.name,
-                      active: false }
+    deleted_client = { id: client.id,
+                       name: client.name,
+                       active: false }
 
-    patch '/clients', edited_client
+    delete '/clients', deleted_client
     follow_redirect!
     expect(last_request.path).to eq('/clients')
     expect(last_response.status).to eq(200)

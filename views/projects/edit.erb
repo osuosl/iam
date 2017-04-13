@@ -1,16 +1,16 @@
 <div class="container">
-  <form action='/projects' method='post'>
-    <input type="hidden" name="_method" value="patch">
-    <input type="hidden" name="id" value="<%= @project.id %>">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Project Name</th>
-          <th>Old</th>
-          <th>New</th>
-        </tr>
-      </thead>
-      <tbody>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Old</th>
+        <th>New</th>
+      </tr>
+    </thead>
+    <tbody>
+      <form action='/projects' method='post'>
+        <input type="hidden" name="_method" value="patch">
+        <input type="hidden" name="id" value="<%= @project.id %>">
         <tr>
           <td>name</td>
           <td>
@@ -38,21 +38,19 @@
           </td>
         </tr>
         <tr>
-          <td>Active state</td>
           <td>
-            <% if @project %>
-              <%= @project.active %>
-            <% else %>
-              N/A
-            <% end %>
+            <input type="submit" value="Update" class="btn btn-primary">
           </td>
           <td>
-            <input type="radio" name="active" value="True"> True
-            <input type="radio" name="active" value="False"> False
+          </form>
+          <form action='/projects' method='post'>
+            <input type="hidden" name="_method" value="delete">
+            <input type="hidden" name="id" value="<%= @project.id %>">
+            <input type="submit" value="Delete" class="btn btn-primary">
+          </form>
           </td>
         </tr>
       </tbody>
     </table>
-    <input type="submit" value="Update" class="btn btn-primary">
   </form>
 </div>

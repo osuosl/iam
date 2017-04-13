@@ -71,15 +71,20 @@ module Sinatra
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
 
-        # if project is set to inactive, disassociate this projects' resources
-        # to the default project and delete this project
-        unless project.active || project.name == 'default'
+        redirect "/projects/#{params[:id]}"
+      end
+
+      app.delete '/projects/?' do
+        # delete a project
+        project = Project[id: params[:id]]
+        # disassociate this projects' resources to the default project and
+        # delete this project
+        unless  project.name == 'default'
           Report.reassign_resources(project)
           project.delete
           redirect '/projects' unless project.nil?
           404
         end
-        redirect "/projects/#{params[:id]}"
       end
     end
   end

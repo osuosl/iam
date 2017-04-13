@@ -126,6 +126,14 @@ module Sinatra
 
         redirect "/node/#{params[:id]}"
       end
+
+      app.delete '/nodes/?' do
+        # delete a node
+        node = NodeResource[id: params[:id]]
+        node.update(active: false)
+        redirect '/nodes/?' unless node.nil?
+        404
+      end
     end
   end
   register NodeRoutes
