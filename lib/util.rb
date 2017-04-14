@@ -225,7 +225,7 @@ class Report
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
-          data_average = if data.nil?
+          data_average = if data[0].nil?
                            0
                          elsif data[0][:value].number?
                            DataUtil.average_value(data)
