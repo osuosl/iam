@@ -127,7 +127,7 @@ module Sinatra
         redirect "/node/#{params[:id]}"
       end
 
-      app.delete '/nodes/?' do
+      app.delete '/nodes/:id/?' do
         # delete a node
         node = NodeResource[id: params[:id]]
         node.update(active: false)

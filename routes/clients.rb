@@ -84,7 +84,7 @@ module Sinatra
         redirect "/clients/#{params[:id]}"
       end
 
-      app.delete '/clients/?' do
+      app.delete '/clients/:id/?' do
         # delete a client
         client = Client[id: params[:id]]
         unless client.name == 'default'

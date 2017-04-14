@@ -74,7 +74,7 @@ module Sinatra
         redirect "/projects/#{params[:id]}"
       end
 
-      app.delete '/projects/?' do
+      app.delete '/projects/:id/?' do
         # delete a project
         project = Project[id: params[:id]]
         # disassociate this projects' resources to the default project and

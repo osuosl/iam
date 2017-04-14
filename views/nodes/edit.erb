@@ -75,9 +75,8 @@
             </td>
             <td>
               </form>
-              <form action='/nodes' method='post'>
+              <form action="/nodes/<%= node.id %>" method='post'>
                 <input type="hidden" name="_method" value="delete">
-                <input type="hidden" name="id" value="<%= @node.id %>">
                 <input type="submit" value="Inactive" class="btn btn-primary">
               </form>
             </td>

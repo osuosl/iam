@@ -43,9 +43,8 @@
           </td>
           <td>
           </form>
-          <form action='/projects' method='post'>
+          <form action="/projects/<%= @project.id %>" method='post'>
             <input type="hidden" name="_method" value="delete">
-            <input type="hidden" name="id" value="<%= @project.id %>">
             <input type="submit" value="Delete" class="btn btn-primary">
           </form>
           </td>
