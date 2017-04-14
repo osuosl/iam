@@ -90,6 +90,7 @@ describe 'The DataUtil class tests' do
         node: 'alembic-java.osuosl.org', value: -3, active: true }
     ]
     @data_empty = []
+    @data_hash_empty = {}
   end
 
   describe 'the max_value method' do
@@ -145,6 +146,15 @@ describe 'The DataUtil class tests' do
     it 'returns nil if called with invalid data' do
       expect(DataUtil.days_in_range(@data_invalid)).to eq(nil)
       expect(DataUtil.days_in_range(@data_future)).to eq(nil)
+    end
+  end
+
+  describe 'the sum_data method' do
+    it "properly handles a 'plain' DiskTemplate" do
+      expect(DataUtil.sum_data(@data_hash_empty, 'DiskSize', 10, 0)).to eq(10)
+    end
+    it "properly handles a 'drdb' DiskTemplate" do
+      expect(DataUtil.sum_data(@data_hash_empty, 'DiskSize', 10, 1)).to eq(20)
     end
   end
 end
