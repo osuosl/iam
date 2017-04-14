@@ -122,8 +122,8 @@ describe 'The Projects endpoint' do
                         name: project.name,
                         active: false }
 
-    delete '/projects', deleted_project
-    expect(last_request.path).to eq('/projects')
+    delete "/projects/#{project.id}", deleted_project
+    expect(last_request.path).to eq("/projects/#{project.id}")
     expect(last_response.status).to eq(302)
   end
 
@@ -136,8 +136,8 @@ describe 'The Projects endpoint' do
                         name: project.name,
                         active: false }
 
-    delete '/projects', deleted_project
-    expect(last_request.path).to eq('/projects')
+    delete "/projects/#{project.id}", deleted_project
+    expect(last_request.path).to eq("/projects/#{project.id}")
     expect(last_response.status).to eq(302)
 
     get "node/#{node.id}"

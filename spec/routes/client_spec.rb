@@ -123,8 +123,8 @@ describe 'The Clients endpoint' do
                        contact_email: client.contact_email,
                        active: false }
 
-    delete '/clients', deleted_client
-    expect(last_request.path).to eq('/clients')
+    delete "/clients/#{client.id}", deleted_client
+    expect(last_request.path).to eq("/clients/#{client.id}")
     expect(last_response.status).to eq(302)
 
     get "/clients/#{client.id}"
@@ -139,10 +139,9 @@ describe 'The Clients endpoint' do
                        name: client.name,
                        active: false }
 
-    delete '/clients', deleted_client
-    follow_redirect!
-    expect(last_request.path).to eq('/clients')
-    expect(last_response.status).to eq(200)
+    delete "/clients/#{client.id}", deleted_client
+    expect(last_request.path).to eq("/clients/#{client.id}")
+    expect(last_response.status).to eq(302)
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(404)
@@ -160,10 +159,9 @@ describe 'The Clients endpoint' do
                        name: client.name,
                        active: false }
 
-    delete '/clients', deleted_client
-    follow_redirect!
-    expect(last_request.path).to eq('/clients')
-    expect(last_response.status).to eq(200)
+    delete "/clients/#{client.id}", deleted_client
+    expect(last_request.path).to eq("/clients/#{client.id}")
+    expect(last_response.status).to eq(302)
 
     get "/clients/#{client.id}"
     expect(last_response.status).to eq(404)

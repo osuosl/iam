@@ -112,9 +112,8 @@ describe 'The NodeResource endpoint' do
                       name: node.name,
                       active: false }
 
-    delete '/nodes/', inactive_node
-    follow_redirect!
-    expect(last_request.path).to eq('/nodes/')
-    expect(last_response.status).to eq(200)
+    delete "/nodes/#{node.id}", inactive_node
+    expect(last_request.path).to eq("/nodes/#{node.id}")
+    expect(last_response.status).to eq(302)
   end
 end
