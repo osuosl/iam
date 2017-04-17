@@ -119,26 +119,12 @@ class DataUtil
     ((latest - earliest + day) / day).round(2)
   end
 
-  # this method uses a class and resource type to call the report function to
-  # get data that falls between two given dates
-  def self.data_from_range(measurement, resource_type, resource_name,
-                           start_date, end_date)
-    meas_class = measurement.constantize
-    if start_date != end_date
-      hash = meas_class.new.report(
-        { resource_type.to_sym => resource_name }, start_date, end_date
-      )
-    else
-      hash = meas_class.new.report(resource_type.to_sym => resource_name)
-    end
-    hash
-  end
-
   # this method takes a hash of  measurments and performs calculations based on
   # the type of data, then adds their value to the final hash of sums
   def self.sum_data(sums, key, value, drdb)
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
+    return if key == 'DiskTemplate'
     sums[key] = if sums.key?(key)
                   (value * drdb) + sums[key]
                 else
@@ -195,7 +181,7 @@ class Report
         end
       end
       (resource_data[resource_type] ||= []) << (
-                                              @page_count / per_page.to_f).ceil
+                                    @page_count / per_page.to_f).ceil
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data
@@ -217,11 +203,6 @@ class Report
       resources.each do |resource|
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
-        if resource_type == 'node'
-          drdb = DiskTemplate.new.report(node: resource.name)
-          drdb = drdb.empty? ? 0 : drdb[0].fetch(:value).to_i
-          resource_data[resource.name]['drdb'] = drdb
-        end
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
@@ -249,28 +230,30 @@ class Report
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
         resource.each do |res_type, resource_hash|
-          # Add hashes for each resource into the main sum hash
           sum[res_type] ||= {}
           # Isolate each projects resource then get those that fall between the
           # start and end date.
           resource_hash.each do |hash, _value|
             hash.each do |resource_name, meas_hash|
               meas_hash.each do |meas_key, _meas_value|
-                next if meas_key == 'id' || meas_key == 'drdb'
-                data_array = DataUtil.data_from_range(meas_key, res_type,
-                                                      resource_name, start_date,
-                                                      end_date)
+                next if meas_key == 'id'
+                data_array = if start_date != end_date
+                               meas_key.constantize.new.report(
+                                 { res_type.to_sym => resource_name },
+                                 start_date, end_date
+                               )
+                             else
+                               meas_key.constantize.new.report(
+                                 res_type.to_sym => resource_name
+                               )
+                             end
 
                 # Transform array to hash. Insures the hashes are not nil,
                 # then adds up all the resources
                 data_hash = data_array[0]
                 data_hash = { value: 0 } if data_hash.nil?
                 value = data_hash.fetch(:value).to_i
-                drdb = if meas_hash.key?('drdb')
-                         meas_hash.fetch('drdb').to_i + 1
-                       else
-                         1
-                       end
+                drdb = meas_hash.fetch('DiskTemplate').to_i + 1
                 DataUtil.sum_data(sum[res_type], meas_key, value, drdb)
               end
             end

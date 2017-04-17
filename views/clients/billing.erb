@@ -45,6 +45,7 @@
               <thead>
                 <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
                 <%resource_measurements.each do |title| %>
+                 <% next if title == 'DiskTemplate' %>
                   <th><%= title %></th>
                   <% end %>
               </thead>
