@@ -151,10 +151,10 @@ describe 'The DataUtil class tests' do
 
   describe 'the sum_data method' do
     it "properly handles a 'plain' DiskTemplate" do
-      expect(DataUtil.sum_data(@data_hash_empty, 'DiskSize', 10, 0)).to eq(10)
+      expect(DataUtil.sum_data(@data_hash_empty, 'DiskSize', 10, 1)).to eq(10)
     end
     it "properly handles a 'drdb' DiskTemplate" do
-      expect(DataUtil.sum_data(@data_hash_empty, 'DiskSize', 10, 1)).to eq(20)
+      expect(DataUtil.sum_data(@data_hash_empty, 'RamSize', 10, 2)).to eq(20)
     end
   end
 end
