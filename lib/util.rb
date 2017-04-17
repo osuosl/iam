@@ -125,10 +125,11 @@ class DataUtil
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
     return if key == 'DiskTemplate'
+    drdb = 1 if drdb.nil?
     sums[key] = if sums.key?(key)
                   (value * drdb) + sums[key]
                 else
-                  sums[key] = value
+                  sums[key] = value * drdb
                 end
   end
 end
@@ -250,10 +251,14 @@ class Report
 
                 # Transform array to hash. Insures the hashes are not nil,
                 # then adds up all the resources
+                # puts input_hash.inspect
                 data_hash = data_array[0]
                 data_hash = { value: 0 } if data_hash.nil?
                 value = data_hash.fetch(:value).to_i
-                drdb = meas_hash.fetch('DiskTemplate').to_i + 1
+                if res_type == 'node'
+                  type = meas_hash.fetch('DiskTemplate')
+                  drdb = type == 'plain' ? 1 : 2
+                end
                 DataUtil.sum_data(sum[res_type], meas_key, value, drdb)
               end
             end
