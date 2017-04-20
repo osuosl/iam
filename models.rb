@@ -25,8 +25,8 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
-  one_to_many :node_resources
-  one_to_many :db_resources
+  many_to_many :node_resources, :join=>:project_node_resources
+  many_to_many :db_resources, :join=>:project_db_resources
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -56,7 +56,23 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
-  many_to_one :projects
+  one_to_many :project_node_resources
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+# Integer    :sku_id
+class ProjectNodeResource < Sequel::Model
+  many_to_one :project
+  one_to_many :sku
+  many_to_one :node_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -73,7 +89,40 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
-  many_to_one :projects
+  one_to_many :project_db_resources
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+# Integer    :sku_id
+class ProjectDbResource < Sequel::Model
+  many_to_one :project
+  one_to_many :sku
+  many_to_one :db_resource
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
+
+# SKU Resource data model
+# A Product belongs to one Project
+# Projects may own many SKU
+# String    :name,        :unique => true
+# String    :family       :text => true
+# Integer   :sku          :unique => true
+# Float     :rate
+# String    :description  :text => true
+class Sku < Sequel::Model
+  many_to_one :project_node_resource
+  many_to_one :project_db_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
