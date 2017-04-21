@@ -40,7 +40,11 @@
     <% else %>
       <% if @client.name != 'default' %>
         <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
-          <% if @data[resource_type].any? %>
+          <% if @data[resource_type].nil? %>
+            <h4>
+              <%= @client.name %> has no <%= resource_type.capitalize %> resources
+            </h4><br>
+          <% else %>
             <table class="table">
               <thead>
                 <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
@@ -59,10 +63,6 @@
                 </tr>
               </tbody>
             </table>
-          <% else %>
-            <h4>
-              <%= @client.name %> has no <%= resource_type.capitalize %> resources
-            </h4><br>
           <% end %>
         <% end %>
       <% end %>

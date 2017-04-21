@@ -54,18 +54,18 @@ module Sinatra
 
         @projects = @client.projects
 
+        start_date = params[:startdate]
+        end_date = params[:enddate]
+
         unless @projects.nil?
           @client_data = {}
           @projects.each do |project|
-            data = Report.project_data(project)
+            data = Report.project_data(project, start_date, end_date)
             (@client_data[project.name] ||= []) << data
           end
         end
 
-        start_date = params[:startdate]
-        end_date = params[:enddate]
-
-        @data = Report.data_in_date_range(@client_data, start_date, end_date)
+        @data = Report.sum_data_in_range(@client_data)
         erb :'clients/billing'
       end
 

@@ -190,7 +190,7 @@ class Report
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
-  def self.project_data(project)
+  def self.project_data(project, start_date = nil, end_date = nil)
     project_data = {}
 
     # for each resource type in the matrix, get a list of all that type
@@ -206,7 +206,12 @@ class Report
         resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
-          data = plugin.report(resource_type.to_sym => resource.name)
+          data = if start_date.nil? || end_date.nil?
+                   plugin.report(resource_type.to_sym => resource.name)
+                 else
+                   plugin.report({ resource_type.to_sym => resource.name },
+                                 start_date, end_date)
+                 end
           data_average = if data[0].nil?
                            0
                          elsif data[0][:value].number?
@@ -224,10 +229,9 @@ class Report
 
   # this method takes a hash of data and two dates. It takes the data that falls
   # between the two dates, then returns the sum of their measurements
-  def self.data_in_date_range(input_hash, start_date, end_date)
+  def self.sum_data_in_range(input_hash)
     sum = {}
-    start_date = Time.at(start_date.to_i)
-    end_date = Time.at(end_date.to_i)
+
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
         resource.each do |res_type, resource_hash|
@@ -235,31 +239,14 @@ class Report
           # Isolate each projects resource then get those that fall between the
           # start and end date.
           resource_hash.each do |hash, _value|
-            hash.each do |resource_name, meas_hash|
-              meas_hash.each do |meas_key, _meas_value|
-                next if meas_key == 'id'
-                data_array = if start_date != end_date
-                               meas_key.constantize.new.report(
-                                 { res_type.to_sym => resource_name },
-                                 start_date, end_date
-                               )
-                             else
-                               meas_key.constantize.new.report(
-                                 res_type.to_sym => resource_name
-                               )
-                             end
-
-                # Transform array to hash. Insures the hashes are not nil,
-                # then adds up all the resources
-                # puts input_hash.inspect
-                data_hash = data_array[0]
-                data_hash = { value: 0 } if data_hash.nil?
-                value = data_hash.fetch(:value).to_i
+            hash.each do |_resource_name, meas_hash|
+              meas_hash.each do |meas_key, meas_value|
+                next if meas_key == 'id' || meas_hash.empty?
                 if res_type == 'node'
                   type = meas_hash.fetch('DiskTemplate')
                   drdb = type == 'plain' ? 1 : 2
                 end
-                DataUtil.sum_data(sum[res_type], meas_key, value, drdb)
+                DataUtil.sum_data(sum[res_type], meas_key, meas_value, drdb)
               end
             end
           end
