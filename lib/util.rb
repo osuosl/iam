@@ -190,7 +190,7 @@ class Report
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
-  def self.project_data(project, start_date = nil, end_date = nil)
+  def self.project_data(project, start_date = Time.now, end_date = Time.now)
     project_data = {}
 
     # for each resource type in the matrix, get a list of all that type
@@ -206,12 +206,8 @@ class Report
         resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
-          data = if start_date.nil? || end_date.nil?
-                   plugin.report(resource_type.to_sym => resource.name)
-                 else
-                   plugin.report({ resource_type.to_sym => resource.name },
-                                 start_date, end_date)
-                 end
+          data = plugin.report({ resource_type.to_sym => resource.name },
+                               start_date, end_date)
           data_average = if data[0].nil?
                            0
                          elsif data[0][:value].number?
