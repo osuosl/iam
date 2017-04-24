@@ -87,18 +87,7 @@ module Sinatra
       app.delete '/clients/:id/?' do
         # delete a client
         client = Client[id: params[:id]]
-        unless client.name == 'default'
-          unless client.projects.empty?
-            # Delete the projects and reassign all the resources to the default
-            # project
-            projects = client.projects
-            projects.each do |project|
-              Report.reassign_resources(project)
-            end
-            projects.each(&:delete) unless projects.empty?
-          end
-          client.delete
-        end
+        client.remove(client) unless client.name == 'default'
         redirect '/clients' unless client.nil?
         404
       end

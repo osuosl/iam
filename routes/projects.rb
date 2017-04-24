@@ -79,12 +79,9 @@ module Sinatra
         project = Project[id: params[:id]]
         # disassociate this projects' resources to the default project and
         # delete this project
-        unless  project.name == 'default'
-          Report.reassign_resources(project)
-          project.delete
-          redirect '/projects' unless project.nil?
-          404
-        end
+        project.reassign_resources(project) unless project.name == 'default'
+        redirect '/projects' unless project.nil?
+        404
       end
     end
   end
