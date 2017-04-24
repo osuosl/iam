@@ -25,8 +25,8 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
-  many_to_many :node_resources, :join=>:project_node_resources
-  many_to_many :db_resources, :join=>:project_db_resources
+  many_to_many :node_resources, :join=>:node_resources_projects
+  many_to_many :db_resources, :join=>:db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -56,7 +56,7 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
-  one_to_many :project_node_resources
+  # one_to_many :project_node_resources
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -69,10 +69,10 @@ end
 # Integer    :project_id
 # Integer    :node_id
 # Integer    :sku_id
-class ProjectNodeResource < Sequel::Model
+class NodeResourceProject < Sequel::Model
   many_to_one :project
   one_to_many :sku
-  many_to_one :node_resource
+  # many_to_one :node_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -89,7 +89,7 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
-  one_to_many :project_db_resources
+  # one_to_many :project_db_resources
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -102,10 +102,10 @@ end
 # Integer    :project_id
 # Integer    :node_id
 # Integer    :sku_id
-class ProjectDbResource < Sequel::Model
+class DbResourceProject < Sequel::Model
   many_to_one :project
   one_to_many :sku
-  many_to_one :db_resource
+  # many_to_one :db_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
