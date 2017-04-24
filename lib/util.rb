@@ -190,8 +190,11 @@ class Report
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
-  def self.project_data(project, start_date = Time.now, end_date = Time.now)
+  def self.project_data(project, start_date, end_date)
     project_data = {}
+
+    start_date = Time.at(start_date.to_i) unless start_date.instance_of? Time
+    end_date = Time.at(end_date.to_i) unless end_date.instance_of? Time
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
@@ -238,10 +241,11 @@ class Report
             hash.each do |_resource_name, meas_hash|
               meas_hash.each do |meas_key, meas_value|
                 next if meas_key == 'id' || meas_hash.empty?
-                if res_type == 'node'
-                  type = meas_hash.fetch('DiskTemplate')
-                  drdb = type == 'plain' ? 1 : 2
-                end
+                drdb = 1
+                # if res_type == 'node'
+                #   type = meas_hash.fetch('DiskTemplate')
+                #   drdb = type == 'plain' ? 1 : 2
+                # end
                 DataUtil.sum_data(sum[res_type], meas_key, meas_value, drdb)
               end
             end
