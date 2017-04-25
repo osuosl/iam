@@ -31,14 +31,6 @@ class DataSampler
     puts "deleting clients"
     Iam.settings.DB[:clients].delete
 
-    # re-create the default client and project
-    puts "re-creating the default client and project"
-    default_client = Client.find_or_create(name: 'default',
-                                           description: 'The default client')
-    Project.find_or_create(name: 'default',
-                           client_id: default_client.id,
-                           description: 'The default project')
-
     # get clients from file, import to Client model
     clients_filename = 'test_data/clients.json'
     puts "creating clients from " + clients_filename
@@ -60,6 +52,14 @@ class DataSampler
       project.save
     end
 
+    # re-create the default client and project
+    puts "re-creating the default client and project"
+    default_client = Client.find_or_create(name: 'default',
+                                           description: 'The default client')
+    Project.find_or_create(name: 'default',
+                           client_id: default_client.id,
+                           description: 'The default project')
+                           
     # for each resource type, look for a file  of measurement data
     plugins.each do |resource_name, measurements|
       filename = "test_data/" + resource_name + ".json"
@@ -149,5 +149,3 @@ class DataSampler
     end
   end
 end
-
-# load the measurements
