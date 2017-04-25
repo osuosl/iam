@@ -10,6 +10,18 @@ task run: [:migrate] do
   ruby 'scheduler.rb'
 end
 
+task :require_verify_db do
+  input = ''
+  STDOUT.puts "\n"\
+    "******************************************\n"\
+    "WARNING! ONLY FOR USE IN DEV ENVIRONMENTS!\n"\
+    "******************************************\n\n"\
+    "This will permanently destroy all current data in this instance of the "\
+    "application, are you sure?\n\nType yes in all uppercase to verify:"
+  input = STDIN.gets.chomp
+  abort("Whew, that was close!") unless input == "YES"
+end
+
 task :migrate, [:version] do |t, args|
   if args[:version]
     puts "Migrating to version #{args[:version]}"
@@ -48,4 +60,20 @@ task :plugins do
     # The actual name is the middle part of the path (plugin/<name>/plugin.rb).
     Object.const_get(name.split('/')[1]).new
   end
+end
+
+# rake get_testdata
+task :get_testdata do
+  require_relative 'lib/datasampler.rb'
+  puts 'Fetching live data'
+  DataSampler.export_data(60,[3,5,11,12])
+  puts 'Data samples written to ./test_data/'
+end
+
+# rake import_testdata
+task :import_testdata => [:plugins, :require_verify_db] do
+  require_relative 'lib/datasampler.rb'
+  puts 'Importing test data from ./test_data'
+  DataSampler.load_data
+  puts 'Data samples imported from ./test_data/'
 end
