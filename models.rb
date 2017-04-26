@@ -25,7 +25,11 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
+
+  one_to_many :node_resources_projects
   many_to_many :node_resources, :join=>:node_resources_projects
+
+  one_to_many :db_resources_projects
   many_to_many :db_resources, :join=>:db_resources_projects
   def validate
     super
@@ -56,7 +60,8 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
-  # one_to_many :project_node_resources
+  many_to_one :project
+  one_to_many :node_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -71,8 +76,7 @@ end
 # Integer    :sku_id
 class NodeResourceProject < Sequel::Model
   many_to_one :project
-  one_to_many :sku
-  # many_to_one :node_resource
+  many_to_one :node_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -89,7 +93,8 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
-  # one_to_many :project_db_resources
+  many_to_one :project
+  one_to_many :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -104,8 +109,7 @@ end
 # Integer    :sku_id
 class DbResourceProject < Sequel::Model
   many_to_one :project
-  one_to_many :sku
-  # many_to_one :db_resource
+  many_to_one :db_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -120,14 +124,14 @@ end
 # Integer   :sku          :unique => true
 # Float     :rate
 # String    :description  :text => true
-class Sku < Sequel::Model
-  many_to_one :project_node_resource
-  many_to_one :project_db_resource
-  def validate
-    super
-    errors.add(:name, 'cannot be empty') if !name || name.empty?
-  end
-end
+# class Sku < Sequel::Model
+#   many_to_one :project_node_resource
+#   many_to_one :project_db_resource
+#   def validate
+#     super
+#     errors.add(:name, 'cannot be empty') if !name || name.empty?
+#   end
+# end
 
 # Collector stats data model
 # String    :name

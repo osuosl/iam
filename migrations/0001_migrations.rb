@@ -13,6 +13,8 @@ Sequel.migration do
     create_table(:projects) do
       primary_key :id
       foreign_key :client_id, :clients
+      foreign_key :node_project_id, :node_resources_projects
+      foreign_key :db_project_id, :db_resources_projects
       String      :name, unique: true
       String      :resources, size: 255
       String      :description, text: true
@@ -31,6 +33,7 @@ Sequel.migration do
     create_table(:node_resources) do
       primary_key :id
       foreign_key :project_id, :projects
+      foreign_key :node_project_id, :node_resources_projects
       String      :name, unique: true
       String      :type
       String      :cluster
