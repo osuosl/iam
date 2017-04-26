@@ -74,7 +74,7 @@ end
 # Integer    :project_id
 # Integer    :node_id
 # Integer    :sku_id
-class NodeResourceProject < Sequel::Model
+class NodeResourcesProject < Sequel::Model
   many_to_one :project
   many_to_one :node_resource
   def validate
@@ -107,7 +107,7 @@ end
 # Integer    :project_id
 # Integer    :node_id
 # Integer    :sku_id
-class DbResourceProject < Sequel::Model
+class DbResourcesProject < Sequel::Model
   many_to_one :project
   many_to_one :db_resource
   def validate
