@@ -6,6 +6,12 @@ require_relative './util.rb'
 # DataLoader - methods for sampling production data for use in testing
 ###
 class DataSampler
+
+  def self.random_name(number)
+    charset = Array('a'..'z')
+    Array.new(number) { charset.sample }.join
+  end
+
   def self.load_data
     # delete all the things, for simplicity
     puts "deleting all existing data"
@@ -59,7 +65,7 @@ class DataSampler
     Project.find_or_create(name: 'default',
                            client_id: default_client.id,
                            description: 'The default project')
-                           
+
     # for each resource type, look for a file  of measurement data
     plugins.each do |resource_name, measurements|
       filename = "test_data/" + resource_name + ".json"
@@ -88,16 +94,15 @@ class DataSampler
     end
   end
 
-  def export_data(days, clients)
+  def self.export_data(days, clients)
     # a time object representing the date 60 days ago
-    timefram = Time.now - (days * 86400)
+    timeframe = Time.now - (days * 86400)
 
     # get the resources available
     plugins = Report.plugin_matrix
 
     # get the client list, write it out to a file in json format
     clients = Client.where(:id => clients)
-    File.open("test_data/clients.json", 'w') { |file| file.write(clients.naked.all.to_json) }
 
     project_ids = []
     plugin_names = []
@@ -106,7 +111,8 @@ class DataSampler
     clients.each do |client|
       projects = client.projects_dataset
 
-      # collect the project ids, accumulate to the master list of all project ids
+      # collect the project ids, accumulate to the master list of all
+      #project ids
       projects.each do |project|
         project_ids << project.id
       end
@@ -117,23 +123,42 @@ class DataSampler
       end
     end
 
-    all_projects = Project.where(:id => project_ids)
+    clients = clients.naked.all
+    clients.each do |client|
+      # anonymize the client
+      client['name'] = 'Client ' + random_name(3).capitalize
+      client['contact_name'] = 'Fred ' + random_name(6).capitalize
+      client['contact_email'] = random_name(5) + '@example.com'
+      client['description'] = "A Client Description"
+    end
 
-    #write the projects to a file in json fromat
-    File.open("test_data/projects.json", 'w') { |file| file.write(all_projects.naked.all.to_json) }
+    File.open("test_data/clients.json", 'w') { |file| file.write(clients.to_json) }
+
+    all_projects = Project.where(:id => project_ids).naked.all
+
+    all_projects.each do |project|
+      # anonymize the project
+      project['name'] = 'The ' + random_name(4).capitalize + ' Project'
+      project['description'] = 'A description of the project'
+    end
+
+    # write the projects to a file in json fromat
+    File.open("test_data/projects.json", 'w') { |file| file.write(all_projects.to_json) }
 
     # get all the resources of each type for each project
     plugins.each do |resource_name, measurements|
       filename = "test_data/" + resource_name + ".json"
       table = resource_name + "_resources"
       resources = Iam.settings.DB[table.to_sym].where(:project_id => project_ids)
-
-      # write the resources to a file in json format
-      File.open(filename, 'w') { |file| file.write(resources.all.to_json) }
-
       # get an array of the resource ids
       resource_ids = resources.map(:id)
+      resources = resources.naked.all
 
+      resources.each do |resource|
+        resource['name'] = random_name(8)
+      end
+      # write the resources to a file in json format
+      File.open(filename, 'w') { |file| file.write(resources.to_json) }
       # for each measurment (plugin) available for this resource type, fetch all
       # the measurment data for the specific resource ids collected above. Get
       # all data newer than today - TIMEFRAME
