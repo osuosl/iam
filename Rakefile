@@ -70,7 +70,7 @@ task :export_data => [:plugins] do
   require_relative 'lib/datasampler.rb'
   puts 'Fetching live data'
   exporter = DataExporter.new
-  exporter.export_data(days.to_i,clients.split(','))
+  exporter.export_data(days: days.to_i, clients: clients.split(','))
   puts 'Data samples written to ./test_data/'
 end
 
