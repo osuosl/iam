@@ -10,6 +10,8 @@ class DataImporter
     @directory = 'test_data/'
   end
 
+  # Deletes all the extant data. This does not drop tables, only removes rows
+  # rubocop:disable AbcSize
   def delete_data
     # deletes everything
     Report.plugin_matrix.each do |resource_name, measurements|
@@ -26,6 +28,7 @@ class DataImporter
     Iam.settings.DB[:clients].delete
   end
 
+  # Imports the clients from clients.json
   def import_clients
     # get clients from file, import to Client model
     clients_filename = @directory + 'clients.json'
@@ -36,6 +39,7 @@ class DataImporter
     clients.each(&:save)
   end
 
+  # Imports the projects from projects.json
   def import_projects
     # get projects
     projects_filename = @directory + 'projects.json'
@@ -46,6 +50,8 @@ class DataImporter
     projects.each(&:save)
   end
 
+  # Loop through our definede resources and import the data for each one
+  # rubocop:disable MethodLength
   def import_resources
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
@@ -65,17 +71,18 @@ class DataImporter
     end
   end
 
+  # Main data importer method, calls other import methods and re-creates the
+  # default client and project
   def import_data
     # delete all the things, for simplicity
     delete_data
-    # import the clients
     import_clients
-    # import the projects
     import_projects
 
     # re-create the default client and project
     default_client = Client.find_or_create(name: 'default',
                                            description: 'The default client')
+
     Project.find_or_create(name: 'default',
                            client_id: default_client.id,
                            description: 'The default project')
@@ -90,11 +97,13 @@ class DataExporter
     @directory = 'test_data/'
   end
 
+  # Generate a string of random letters of <number> length
   def random_name(number)
     charset = Array('a'..'z')
     Array.new(number) { charset.sample }.join
   end
 
+  # Change any identifying fields in the client data before export
   def anonymize_clients(clients)
     clients.each do |client|
       client[:name] = 'Client ' + random_name(3).capitalize
@@ -104,6 +113,7 @@ class DataExporter
     end
   end
 
+  # Change any identifying fields in the project data before export
   def anonymize_projects(all_projects)
     all_projects.each do |project|
       # anonymize the project
@@ -112,26 +122,23 @@ class DataExporter
     end
   end
 
-  def export_data(days = 60, clients)
+  def export_data(clients:, days: 60)
     # a time object representing the date 60 days ago
     timeframe = Time.now - (days * 86_400)
 
     # get the client list, write it out to a file in json format
     clients = Client.where(id: clients)
 
+    # for each client, get its projects, keep track of all the project ids
     project_ids = []
-
-    # for each client, get its projects
     clients.each do |client|
       projects = client.projects_dataset
-
-      # collect the project ids, accumulate to the master list of all
-      # project ids
       projects.each do |project|
         project_ids << project.id
       end
     end
 
+    # Don't think about naked clients.
     clients = clients.naked.all
     anonymize_clients(clients)
 
@@ -146,6 +153,7 @@ class DataExporter
     File.open(filename, 'w') { |file| file.write(all_projects.to_json) }
 
     # get all the resources of each type for each project
+    #  rubocop:disable BlockLength
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
       table = resource_name + '_resources'
@@ -158,7 +166,7 @@ class DataExporter
       # resources tend to have a resource-specific reference to an internal
       # server, lets try to find them and anonymize with our best guess of
       # what they will be named
-      server_refs = [:ip, :server, :cluster, :fqdn, :hostname, :@directory]
+      server_refs = [:ip, :server, :cluster, :fqdn, :hostname, :directory]
       resources = resources.naked.all
       resources.each do |resource|
         resource[:name] = random_name(8)
@@ -172,7 +180,7 @@ class DataExporter
 
       # for each measurment (plugin) available for this resource type, fetch all
       # the measurment data for the specific resource ids collected above. Get
-      # all data newer than today - TIMEFRAME
+      # all data newer than (today - TIMEFRAME)
       measurements.each do |plugin_name|
         table = Plugin.where(name: plugin_name).first.storage_table
         resource = resource_name + '_resource'
