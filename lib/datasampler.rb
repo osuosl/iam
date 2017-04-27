@@ -3,173 +3,192 @@ require_relative '../models.rb'
 require_relative './util.rb'
 
 ###
-# DataLoader - methods for sampling production data for use in testing
+# DataImporter - methods for sampling production data for use in testing
 ###
-class DataSampler
-
-  def self.random_name(number)
-    charset = Array('a'..'z')
-    Array.new(number) { charset.sample }.join
+class DataImporter
+  def initialize
+    @directory = 'test_data/'
   end
 
-  def self.load_data
-    # delete all the things, for simplicity
-    puts "deleting all existing data"
-    plugins = Report.plugin_matrix
-    plugins.each do |resource_name, measurements|
-    #  filename = "test_data/" + resource_name + ".json"
-      model_name = (resource_name + "Resource").camelcase(:upper)
-      model = Object.const_get(model_name)
-      objects = model.dataset.all
-      objects.each do |object|
-        puts "deleting " + object.name
-        object.delete
-      end
+  def delete_data
+    # deletes everything
+    Report.plugin_matrix.each do |resource_name, measurements|
+      model = Object.const_get(resource_name + 'Resource').camelcase(:upper)
+      model.dataset.all.each(&:delete)
+
       measurements.each do |measurement_name|
-        table = Plugin.where(:name => measurement_name).first.storage_table
-        puts "deleting measurements from " + table
+        table = Plugin.where(name: measurement_name).first.storage_table
         Iam.settings.DB[table.to_sym].delete
       end
     end
 
-    puts "deleting projects"
     Iam.settings.DB[:projects].delete
-    puts "deleting clients"
     Iam.settings.DB[:clients].delete
+  end
 
+  def import_clients
     # get clients from file, import to Client model
-    clients_filename = 'test_data/clients.json'
-    puts "creating clients from " + clients_filename
+    clients_filename = @directory + 'clients.json'
     clients_json = File.open(clients_filename, &:readline)
+    clients = Client.array_from_json(clients_json,
+                                     fields: Client.columns.map(&:to_s))
 
-    clients = Client.array_from_json(clients_json, :fields=>%w'id name contact_name contact_email description active')
+    clients.each(&:save)
+  end
 
-    clients.each do |client|
-      client.save
-    end
-
+  def import_projects
     # get projects
-    projects_filename = 'test_data/projects.json'
-    puts "creating projects from " + projects_filename
+    projects_filename = @directory + 'projects.json'
     projects_json = File.open(projects_filename, &:readline)
-    projects = Project.array_from_json(projects_json, :fields=>%w'id client_id name description active')
+    projects = Project.array_from_json(projects_json,
+                                       fields: Project.columns.map(&:to_s))
 
-    projects.each do |project|
-      project.save
-    end
+    projects.each(&:save)
+  end
 
-    # re-create the default client and project
-    puts "re-creating the default client and project"
-    default_client = Client.find_or_create(name: 'default',
-                                           description: 'The default client')
-    Project.find_or_create(name: 'default',
-                           client_id: default_client.id,
-                           description: 'The default project')
-
+  def import_resources
     # for each resource type, look for a file  of measurement data
-    plugins.each do |resource_name, measurements|
-      filename = "test_data/" + resource_name + ".json"
-      puts "creating " + resource_name + "s from " + filename
+    Report.plugin_matrix.each do |resource_name, measurements|
+      filename = @directory + resource_name + '.json'
       resource_json = File.open(filename, &:readline)
-      model_name = (resource_name + "Resource").camelcase(:upper)
-      model = Object.const_get(model_name)
+      model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
+      resources = model.array_from_json(resource_json,
+                                        fields: model.columns.map(&:to_s))
 
-      # force from_json to import every field, normally 'id' is restricted
-      # first, get all the column names as an array of strings
-      model_columns = model.columns.map { |x| x.to_s }
-      # then specify these as the fields to import
-      resources = model.array_from_json(resource_json, :fields=>model_columns)
-      # the resources objects aren't saved yet, just created, so save them
-      resources.each do |resource|
-        resource.save
-      end
-
+      resources.each(&:save)
       measurements.each do |measurement_name|
-        table = Plugin.where(:name => measurement_name).first.storage_table
-        filename = 'test_data/' + table + '.json'
-        puts "loading " + measurement_name + "s from " + filename
+        table = Plugin.where(name: measurement_name).first.storage_table
+        filename = @directory + table + '.json'
         measurement_data = JSON.parse(File.open(filename, &:readline))
         Iam.settings.DB[table.to_sym].multi_insert(measurement_data)
       end
     end
   end
 
-  def self.export_data(days, clients)
-    # a time object representing the date 60 days ago
-    timeframe = Time.now - (days * 86400)
+  def import_data
+    # delete all the things, for simplicity
+    delete_data
+    # import the clients
+    import_clients
+    # import the projects
+    import_projects
 
-    # get the resources available
-    plugins = Report.plugin_matrix
+    # re-create the default client and project
+    default_client = Client.find_or_create(name: 'default',
+                                           description: 'The default client')
+    Project.find_or_create(name: 'default',
+                           client_id: default_client.id,
+                           description: 'The default project')
+    # import the resources
+    import_resources
+  end
+end
+
+# methods for exporting data
+class DataExporter
+  def initialize
+    @directory = 'test_data/'
+  end
+
+  def random_name(number)
+    charset = Array('a'..'z')
+    Array.new(number) { charset.sample }.join
+  end
+
+  def anonymize_clients(clients)
+    clients.each do |client|
+      client[:name] = 'Client ' + random_name(3).capitalize
+      client[:contact_name] = 'Fred ' + random_name(6).capitalize
+      client[:contact_email] = random_name(5) + '@example.com'
+      client[:description] = 'A Client Description'
+    end
+  end
+
+  def anonymize_projects(all_projects)
+    all_projects.each do |project|
+      # anonymize the project
+      project[:name] = 'The ' + random_name(4).capitalize + ' Project'
+      project[:description] = 'A description of the project'
+    end
+  end
+
+  def export_data(days = 60, clients)
+    # a time object representing the date 60 days ago
+    timeframe = Time.now - (days * 86_400)
 
     # get the client list, write it out to a file in json format
-    clients = Client.where(:id => clients)
+    clients = Client.where(id: clients)
 
     project_ids = []
-    plugin_names = []
-    resource_names = []
+
     # for each client, get its projects
     clients.each do |client|
       projects = client.projects_dataset
 
       # collect the project ids, accumulate to the master list of all
-      #project ids
+      # project ids
       projects.each do |project|
         project_ids << project.id
-      end
-
-      # get all the resource types by name
-      plugins.each do |resource, plugins|
-        resource_names << resource
       end
     end
 
     clients = clients.naked.all
-    clients.each do |client|
-      # anonymize the client
-      client['name'] = 'Client ' + random_name(3).capitalize
-      client['contact_name'] = 'Fred ' + random_name(6).capitalize
-      client['contact_email'] = random_name(5) + '@example.com'
-      client['description'] = "A Client Description"
-    end
+    anonymize_clients(clients)
 
-    File.open("test_data/clients.json", 'w') { |file| file.write(clients.to_json) }
+    filename = @directory + 'clients.json'
+    File.open(filename, 'w') { |file| file.write(clients.to_json) }
 
-    all_projects = Project.where(:id => project_ids).naked.all
-
-    all_projects.each do |project|
-      # anonymize the project
-      project['name'] = 'The ' + random_name(4).capitalize + ' Project'
-      project['description'] = 'A description of the project'
-    end
+    all_projects = Project.where(id: project_ids).naked.all
+    anonymize_projects(all_projects)
 
     # write the projects to a file in json fromat
-    File.open("test_data/projects.json", 'w') { |file| file.write(all_projects.to_json) }
+    filename = @directory + 'projects.json'
+    File.open(filename, 'w') { |file| file.write(all_projects.to_json) }
 
     # get all the resources of each type for each project
-    plugins.each do |resource_name, measurements|
-      filename = "test_data/" + resource_name + ".json"
-      table = resource_name + "_resources"
-      resources = Iam.settings.DB[table.to_sym].where(:project_id => project_ids)
+    Report.plugin_matrix.each do |resource_name, measurements|
+      filename = @directory + resource_name + '.json'
+      table = resource_name + '_resources'
+      resources = Iam.settings.DB[table.to_sym].where(project_id: project_ids)
+
       # get an array of the resource ids
       resource_ids = resources.map(:id)
-      resources = resources.naked.all
 
+      # anonymize all the resources
+      # resources tend to have a resource-specific reference to an internal
+      # server, lets try to find them and anonymize with our best guess of
+      # what they will be named
+      server_refs = [:ip, :server, :cluster, :fqdn, :hostname, :@directory]
+      resources = resources.naked.all
       resources.each do |resource|
-        resource['name'] = random_name(8)
+        resource[:name] = random_name(8)
+        server_refs.each do |ref|
+          resource[ref] = resource_name + '.example.com' if resource.key?(ref)
+        end
       end
+
       # write the resources to a file in json format
       File.open(filename, 'w') { |file| file.write(resources.to_json) }
+
       # for each measurment (plugin) available for this resource type, fetch all
       # the measurment data for the specific resource ids collected above. Get
       # all data newer than today - TIMEFRAME
       measurements.each do |plugin_name|
-        table = Plugin.where(:name => plugin_name).first.storage_table
-        resource = resource_name + "_resource"
-        filename = "test_data/" + table + ".json"
-        data = Iam.settings.DB[table.to_sym].where(resource.to_sym => resource_ids)
-        json = data.filter{created > timeframe}.all.to_json
+        table = Plugin.where(name: plugin_name).first.storage_table
+        resource = resource_name + '_resource'
+        filename = @directory + table + '.json'
+        data = Iam.settings.DB[table.to_sym].where(
+          resource.to_sym => resource_ids
+        )
+        data = data.filter { created > timeframe }.naked.all
+        # now we need to adjust the measurements to remove db names and fqdns
+        data.each do |datum|
+          # get the new resource name
+          res = resources.find { |x| x[:id] == datum[resource.to_sym] }
+          datum[resource_name.to_sym] = res[:name]
+        end
+        json = data.to_json
         File.open(filename, 'w') { |file| file.write(json) }
-        #  end
       end
     end
   end
