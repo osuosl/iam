@@ -63,17 +63,22 @@ task :plugins do
 end
 
 # rake get_testdata
-task :get_testdata do
+task :export_data => [:plugins] do
+  desc "export data"
+  days = ENV['EXPORT_DATA_DAYS'] ||= '60'
+  clients = ENV['EXPORT_DATA_CLIENTS'] ||= '3,5,11,12'
   require_relative 'lib/datasampler.rb'
   puts 'Fetching live data'
-  DataSampler.export_data(60,[3,5,11,12])
+  exporter = DataExporter.new
+  exporter.export_data(days.to_i,clients.split(','))
   puts 'Data samples written to ./test_data/'
 end
 
 # rake import_testdata
-task :import_testdata => [:plugins, :require_verify_db] do
+task :import_data => [:plugins, :require_verify_db] do
   require_relative 'lib/datasampler.rb'
   puts 'Importing test data from ./test_data'
-  DataSampler.load_data
+  importer = DataImporter.new
+  importer.import_data
   puts 'Data samples imported from ./test_data/'
 end
