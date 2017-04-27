@@ -19,7 +19,7 @@ Before importing data, be sure that data files exist in the test_data directory.
 A set of test data should be included in this repository. If this data is
 out of date, see DataExporter below for instructions on exporting new data.
 
-*Usage*
+**Usage**
 
 IMPORTANT: This function destroys all data in the currently configured database
 and should only ever be used in the environment of a Docker or other development
@@ -30,7 +30,14 @@ In the environment of a development instance of the application in docker or on
 a workstation:
 
 .. code-block:: bash
+
   rake import_data
+
+If you are running an RVM ruby:
+
+.. code-block:: bash
+
+  rvm all do rake import_data
 
 The rake task will remind you that this action will destroy all data in the
 current database and require you to type 'YES' to continue. It will take some
@@ -45,24 +52,70 @@ writes the data in json format to a series of files in the test_data
 subdirectory. Each model or measurement table will be written to a separate
 file named for the model or table.
 
-It's agood idea to browse through the application you will be exporting from and
-make sure that the clients you are exporting have appropriate data. Avoid
+It's a good idea to browse through the application you will be exporting from
+and make sure that the clients you are exporting have appropriate data. Avoid
 clients whose projects have very large numbers of resources, as this will export
 a large amount of test data. A good selection would include clients with
 different combinations of resources.
 
 By default this will export all measuremnt data collected in the last 60 days.
 
-*Usage*
+**Usage**
 
 In the environment of a staging or production instance of the app (an instance
 that has collected significant real-world data):
-
-.. code-block:: bash
-  rake export_data
 
 This will extract all data associated with the specified clients, including all
 measuremnts for all resources. The data will be anonymized by substituting any
 names, email addresses, host name or ip addresses with random data while
 maintaing the relationships between clients, projects, resources, and
 measurements.
+
+.. code-block:: bash
+
+  rake export_data
+
+or
+
+.. code-block:: bash
+
+  rvm all do rake export_data
+
+If you would like to set a different time frame, set the EXPORT_DATA_DAYS
+environment variable.
+
+.. code-block:: bash
+
+  rake export_data EXPORT_DATA_DAYS=<int>
+
+or
+
+.. code-block:: bash
+
+  rvm all do rake export_data EXPORT_DATA_DAYS=<int>
+
+
+If you would like to set a different list of clients (see Rakefile for default).
+set the EXPORT_DATA_CLIENTS environment variable.
+
+.. code-block:: bash
+
+  rake export_data EXPORT_DATA_CLIENTS=<client_id>,<client_id>,<client_id>
+
+or
+
+.. code-block:: bash
+
+  rvm all do rake export_data EXPORT_DATA_CLIENTS=<client_id>,<client_id>,...
+
+You may set both variables at the same time:
+
+.. code-block:: bash
+
+  rake export_data EXPORT_DATA_DAYS=30 EXPORT_DATA_CLIENTS=1,2,6
+
+or
+
+.. code-block:: bash
+
+  rvm all do rake export_data EXPORT_DATA_DAYS=30 EXPORT_DATA_CLIENTS=1,2,6
