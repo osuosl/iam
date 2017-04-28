@@ -123,7 +123,33 @@ class DataExporter
     end
   end
 
-  def export_data(clients:, days: 60)
+  # Change any identifying fields in the resource data before export
+  def anonymize_resources(resources)
+    # resources tend to have a resource-specific reference to an internal
+    # server, lets try to find them and anonymize with our best guess of
+    # what they will be named
+    server_refs = [:ip, :server, :cluster, :fqdn, :hostname, :directory]
+
+    resources.each do |resource|
+      resource[:name] = random_name(8)
+      server_refs.each do |ref|
+        resource[ref] = resource_name + '.example.com' if resource.key?(ref)
+      end
+    end
+  end
+
+  # Change any identifying fields in the measurement data before export
+  def anonymize_measurements(data)
+    # now we need to adjust the measurements to remove db names and fqdns
+    data.each do |datum|
+      # get the new resource name
+      res = resources.find { |x| x[:id] == datum[resource.to_sym] }
+      datum[resource_name.to_sym] = res[:name]
+    end
+  end
+
+  # export the data
+  def export_data(clients:, days: 60, anonymize: true)
     # a time object representing the date 60 days ago
     timeframe = Time.now - (days * 86_400)
 
@@ -141,13 +167,13 @@ class DataExporter
 
     # Don't think about naked clients.
     clients = clients.naked.all
-    anonymize_clients(clients)
+    anonymize_clients(clients) if anonymize
 
     filename = @directory + 'clients.json'
     File.open(filename, 'w') { |file| file.write(clients.to_json) }
 
     all_projects = Project.where(id: project_ids).naked.all
-    anonymize_projects(all_projects)
+    anonymize_projects(all_projects) if anonymize
 
     # write the projects to a file in json fromat
     filename = @directory + 'projects.json'
@@ -161,26 +187,15 @@ class DataExporter
 
       # get an array of the resource ids
       resource_ids = resources.map(:id)
-
-      # anonymize all the resources
-      # resources tend to have a resource-specific reference to an internal
-      # server, lets try to find them and anonymize with our best guess of
-      # what they will be named
-      server_refs = [:ip, :server, :cluster, :fqdn, :hostname, :directory]
       resources = resources.naked.all
-      resources.each do |resource|
-        resource[:name] = random_name(8)
-        server_refs.each do |ref|
-          resource[ref] = resource_name + '.example.com' if resource.key?(ref)
-        end
-      end
+      anonymize_resources(resources) if anonymize
 
       # write the resources to a file in json format
       File.open(filename, 'w') { |file| file.write(resources.to_json) }
 
-      # for each measurment (plugin) available for this resource type, fetch all
-      # the measurment data for the specific resource ids collected above. Get
-      # all data newer than (today - TIMEFRAME)
+      # for each measurment (plugin) available for this resource type,
+      # fetch all the measurment data for the specific resource ids collected
+      # above. Get all data newer than (today - TIMEFRAME)
       measurements.each do |plugin_name|
         table = Plugin.where(name: plugin_name).first.storage_table
         resource = resource_name + '_resource'
@@ -189,12 +204,9 @@ class DataExporter
           resource.to_sym => resource_ids
         )
         data = data.filter { created > timeframe }.naked.all
-        # now we need to adjust the measurements to remove db names and fqdns
-        data.each do |datum|
-          # get the new resource name
-          res = resources.find { |x| x[:id] == datum[resource.to_sym] }
-          datum[resource_name.to_sym] = res[:name]
-        end
+
+        anonymize_measurements(data) if anonymize
+
         json = data.to_json
         File.open(filename, 'w') { |file| file.write(json) }
       end
