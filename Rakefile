@@ -62,12 +62,19 @@ task :plugins do
   end
 end
 
-# rake get_testdata
+# rake export_data
 task :export_data => [:plugins] do
   desc "export data"
   days = ENV['EXPORT_DATA_DAYS'] ||= '60'
   clients = ENV['EXPORT_DATA_CLIENTS'] ||= '3,5,11,12'
   anon = ENV['EXPORT_DATA_ANON'] == 'false' ? false : true
+
+  STDOUT.puts "\n"\
+    "********\n"\
+    "WARNING!\n"\
+    "********\n\n"\
+    "You are exporting IDENTIFYING DATA\n"\
+    "DO NOT ADD THIS DATA TO A PUBLIC REPOSITORY!\n" unless anon
 
   require_relative 'lib/datasampler.rb'
   puts 'Fetching live data'
