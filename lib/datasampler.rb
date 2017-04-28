@@ -146,11 +146,11 @@ class DataExporter
     timeframe = Time.now - (days * 86_400)
 
     # get the client list, write it out to a file in json format
-    if client_list == ['all']
-      clients = Client.where(active: true)
-    else
-      clients = Client.where(id: client_list, active: true)
-    end
+    clients = if client_list == ['all']
+                Client.where(active: true)
+              else
+                Client.where(id: client_list, active: true)
+              end
 
     # for each client, get its projects, keep track of all the project ids
     project_ids = []
