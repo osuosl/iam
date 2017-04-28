@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative '../environment.rb'
 require_relative '../models.rb'
 require_relative './util.rb'
@@ -153,7 +154,6 @@ class DataExporter
     File.open(filename, 'w') { |file| file.write(all_projects.to_json) }
 
     # get all the resources of each type for each project
-    #  rubocop:disable BlockLength
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
       table = resource_name + '_resources'

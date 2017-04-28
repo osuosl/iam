@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # set path to app that will be used to configure unicorn,
 # note the trailing slash in this example
 app_dir = '/data/code'

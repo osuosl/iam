@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 FactoryGirl.define do
   # use sequences to dynamically create unique records on demand
 

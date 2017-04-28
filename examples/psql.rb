@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Example of using Sequel to connect to and work with a Postgres database.
 # The PostgreSQL database is running in a linked docker container at the host
 # `testing-psql`

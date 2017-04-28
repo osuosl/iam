@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # if we are in test mode, run the migrations first to make sure
 # the test db is all set up
 Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
