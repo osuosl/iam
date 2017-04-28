@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sinatra/base'
 require_relative 'environment'
 require_relative 'scheduler'

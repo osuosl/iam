@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Changes the column type for value to bigint so we can store the size in bytes
 # of larger databases
 
