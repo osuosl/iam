@@ -21,10 +21,12 @@ out of date, see DataExporter below for instructions on exporting new data.
 
 **Usage**
 
-IMPORTANT: This function destroys all data in the currently configured database
-and should only ever be used in the environment of a Docker or other development
-instance of the application. MAKE SURE YOUR INSTANCE IS NOT CONFIGURED TO USE
-THE PRODUCTION OR STAGING DATABASES!
+.. warning::
+
+  This function destroys all data in the currently configured database and
+  should only ever be used in the environment of a Docker or other
+  development instance of the application. MAKE SURE YOUR INSTANCE IS NOT
+  CONFIGURED TO USE THE PRODUCTION OR STAGING DATABASES!
 
 In the environment of a development instance of the application in docker or on
 a workstation:
@@ -71,11 +73,18 @@ names, email addresses, host name or ip addresses with random data while
 maintaing the relationships between clients, projects, resources, and
 measurements.
 
+.. note::
+
+  On stanging and production, you'll need to use the RVM ruby to run the rake
+  commands. Add 'rvm 2.3.0 do' in front of any rake commands.
+
+To export data with default options (60 days of anonymized data for all clients)
+
 .. code-block:: bash
 
   rake export_data
 
-or
+or, using rvm:
 
 .. code-block:: bash
 
@@ -89,41 +98,36 @@ environment variable. This should be an integer number of days, the default is
 
   rake export_data EXPORT_DATA_DAYS=60
 
-or
+.. note::
 
-.. code-block:: bash
+  You can set any of the environment variables before running the command, or
+  include them on the command line as shown in the exmaples. Don't forget that
+  these variables are set in your environment, you may need to unset or change
+  their values.
 
-  rvm all do rake export_data EXPORT_DATA_DAYS=30
-
-
-If you would like to set a different list of clients (see Rakefile for default).
-set the EXPORT_DATA_CLIENTS environment variable.
+If you would like to set a specific list of clients (recommended),
+set the EXPORT_DATA_CLIENTS environment variable. You can find the ids of the
+clients in the application Clients view.
 
 .. code-block:: bash
 
   rake export_data EXPORT_DATA_CLIENTS=<client_id>,<client_id>,<client_id>
 
-or
+example:
 
 .. code-block:: bash
 
-  rvm all do rake export_data EXPORT_DATA_CLIENTS=<client_id>,<client_id>,...
+  rake export_data EXPORT_DATA_CLIENTS=1,2,5
 
-If you would like to export data without anonymizing it, you can se the
+If you would like to export data without anonymizing it, you can set the
 EXPORT_DATA_ANON environment variable to 'false'
 
 .. code-block:: bash
 
   rake export_data EXPORT_DATA_ANON='false'
 
-or
-
-.. code-block:: bash
-
-  rvm all do rake export_data EXPORT_DATA_ANON='false'
-
-
-You may set any or all variables at the same time:
+You may set any or all variables at the same time (don't forget about previously
+set variables!)
 
 .. code-block:: bash
 
