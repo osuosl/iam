@@ -149,7 +149,7 @@ class DataExporter
   end
 
   # export the data
-  def export_data(clients:, days: 60, anonymize: true)
+  def export_data(clients:, days: 60, anon: true)
     # a time object representing the date 60 days ago
     timeframe = Time.now - (days * 86_400)
 
@@ -167,13 +167,13 @@ class DataExporter
 
     # Don't think about naked clients.
     clients = clients.naked.all
-    anonymize_clients(clients) if anonymize
+    anonymize_clients(clients) if anon
 
     filename = @directory + 'clients.json'
     File.open(filename, 'w') { |file| file.write(clients.to_json) }
 
     all_projects = Project.where(id: project_ids).naked.all
-    anonymize_projects(all_projects) if anonymize
+    anonymize_projects(all_projects) if anon
 
     # write the projects to a file in json fromat
     filename = @directory + 'projects.json'
@@ -188,7 +188,7 @@ class DataExporter
       # get an array of the resource ids
       resource_ids = resources.map(:id)
       resources = resources.naked.all
-      anonymize_resources(resources) if anonymize
+      anonymize_resources(resources) if anon
 
       # write the resources to a file in json format
       File.open(filename, 'w') { |file| file.write(resources.to_json) }
@@ -205,7 +205,7 @@ class DataExporter
         )
         data = data.filter { created > timeframe }.naked.all
 
-        anonymize_measurements(data) if anonymize
+        anonymize_measurements(data) if anon
 
         json = data.to_json
         File.open(filename, 'w') { |file| file.write(json) }
