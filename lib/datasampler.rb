@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'fileutils'
 require_relative '../environment.rb'
 require_relative '../models.rb'
 require_relative './util.rb'
@@ -9,6 +10,7 @@ require_relative './util.rb'
 class DataImporter
   def initialize
     @directory = 'test_data/'
+    FileUtils.mkdir_p @directory
   end
 
   # Deletes all the extant data. This does not drop tables, only removes rows
