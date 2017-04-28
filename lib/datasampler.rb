@@ -10,7 +10,6 @@ require_relative './util.rb'
 class DataImporter
   def initialize
     @directory = 'test_data/'
-    FileUtils.mkdir_p @directory
   end
 
   # Deletes all the extant data. This does not drop tables, only removes rows
@@ -98,6 +97,7 @@ end
 class DataExporter
   def initialize
     @directory = 'test_data/'
+    FileUtils.mkdir_p @directory
   end
 
   # Generate a string of random letters of <number> length
@@ -141,12 +141,16 @@ class DataExporter
   end
 
   # export the data
-  def export_data(clients:, days: 60, anon: true)
+  def export_data(client_list: ['all'], days: 60, anon: true)
     # a time object representing the date 60 days ago
     timeframe = Time.now - (days * 86_400)
 
     # get the client list, write it out to a file in json format
-    clients = Client.where(id: clients)
+    if client_list == ['all']
+      clients = Client.where(active: true)
+    else
+      clients = Client.where(id: client_list, active: true)
+    end
 
     # for each client, get its projects, keep track of all the project ids
     project_ids = []
