@@ -67,10 +67,12 @@ task :export_data => [:plugins] do
   desc "export data"
   days = ENV['EXPORT_DATA_DAYS'] ||= '60'
   clients = ENV['EXPORT_DATA_CLIENTS'] ||= '3,5,11,12'
+  anon = ENV['EXPORT_DATA_ANON'] == 'false' ? false : true
+
   require_relative 'lib/datasampler.rb'
   puts 'Fetching live data'
   exporter = DataExporter.new
-  exporter.export_data(days: days.to_i, clients: clients.split(','))
+  exporter.export_data(days: days.to_i, clients: clients.split(','), anon: anon)
   puts 'Data samples written to ./test_data/'
 end
 

@@ -108,14 +108,23 @@ or
 
   rvm all do rake export_data EXPORT_DATA_CLIENTS=<client_id>,<client_id>,...
 
-You may set both variables at the same time:
+If you would like to export data without anonymizing it, you can se the
+EXPORT_DATA_ANON environment variable to 'false'
 
 .. code-block:: bash
 
-  rake export_data EXPORT_DATA_DAYS=30 EXPORT_DATA_CLIENTS=1,2,6
+  rake export_data EXPORT_DATA_ANON='false'
 
 or
 
 .. code-block:: bash
 
-  rvm all do rake export_data EXPORT_DATA_DAYS=30 EXPORT_DATA_CLIENTS=1,2,6
+  rvm all do rake export_data EXPORT_DATA_ANON='false'
+
+
+You may set any or all variables at the same time:
+
+.. code-block:: bash
+
+  rake export_data EXPORT_DATA_DAYS=30 EXPORT_DATA_CLIENTS=1,2,6
+  rake export_data EXPORT_DATA_DAYS=20 EXPORT_DATA_ANON='false'
