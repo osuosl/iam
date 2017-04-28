@@ -27,10 +27,10 @@ class Project < Sequel::Model
   many_to_one :client
 
   one_to_many :node_resources_projects
-  many_to_many :node_resources, :join=>:node_resources_projects
+  one_to_many :node_resources, join_table: :node_resources_projects
 
   one_to_many :db_resources_projects
-  many_to_many :db_resources, :join=>:db_resources_projects
+  one_to_many :db_resources, join_table: :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -61,7 +61,7 @@ end
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
   many_to_one :project
-  one_to_many :node_resources_projects
+  one_to_one :node_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -73,10 +73,9 @@ end
 # Projects may own many Project-Nodes
 # Integer    :project_id
 # Integer    :node_id
-# Integer    :sku_id
 class NodeResourcesProject < Sequel::Model
   many_to_one :project
-  many_to_one :node_resource
+  one_to_one :node_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -94,7 +93,7 @@ end
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
   many_to_one :project
-  one_to_many :db_resources_projects
+  one_to_one :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -106,32 +105,14 @@ end
 # Projects may own many Project-Nodes
 # Integer    :project_id
 # Integer    :node_id
-# Integer    :sku_id
 class DbResourcesProject < Sequel::Model
   many_to_one :project
-  many_to_one :db_resource
+  one_to_one :db_resource
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 end
-
-# SKU Resource data model
-# A Product belongs to one Project
-# Projects may own many SKU
-# String    :name,        :unique => true
-# String    :family       :text => true
-# Integer   :sku          :unique => true
-# Float     :rate
-# String    :description  :text => true
-# class Sku < Sequel::Model
-#   many_to_one :project_node_resource
-#   many_to_one :project_db_resource
-#   def validate
-#     super
-#     errors.add(:name, 'cannot be empty') if !name || name.empty?
-#   end
-# end
 
 # Collector stats data model
 # String    :name
