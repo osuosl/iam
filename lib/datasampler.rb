@@ -124,7 +124,7 @@ class DataExporter
   end
 
   # Change any identifying fields in the resource data before export
-  def anonymize_resources(resources)
+  def anonymize_resources(resources, resource_name)
     # resources tend to have a resource-specific reference to an internal
     # server, lets try to find them and anonymize with our best guess of
     # what they will be named
@@ -135,16 +135,6 @@ class DataExporter
       server_refs.each do |ref|
         resource[ref] = resource_name + '.example.com' if resource.key?(ref)
       end
-    end
-  end
-
-  # Change any identifying fields in the measurement data before export
-  def anonymize_measurements(data)
-    # now we need to adjust the measurements to remove db names and fqdns
-    data.each do |datum|
-      # get the new resource name
-      res = resources.find { |x| x[:id] == datum[resource.to_sym] }
-      datum[resource_name.to_sym] = res[:name]
     end
   end
 
@@ -188,7 +178,7 @@ class DataExporter
       # get an array of the resource ids
       resource_ids = resources.map(:id)
       resources = resources.naked.all
-      anonymize_resources(resources) if anon
+      anonymize_resources(resources, resource_name) if anon
 
       # write the resources to a file in json format
       File.open(filename, 'w') { |file| file.write(resources.to_json) }
@@ -205,7 +195,14 @@ class DataExporter
         )
         data = data.filter { created > timeframe }.naked.all
 
-        anonymize_measurements(data) if anon
+        # Change any identifying fields in the measurement data before export
+        if anon
+          data.each do |datum|
+            # get the new resource name
+            res = resources.find { |x| x[:id] == datum[resource.to_sym] }
+            datum[resource_name.to_sym] = res[:name]
+          end
+        end
 
         json = data.to_json
         File.open(filename, 'w') { |file| file.write(json) }
