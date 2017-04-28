@@ -58,7 +58,7 @@ clients whose projects have very large numbers of resources, as this will export
 a large amount of test data. A good selection would include clients with
 different combinations of resources.
 
-By default this will export all measuremnt data collected in the last 60 days.
+By default this will export all measurement data collected in the last 60 days.
 
 **Usage**
 
