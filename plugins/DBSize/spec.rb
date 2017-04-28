@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative './plugin.rb'
 describe 'DBSize plugin' do
   before(:all) do

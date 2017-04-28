@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # RamSize's migration file
 
 Sequel.migration do

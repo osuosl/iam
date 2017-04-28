@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative '../lib/util.rb'
 
 puts 'The following output will not make sense unless you read the script you
