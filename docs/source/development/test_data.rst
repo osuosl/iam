@@ -82,17 +82,18 @@ or
   rvm all do rake export_data
 
 If you would like to set a different time frame, set the EXPORT_DATA_DAYS
-environment variable.
+environment variable. This should be an integer number of days, the default is
+60.
 
 .. code-block:: bash
 
-  rake export_data EXPORT_DATA_DAYS=<int>
+  rake export_data EXPORT_DATA_DAYS=60
 
 or
 
 .. code-block:: bash
 
-  rvm all do rake export_data EXPORT_DATA_DAYS=<int>
+  rvm all do rake export_data EXPORT_DATA_DAYS=30
 
 
 If you would like to set a different list of clients (see Rakefile for default).

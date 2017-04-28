@@ -16,7 +16,7 @@ class DataImporter
   def delete_data
     # deletes everything
     Report.plugin_matrix.each do |resource_name, measurements|
-      model = Object.const_get(resource_name + 'Resource').camelcase(:upper)
+      model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       model.dataset.all.each(&:delete)
 
       measurements.each do |measurement_name|
@@ -51,7 +51,7 @@ class DataImporter
     projects.each(&:save)
   end
 
-  # Loop through our definede resources and import the data for each one
+  # Loop through our defined resources and import the data for each one
   # rubocop:disable MethodLength
   def import_resources
     # for each resource type, look for a file  of measurement data
