@@ -8,3 +8,4 @@ AllCops:
     - docs/
     - public/
     - views/
+  TargetRubyVersion: 2.3 
