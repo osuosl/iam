@@ -31,7 +31,6 @@ Sequel.migration do
     create_table(:node_resources) do
       primary_key :id
       foreign_key :project_id, :projects
-      foreign_key :node_project_id, :node_resources_projects
       String      :name, unique: true
       String      :type
       String      :cluster

@@ -76,10 +76,6 @@ end
 class NodeResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :node_resource
-  def validate
-    super
-    errors.add(:name, 'cannot be empty') if !name || name.empty?
-  end
 end
 
 # Database Resource data model
@@ -108,10 +104,6 @@ end
 class DbResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :db_resource
-  def validate
-    super
-    errors.add(:name, 'cannot be empty') if !name || name.empty?
-  end
 end
 
 # Collector stats data model
