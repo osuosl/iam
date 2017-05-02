@@ -122,10 +122,20 @@ class DataUtil
   # this method takes a hash of  measurments and performs calculations based on
   # the type of data, then adds their value to the final hash of sums
   def self.sum_data(sums, key, value, drdb)
+    return if key == 'DiskTemplate'
+    # convervion from MB -> GB and bytes -> GB
+    value = if %w(RamSize DiskSize).include?(key)
+              # convert from MB -> GB
+              ((value / 1024.00) * 100).round.to_f / 100
+            elsif key == 'DBSize'
+              # convert from Bytes -> GB
+              (value / (1024.00 * 1024.00)).round.to_f / 100
+            else
+              # no conversion needed
+              value
+            end
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
-    return if key == 'DiskTemplate'
-    drdb = 1 if drdb.nil?
     sums[key] = if sums.key?(key)
                   (value * drdb) + sums[key]
                 else
@@ -190,11 +200,11 @@ class Report
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
-  def self.project_data(project, start_date = Time.now, end_date = Time.now)
+  def self.project_data(project, start_date, end_date)
     project_data = {}
 
-    start_date = Time.at(start_date.to_i) unless start_date.instance_of? Time
-    end_date = Time.at(end_date.to_i) unless end_date.instance_of? Time
+    start_date = Time.at(start_date.to_i)
+    end_date = Time.at(end_date.to_i)
 
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has

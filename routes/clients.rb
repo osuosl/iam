@@ -28,10 +28,13 @@ module Sinatra
 
         @projects = @client.projects
 
+        start_date = params[:startdate].nil? ? Time.now - 2_592_000 : params[:startdate]
+        end_date = params[:enddate].nil? ? Time.now : params[:enddate]
+
         unless @projects.nil?
           @client_data = {}
           @projects.each do |project|
-            data = Report.project_data(project)
+            data = Report.project_data(project, start_date, end_date)
             (@client_data[project.name] ||= []) << data
           end
         end
