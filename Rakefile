@@ -25,10 +25,10 @@ end
 task :migrate, [:version] do |t, args|
   if args[:version]
     puts "Migrating to version #{args[:version]}"
-    Sequel::Migrator.run(Iam.DB, 'migrations', target: args[:version].to_i)
+    Sequel::Migrator.run(Iam.settings.DB, 'migrations', target: args[:version].to_i)
   else
     puts 'Migrating to latest'
-    Sequel::Migrator.run(Iam.DB, 'migrations')
+    Sequel::Migrator.run(Iam.settings.DB, 'migrations')
   end
 end
 
