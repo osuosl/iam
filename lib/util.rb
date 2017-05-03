@@ -122,18 +122,18 @@ class DataUtil
   # this method takes a hash of  measurments and performs calculations based on
   # the type of data, then adds their value to the final hash of sums
   def self.sum_data(sums, key, value, drdb)
-    return if key == 'DiskTemplate'
     # convervion from MB -> GB and bytes -> GB
     value = if %w(RamSize DiskSize).include?(key)
               # convert from MB -> GB
               ((value / 1024.00) * 100).round.to_f / 100
             elsif key == 'DBSize'
               # convert from Bytes -> GB
-              (value / (1024.00 * 1024.00)).round.to_f / 100
+              (value / (1024.00 * 1024.00 * 1024.00) * 100).round.to_f / 100
             else
               # no conversion needed
               value
             end
+    drdb = 1 if drdb.nil?
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
     sums[key] = if sums.key?(key)
@@ -255,7 +255,9 @@ class Report
                   type = meas_hash.fetch('DiskTemplate')
                   drdb = type == 'plain' ? 1 : 2
                 end
-                DataUtil.sum_data(sum[res_type], meas_key, meas_value, drdb)
+                unless meas_key == 'DiskTemplate'
+                  DataUtil.sum_data(sum[res_type], meas_key, meas_value, drdb)
+                end
               end
             end
           end
