@@ -18,7 +18,7 @@ services:
   # Dev container extends the base application.
   ###
   dev:
-    command: unicorn -l 4567 -c dockerfiles/unicorn.rb -E deployment
+    command: bash -c "sleep 20 && unicorn -l 4567 -c dockerfiles/unicorn.rb -E deployment"
     extends:
       service: app
     links:
@@ -26,8 +26,17 @@ services:
       - testing-mysql
     depends_on:
       - test
+      - migrate
     ports:
       - "4567:4567"
+
+  ###
+  # migrate container extends the base application.
+  ###
+  migrate:
+    command: bash -c "sleep 10 && rake migrate"
+    extends:
+      service: app
 
   ###
   # test container extends the base application.
