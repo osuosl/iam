@@ -69,10 +69,12 @@
           </td>
           <td>
           </form>
-          <form action="/clients/<%= @client.id %>" method='post'>
-            <input type="hidden" name="_method" value="delete">
-            <input type="submit" value="Delete" class="btn btn-primary">
-          </form>
+          <% unless @client.name == 'default' %>
+            <form action="/clients/<%= @client.id %>" method='post'>
+              <input type="hidden" name="_method" value="delete">
+              <input type="submit" value="Delete" class="btn btn-primary">
+            </form>
+          <% end %>
           </td>
         </tr>
       </tbody>

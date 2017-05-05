@@ -16,14 +16,9 @@ class Client < Sequel::Model
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 
-  def remove(client)
-    unless client.projects.empty?
-      projects = client.projects
-      projects.each do |project|
-        project.reassign_resources(project)
-      end
-    end
-    client.delete
+  def remove
+    projects.each(&:reassign_resources) unless projects.empty?
+    delete
   end
 end
 
@@ -42,16 +37,16 @@ class Project < Sequel::Model
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 
-  def reassign_resources(project)
+  def reassign_resources
     Report.plugin_matrix.each do |resource_type, _measurements|
-      data = project.send("#{resource_type}_resources")
+      data = send("#{resource_type}_resources")
       next if data.empty?
       # reassign the projects' resources to the default project
       data.each do |resource|
         resource.update(project_id: Project.find(name: 'default').id)
       end
     end
-    project.delete
+    delete
   end
 end
 
