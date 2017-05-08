@@ -53,8 +53,9 @@
             <% @data.each do |res_type, entire_hash| %>
               <% if entire_hash[0].empty? %>
                 <tr>
-                  <td> There are no <%= res_type == "db" ? "Database" : res_type.capitalize %> resources </h4> </td>
+                  <td><b> There are no <%= res_type == "db" ? "Database" : res_type.capitalize %> resources </b> </td>
                 </tr>
+                <tr></tr>
               <% else %>
                 <% @keys = [] %>
                 <% entire_hash[0].each { |name,value| @keys.push(value.keys) }%>

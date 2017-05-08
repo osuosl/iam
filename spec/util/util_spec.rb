@@ -151,7 +151,7 @@ describe 'The DataUtil class tests' do
   end
 
   describe 'the unit_conversion method' do
-    it "properly converts the units of the plugins" do
+    it 'properly converts the units of the plugins' do
       expect(DataUtil.unit_conversion('DBSize', 268_000_000)).to eq(0.25)
       expect(DataUtil.unit_conversion('RamSize', 268)).to eq(0.26)
       expect(DataUtil.unit_conversion('VCPUCount', 10)).to eq(10)
