@@ -39,32 +39,60 @@
       </p>
     <% else %>
       <% if @client.name != 'default' %>
-        <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
-          <% if @data[resource_type].nil? %>
-            <h4>
-              <%= @client.name %> has no <%= resource_type.capitalize %> resources
-            </h4><br>
-          <% else %>
-            <table class="table">
-              <thead>
-                <h4>Totals for <%= resource_type.capitalize%> measurements</h4>
-                <%resource_measurements.each do |title| %>
-                 <% next if title == 'DiskTemplate' %>
-                  <th><%= title %></th>
-                  <% end %>
-              </thead>
-              <tbody>
+      <h4>For time period:  <%= @v_start_date.strftime("%m/%d/%Y") %> - <%= @v_end_date.strftime("%m/%d/%Y") %></h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Description</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @total_hash = {} %>
+            <% @data.each do |res_type, entire_hash| %>
+              <% if entire_hash[0].empty? %>
                 <tr>
-                  <% @data[resource_type].each do |_measurement, totals|%>
-                    <td>
-                      <%= totals %>
-                    </td>
-                  <% end %>
+                  <td> There are no <%= res_type == "db" ? "Database" : res_type.capitalize %> resources </h4> </td>
                 </tr>
-              </tbody>
-            </table>
-          <% end %>
-        <% end %>
+              <% else %>
+                <% @keys = [] %>
+                <% entire_hash[0].each { |name,value| @keys.push(value.keys) }%>
+                <% @keys = @keys.uniq %>
+                <% @keys[0].each do |key| %>
+                  <% next if %w(id DiskTemplate).include?(key) %>
+                  <% @total_hash[key] ||= {} %>
+                  <% entire_hash[0].each do |res_name, res_hash| %>
+                    <%  val = res_hash.values_at(key)  %>
+                    <% @total_hash[key][res_name] = val %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <% unless @total_hash.empty? %>
+              <% @total_hash.each do |plugin, hash| %>
+                <% hash.each do |name, value| %>
+                  <tr>
+                    <td><%= plugin == "DBSize" ? "Database" : plugin %></td>
+                    <td><%= name %></td>
+                    <td><%= val = DataUtil.unit_conversion(plugin,value[0]) %></td>
+                  </tr>
+                <% end %>
+                <tr>
+                  <td></td><td></td>
+                  <td><b><%= plugin %> Total:</b> <%= @sum_data.values_at(plugin)[0] %></td>
+                  <td></td>
+                </tr>
+                <tr class="blank_row">
+                  <td colspan="3"></td>
+                </tr>
+                <tr class="blank_row">
+                  <td colspan="3"></td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
       <% end %>
     <% end %>
   </form>

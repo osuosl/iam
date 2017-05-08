@@ -150,16 +150,20 @@ describe 'The DataUtil class tests' do
     end
   end
 
+  describe 'the unit_conversion method' do
+    it "properly converts the units of the plugins" do
+      expect(DataUtil.unit_conversion('DBSize', 268_000_000)).to eq(0.25)
+      expect(DataUtil.unit_conversion('RamSize', 268)).to eq(0.26)
+      expect(DataUtil.unit_conversion('VCPUCount', 10)).to eq(10)
+    end
+  end
+
   describe 'the sum_data method' do
     it "properly handles a 'plain' DiskTemplate" do
-      expect(DataUtil.sum_data(@plain, 'DBSize', 268_000_000, 1)).to eq(0.25)
-      expect(DataUtil.sum_data(@plain, 'RamSize', 268, 1)).to eq(0.26)
-      expect(DataUtil.sum_data(@plain, 'VCPUCount', 10, 1)).to eq(10)
+      expect(DataUtil.sum_data(@plain, 'DBSize', 10, 1)).to eq(10)
     end
     it "properly handles a 'drdb' DiskTemplate" do
-      expect(DataUtil.sum_data(@drdb, 'DBSize', 111_000_000, 2)).to eq(0.2)
-      expect(DataUtil.sum_data(@drdb, 'RamSize', 268, 2)).to eq(0.52)
-      expect(DataUtil.sum_data(@drdb, 'VCPUCount', 10, 2)).to eq(20)
+      expect(DataUtil.sum_data(@drdb, 'DBSize', 10, 2)).to eq(20)
     end
   end
 end

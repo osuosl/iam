@@ -122,6 +122,18 @@ class DataUtil
   # this method takes a hash of  measurments and performs calculations based on
   # the type of data, then adds their value to the final hash of sums
   def self.sum_data(sums, key, value, drdb)
+    drdb = 1 if drdb.nil?
+    # if sums already contains this key, add the value to the existing value;
+    # else add the key and value to sums
+    sums[key] = if sums.key?(key)
+                  (value * drdb) + sums[key]
+                else
+                  value * drdb
+                end
+  end
+
+  # this method converts units of plugins from their original form to GB
+  def self.unit_conversion(key, value)
     # convervion from MB -> GB and bytes -> GB
     value = if %w(RamSize DiskSize).include?(key)
               # convert from MB -> GB
@@ -133,14 +145,7 @@ class DataUtil
               # no conversion needed
               value
             end
-    drdb = 1 if drdb.nil?
-    # if sums already contains this key, add the value to the existing value;
-    # else add the key and value to sums
-    sums[key] = if sums.key?(key)
-                  (value * drdb) + sums[key]
-                else
-                  sums[key] = value * drdb
-                end
+    value
   end
 end
 
@@ -244,7 +249,6 @@ class Report
     input_hash.each do |_project_name, project_resource|
       project_resource.each do |resource|
         resource.each do |res_type, resource_hash|
-          sum[res_type] ||= {}
           # Isolate each projects resource then get those that fall between the
           # start and end date.
           resource_hash.each do |hash, _value|
@@ -256,7 +260,8 @@ class Report
                   drdb = type == 'plain' ? 1 : 2
                 end
                 unless meas_key == 'DiskTemplate'
-                  DataUtil.sum_data(sum[res_type], meas_key, meas_value, drdb)
+                  meas_value = DataUtil.unit_conversion(meas_key, meas_value)
+                  DataUtil.sum_data(sum, meas_key, meas_value, drdb)
                 end
               end
             end
