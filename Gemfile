@@ -42,4 +42,5 @@ group :test, :development do
   gem 'factory_girl', '4.7.0'
   gem 'pg', '0.18.4'
   gem 'mysql', '2.9.1'
+  gem 'chef-zero', '4.9.0'
 end

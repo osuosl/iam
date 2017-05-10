@@ -1,0 +1,25 @@
+ERROR  logfile : <StandardError> BasePlugin: start_time and end_time should be Time objects
+ERROR  logfile : <StandardError> BasePlugin: start_time > end_time
+ WARN  logfile : DBSize: DB information for bad_test_db         malformed (should be a number)
+ERROR  logfile : <StandardError> DBSize:  DB information for bad_test_db malformed (should be a number)
+: {"db_size"=>"ABCD"}
+ WARN  logfile : DiskSize: No disk_sizes information for badnode
+ERROR  logfile : <StandardError> DiskSize:  DiskTemplate: No disk_template information for badnode: {"disk_size"=>"[10,20]", "active"=>true}
+ WARN  logfile : DiskTemplate: No disk_template information for badnode
+ERROR  logfile : <StandardError> DiskTemplate:  DiskTemplate: No disk_template information for badnode: {"disk_type"=>"1", "active"=>true}
+ERROR  logfile : <StandardError> RamSize: total_ram information for badnode malformed           (should be number)
+ERROR  logfile : <StandardError> RamSize:  RamSize: total_ram information for badnode malformed           (should be number): {"total_ram"=>"[1024,256]", "active"=>true}
+ WARN  logfile : VCPUCount: No num_cpus information for badnode
+ERROR  logfile : <StandardError> VCPUCount:  VCPUCount: No num_cpus information for badnode: {"num_cpu"=>"eight", "active"=>true}
+FATAL  logfile : routes/clients: Client not found
+FATAL  logfile : routes/main: Not found
+FATAL  logfile : routes/clients: Client not found [edit]
+FATAL  logfile : routes/main: Not found
+FATAL  logfile : routes/nodes: Node not found
+FATAL  logfile : routes/main: Not found
+FATAL  logfile : routes/nodes: Node not found [edit]
+FATAL  logfile : routes/main: Not found
+FATAL  logfile : routes/projects: Project not found
+FATAL  logfile : routes/main: Not found
+FATAL  logfile : routes/projects: Project not found [edit]
+FATAL  logfile : routes/main: Not found
