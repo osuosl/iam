@@ -13,6 +13,8 @@ describe 'IaM Chef Collector' do
     server.start_background
 
     # Define test data
+    # This set of nested hashes is formatted specifically for chef-zero to
+    # reflect the data returned by a query to the /node endpoint
     test_data = {
       'nodes' => {
         'testNode1' => {
@@ -32,7 +34,7 @@ describe 'IaM Chef Collector' do
     }
 
     @expected = []
-    # Populate the expected array the way as the collector
+    # Populate the expected array the same way as the collector
     # The actual return data will be in JSON format, so the
     # access will be slightly different
     test_data['nodes'].each do |_key, val|
@@ -58,13 +60,13 @@ describe 'IaM Chef Collector' do
   end
 
   it 'Correctly reads and stores data' do
-    # c = Collectors.new
+    c = Collectors.new
     # call chef collector
-    # c.collect_chef(
-    #   server.url,
-    #   ENV['TEST_CHEF_USER'],
-    #   ENV['TEST_CHEF_PEM']
-    # )
+    c.collect_chef(
+      server.url,
+      'test',  # an arbitrary user name
+      ENV['TEST_CHEF_PEM'] # path to a properly formatted private key
+    )
     cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
 
     @expected.each do |var|
