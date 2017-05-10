@@ -12,7 +12,7 @@
     <% end %><br>
     Last updated:
     <% if @update_time %>
-      <%= @update_time %>
+      <%= @update_time.asctime %>
     <% else %>
       Unknown
     <% end %>

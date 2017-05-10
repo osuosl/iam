@@ -4,14 +4,13 @@
     <a href="/projects/new">Create</a>
   </div>
   <br>
-  <table class="table">
+  <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
         <th>#</th>
         <th>Project Name</th>
         <th>Resources</th>
         <th>Description</th>
-        <th>Edit</th>
       </tr>
     </thead>
     <tbody>
@@ -20,20 +19,28 @@
       <tr>
         <th scope="row"><%= @project.id %></th>
           <td>
-            <a href="/projects/<%= @project.id %>/">
-              <%= @project.name %>
-            </a>
+            <div class="ellipsis">
+              <a href="/projects/<%= @project.id %>/">
+                <%= @project.name %>
+              </a>
+            </div>
           </td>
           <td>
-            <%= @project.resources %>
+            <div class="ellipsis">
+              <%= @project.resources %>
+            </div>
           </td>
           <td>
-            <%= @project.description %>
+            <div class="ellipsis">
+              <%= @project.description %>
+            </div>
           </td>
           <td>
-            <a href="/projects/<%= @project.id %>/edit" >
-              Edit
-            </a>
+            <div class="ellipsis">
+              <a href="/projects/<%= @project.id %>/edit" >
+                Edit
+              </a>
+            </div>
           </td>
       </tr>
       <% end %>

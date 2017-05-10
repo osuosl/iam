@@ -4,7 +4,7 @@
     <a href="/db/new">Create</a>
   </div>
   <br>
-  <table class="table">
+  <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
         <th>#</th>
@@ -19,20 +19,28 @@
       <tr>
         <th scope="row"><%= @db.id %></th>
           <td>
-            <a href="/db/<%= @db.id %>">
-              <%= @db.name %>
-            </a>
+            <div class="ellipsis">
+              <a href="/db/<%= @db.id %>">
+                <%= @db.name %>
+              </a>
+            </div>
           </td>
           <td>
-            <%= @db.type %>
+            <div class="ellipsis">
+              <%= @db.type %>
+            </div>
           </td>
           <td>
-            <%= @db.server %>
+            <div class="ellipsis">
+              <%= @db.server %>
+            </div>
           </td>
           <td>
-            <a href="/db/<%= @db.id %>/edit" >
-              Edit
-            </a>
+            <div class="ellipsis">
+              <a href="/db/<%= @db.id %>/edit" >
+                Edit
+              </a>
+            </div>
           </td>
       </tr>
 
