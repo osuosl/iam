@@ -1,4 +1,4 @@
-langauge: ruby
+language: ruby #language was spelled incorrectly here.
 
 rvm:
   - '2.3.0'

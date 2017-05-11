@@ -136,3 +136,17 @@ class CollectorStat < Sequel::Model
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
 end
+
+# SKU stats data model
+# primary_key :id
+# String      :family
+# String      :sku_num
+# String      :description
+# Float       :rate
+# Boolean     :active, default: true
+class Sku < Sequel::Model
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
