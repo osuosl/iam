@@ -12,8 +12,9 @@ module Sinatra
       # Projects
       ##
 
-      app.get '/projects/new/?' do
+      app.get '/projects/new/?:error?' do
         # get new project form
+        @error = true if params[:error]
         @clients = Client.all
         erb :'projects/create'
       end
@@ -54,10 +55,17 @@ module Sinatra
       # This could also be PUT
       app.post '/projects/?' do
         # recieve new project
-        project = Project.create(name: params[:name],
-                                 client_id:   params[:client_id] || '',
-                                 description: params[:description] || '')
+        if params[:name]
+          begin
+            project = Project.create(name: params[:name],
+                                     client_id:   params[:client_id] || '',
+                                     description: params[:description] || '')
+          rescue StandardError
+            @err = 1
+            redirect "/projects/new/#{@err}"
+          end
         redirect "/projects/#{project.id}"
+        end
       end
 
       app.patch '/projects/?' do

@@ -12,8 +12,9 @@ module Sinatra
       # Node Resource
       ##
 
-      app.get '/node/new/?' do
+      app.get '/node/new/?:error?' do
         # get new node form
+        @error = true if params[:error]
         @projects = Project.all
         erb :'nodes/create'
       end
@@ -99,13 +100,20 @@ module Sinatra
       # This could also be PUT
       app.post '/nodes/?' do
         # recieve new node
-        node = NodeResource.create(project_id:  params[:project_id] || '',
-                                   name:       params[:name],
-                                   type:       params[:type] || '',
-                                   cluster:    params[:cluster] || '',
-                                   created:    DateTime.now || '',
-                                   modified:   DateTime.now || '')
+        if params[:name]
+          begin
+            node = NodeResource.create(project_id:  params[:project_id] || '',
+                                       name:       params[:name],
+                                       type:       params[:type] || '',
+                                       cluster:    params[:cluster] || '',
+                                       created:    DateTime.now || '',
+                                       modified:   DateTime.now || '')
+          rescue StandardError
+            @err = 1
+            redirect "/node/new/#{@err}"
+         end
         redirect "/node/#{node.id}"
+        end
       end
 
       app.patch '/nodes/?' do

@@ -1,49 +1,79 @@
 <div class="container">
   <form action='/dbs' name="createDatabase" method='post' onsubmit="return validateForm()">
-    <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>New Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Database name</td>
-        <td>
-           <input type="text" name="name" placeholder="New Database">
-        </td>
-      </tr>
-      <tr>
-        <td>Project Id</td>
-        <td>
-          <select  name="project_id">
-          <% for @project in @projects %>
-             <% if @project.active %>
-                <option value="<%= @project.id %>"><%= @project.name %></option>
-            <% end %>
-          <% end %>
-          </select>
-        </td>
-      </tr>
-      </tr>
-      <tr>
-        <td>Type</td>
-        <td>
-          <input type="text" name="type" placeholder="New Type">
-        </td>
-      </tr>
-      <tr>
-        <td>Server</td>
-        <td>
-          <input type="text" name="server" placeholder="New Server">
-        </td>
-      </tr>
-    </table>
-    <input type="submit" value="Create Database" class="btn btn-primary">
-  </form>
-</div>
+    <fieldset>
+      <legend> New Database </legend>
+      <% if @error %>
+        <div class="alert alert-danger">
+          <strong>Invalid Input:</strong>
+           That database already exists!
+         </div>
+      <% end %>
+      <div class="form-group has-danger">
+        <label class="col-md-12 control-label">Name</label>
+          <div class="col-md-4 inputGroupContainer">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <i class="glyphicon glyphicon-briefcase"></i>
+              </span>
+              <input name="name" placeholder="New Name" class="form-control" type="text">
+            </div>
+          </div>
+       </div>
 
+
+       <div class="form-group">
+         <label class="col-md-4 control-label">Select Project</label>
+         <div class="col-md-4 selectContainer">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-list"></i>
+             </span>
+             <select name="project_id" class="form-control selectpicker" >
+               <% for @project in @projects %>
+                  <% if @project.active %>
+                     <option value="<%= @project.id %>"><%= @project.name %></option>
+                 <% end %>
+               <% end %>
+             </select>
+           </div>
+         </div>
+       </div>
+
+       <div class="form-group has-danger">
+         <label class="col-md-12 control-label">Type</label>
+           <div class="col-md-4 inputGroupContainer">
+             <div class="input-group">
+               <span class="input-group-addon">
+                 <i class="glyphicon glyphicon-tree-conifer"></i>
+               </span>
+               <input name="type" placeholder="Type" class="form-control" type="text">
+             </div>
+           </div>
+        </div>
+
+        <div class="form-group has-danger">
+          <label class="col-md-12 control-label">Server</label>
+            <div class="col-md-4 inputGroupContainer">
+              <div class="input-group">
+                <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-list-alt"></i>
+                </span>
+                <input name="server" placeholder="Server" class="form-control" type="text">
+              </div>
+            </div>
+         </div>
+
+         <div class="form-group">
+           <label class="col-md-4 control-label"></label>
+           <div class="col-md-4">
+             <button type="submit" class="btn btn-success" >Create Database
+               <span class="glyphicon glyphicon-saved"></span>
+             </button>
+           </div>
+         </div>
+
+       </fieldset>
+      </form>
 
 <script>
 function validateForm() {

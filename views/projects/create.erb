@@ -1,48 +1,79 @@
 <div class="container">
   <form action='/projects' name="createProject" method='post' onsubmit="return validateForm()">
-    <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>New Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Project name</td>
-        <td>
-           <input type="text" name="name" placeholder="New project">
-        </td>
-      </tr>
-      <tr>
-        <td>Client id</td>
-        <td>
-          <select  name="client_id">
-          <% for @client in @clients %>
-             <% if @client.active %>
-                <option value="<%= @client.id %>"><%= @client.name %></option>
-            <% end %>
-          <% end %>
-          </select>
-        </td>
-      </tr>
-      </tr>
-      <tr>
-        <td>Resources</td>
-        <td>
-          <input type="text" name="resources" placeholder="New resource">
-        </td>
-      </tr>
-      <tr>
-        <td>Description</td>
-        <td>
-          <input type="text" name="description" placeholder="New description">
-        </td>
-      </tr>
-    </table>
-    <input type="submit" value="Create Project" class="btn btn-primary">
-  </form>
-</div>
+    <fieldset>
+    <legend> New Project </legend>
+    <% if @error %>
+      <div class="alert alert-danger">
+        <strong>Invalid Input:</strong>
+         That project already exists!
+       </div>
+    <% end %>
+
+    <div class="form-group has-danger">
+      <label class="col-md-12 control-label">Name</label>
+        <div class="col-md-4 inputGroupContainer">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <i class="glyphicon glyphicon-book"></i>
+            </span>
+            <input name="name" placeholder="New Project Name" class="form-control" type="text">
+          </div>
+        </div>
+     </div>
+
+     <div class="form-group">
+       <label class="col-md-4 control-label">Client</label>
+       <div class="col-md-4 selectContainer">
+         <div class="input-group">
+           <span class="input-group-addon">
+             <i class="glyphicon glyphicon-list"></i>
+           </span>
+           <select name="client_id" class="form-control selectpicker" >
+             <% for @client in @clients %>
+                <% if @client.active %>
+                   <option value="<%= @client.id %>"><%= @client.name %></option>
+               <% end %>
+             <% end %>
+           </select>
+         </div>
+       </div>
+     </div>
+
+     <div class="form-group">
+       <label class="col-md-12 control-label">Resource</label>
+       <div class="col-md-4 inputGroupContainer">
+         <div class="input-group">
+           <span class="input-group-addon">
+             <i class="glyphicon glyphicon-tree-conifer"></i>
+           </span>
+           <input name="resources" placeholder="Resource" class="form-control"  type="text">
+         </div>
+       </div>
+     </div>
+
+     <div class="form-group">
+       <label class="col-md-4 control-label">Description</label>
+       <div class="col-md-4 inputGroupContainer">
+         <div class="input-group">
+           <span class="input-group-addon">
+             <i class="glyphicon glyphicon-pencil"></i>
+           </span>
+           <textarea class="form-control" name="description"></textarea>
+         </div>
+       </div>
+     </div>
+
+     <div class="form-group">
+       <label class="col-md-4 control-label"></label>
+       <div class="col-md-4">
+         <button type="submit" class="btn btn-success" >Create Project
+           <span class="glyphicon glyphicon-saved"></span>
+         </button>
+       </div>
+     </div>
+
+   </fieldset>
+ </form>
 
 <script>
 function validateForm() {
