@@ -36,12 +36,12 @@ describe 'The SKU Model and table' do
   end
 
   it 'cannot create a sku without required fields' do
-      expect do
+    expect do
       Sku.create
     end.to raise_error(Sequel::ValidationFailed, /name cannot be empty/)
   end
- 
-   it 'can delete a sku' do
+
+  it 'can delete a sku' do
     sku = Sku.create(name: 'Delete Me')
     expect(sku).to exist
     expect { sku.delete }.to_not raise_error
@@ -78,15 +78,17 @@ describe 'The SKU Model and table' do
   end
 
   it 'can set a family, sku, description, and rate' do
-    sku = Sku.create(name: 'Testo', family: 'testing', sku_num: '44', description: 'reallycool', rate: '6.9')
-    #checks to see if all parts of the sku model store the information
-    #correctly.
+    sku = Sku.create(name: 'Testo', family: 'testing', sku_num: '44')
+    # checks to see if all parts of the sku model store the information
+    # correctly.
+    sku.update(description: 'reallycool')
+    sku.update(rate: '6.8')
     expect(sku).to exist
     expect(sku.name).to eq('Testo')
     expect(sku.family).to eq('testing')
     expect(sku.sku_num).to eq(44)
     expect(sku.description).to eq('reallycool')
-    expect(sku.rate).to eq(6.9)
+    expect(sku.rate).to eq(6.8)
   end
   it 'has an active flag' do
     sku = Sku.create(name: 'testo')
@@ -104,4 +106,3 @@ describe 'The SKU Model and table' do
     expect { sku.update(active: true) }.to_not raise_error
   end
 end
-
