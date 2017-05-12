@@ -5,14 +5,15 @@
       <legend> New Client </legend>
 
       <% if @error %>
-        <div class="alert alert-danger col-md-offset-2">
+        <div class="col-md-offset-2 row">
           <strong>Invalid Input:</strong>
            That clients already exists!
          </div>
       <% end %>
-       <div class="form-group has-danger">
-         <label class="col-md-12 control-label">Name</label>
-           <div class="col-md-4 inputGroupContainer">
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Name</label>
+           <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
              <div class="input-group">
                <span class="input-group-addon">
                  <i class="glyphicon glyphicon-briefcase"></i>
@@ -22,9 +23,9 @@
            </div>
         </div>
 
-       <div class="form-group">
-         <label class="col-md-12 control-label">Contact Name</label>
-         <div class="col-md-4 inputGroupContainer">
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Contact Name</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
            <div class="input-group">
              <span class="input-group-addon">
                <i class="glyphicon glyphicon-user"></i>
@@ -34,9 +35,9 @@
          </div>
        </div>
 
-       <div class="form-group">
-         <label class="col-md-4 control-label">Description</label>
-         <div class="col-md-4 inputGroupContainer">
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Description</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
            <div class="input-group">
              <span class="input-group-addon">
                <i class="glyphicon glyphicon-pencil"></i>
@@ -46,9 +47,9 @@
          </div>
        </div>
 
-       <div class="form-group">
-         <label class="col-md-12 control-label">Contact Email</label>
-         <div class="col-md-4 inputGroupContainer">
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Contact Email</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
            <div class="input-group">
              <span class="input-group-addon">
                <i class="glyphicon glyphicon-envelope"></i>
@@ -58,9 +59,9 @@
          </div>
        </div>
 
-       <div class="form-group">
-         <label class="col-md-4 control-label"></label>
-         <div class="col-md-4">
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2"></label>
+         <div class="col-md-offset-2  col-md-5  col-md-offset-2">
            <button type="submit" class="btn btn-success" >Create Client
              <span class="glyphicon glyphicon-saved"></span>
            </button>
