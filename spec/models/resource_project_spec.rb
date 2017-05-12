@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require File.expand_path '../../spec_helper.rb', __FILE__
 
 describe 'The Db and Node Projects Model and table' do
