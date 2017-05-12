@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sequel'
 require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'

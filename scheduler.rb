@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rufus/scheduler'
 require_relative 'collectors.rb'
 require_relative 'environment.rb'

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 ## This file defines various environments and associates settings with them
 require 'sinatra/base'
 

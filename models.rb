@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # if we are in test mode, run the migrations first to make sure
 # the test db is all set up
 Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
@@ -30,8 +31,12 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
-  one_to_many :node_resources
-  one_to_many :db_resources
+
+  one_to_many :node_resources_projects
+  one_to_many :node_resources, join_table: :node_resources_projects
+
+  one_to_many :db_resources_projects
+  one_to_many :db_resources, join_table: :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
@@ -73,11 +78,22 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
-  many_to_one :projects
+  many_to_one :project
+  one_to_one :node_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+class NodeResourcesProject < Sequel::Model
+  many_to_one :project
+  one_to_one :node_resource
 end
 
 # Database Resource data model
@@ -90,11 +106,22 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
-  many_to_one :projects
+  many_to_one :project
+  one_to_one :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+class DbResourcesProject < Sequel::Model
+  many_to_one :project
+  one_to_one :db_resource
 end
 
 # Collector stats data model

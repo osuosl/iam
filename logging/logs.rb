@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Types of log statements:
 #   log.debug "a very nice little debug message"
 #   log.info "things are operating nominally"

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sinatra/base'
 require_relative '../logging/logs'
 
@@ -46,6 +47,9 @@ module Sinatra
           MyLog.log.fatal "routes/projects: Project's clients not found"
           halt 404, "Project's Client not found"
         end
+
+        @exclude_keys = [:id, :project_id, :created, :modified, :active,
+                         :db_project_id, :node_project_id]
 
         erb :'projects/show'
       end

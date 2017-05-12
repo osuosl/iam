@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # example of
 # 1. Connecting to a mysql database server
 # 2. Creating five databases on that server
