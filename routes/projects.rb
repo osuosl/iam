@@ -48,6 +48,9 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
+        @exclude_keys = [:id, :project_id, :created, :modified, :active,
+                         :db_project_id, :node_project_id]
+
         erb :'projects/show'
       end
 

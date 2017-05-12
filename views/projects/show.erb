@@ -27,7 +27,7 @@
       <% else %>
         <thead>
           <% @resource[0].each do |res_key, _value| %>
-            <% unless res_key==:id || res_key==:project_id || res_key==:created || res_key==:modified || res_key==:active %>
+            <% unless @exclude_keys.include?(res_key)%>
               <th>
                 <%= res_key %>
               </th>
@@ -38,9 +38,9 @@
           <% @resource.each do |res_hash, _value| %>
           <tr>
             <% res_hash.each do |k, v| %>
-              <% unless k==:id || k==:project_id || k==:created || k==:modified || k==:active %>
+              <% unless @exclude_keys.include?(k)%>
                 <td>
-                  <% if k==:name %>
+                  <% if k == :name %>
                     <a href="/<%=resource_type%>/<%=res_hash[:id]%>">
                       <%= v %>
                     </a>
