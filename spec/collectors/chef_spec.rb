@@ -62,10 +62,20 @@ describe 'IaM Chef Collector' do
   it 'Correctly reads and stores data' do
     c = Collectors.new
     # call chef collector
+
+    # Chef zero is running in no-auth mode,
+    # so it only needs to be provided with valid
+    # input in order to respond to REST requests
+
+    # The private key will need to be added to the
+    # project files and linked in environment variables
+    # For the purposes of testing, this key is arbitrary
+    # In the live collector, a chef user's private key will
+    # need to be passed in
     c.collect_chef(
-      server.url,
-      'test',  # an arbitrary user name
-      ENV['TEST_CHEF_PEM'] # path to a properly formatted private key
+      server.url,          # The url of the server to collect from
+      'test',              # an arbitrary user name
+      File.expand_path('./chef_test.pem') # path to a properly formatted private key
     )
     cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
 
