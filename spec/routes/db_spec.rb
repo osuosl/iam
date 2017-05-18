@@ -103,4 +103,14 @@ describe 'The DbResource endpoint' do
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('Not Boring!')
   end
+
+  it 'cannot create a db with a non-unique name' do
+    db1 = DbResource.create(name: 'db1')
+
+    expect(db1).to exist
+
+    expect do
+      DbResource.create(name: 'db1')
+    end.to raise_error(StandardError)
+  end
 end
