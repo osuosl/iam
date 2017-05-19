@@ -16,6 +16,11 @@ class Client < Sequel::Model
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+
+  def remove
+    projects.each(&:reassign_resources) unless projects.empty?
+    delete
+  end
 end
 
 # Project data model
@@ -26,11 +31,27 @@ end
 # Boolean     :active, default: true
 class Project < Sequel::Model
   many_to_one :client
-  one_to_many :node_resources
-  one_to_many :db_resources
+
+  one_to_many :node_resources_projects
+  one_to_many :node_resources, join_table: :node_resources_projects
+
+  one_to_many :db_resources_projects
+  one_to_many :db_resources, join_table: :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+
+  def reassign_resources
+    Report.plugin_matrix.each do |resource_type, _measurements|
+      data = send("#{resource_type}_resources")
+      next if data.empty?
+      # reassign the projects' resources to the default project
+      data.each do |resource|
+        resource.update(project_id: Project.find(name: 'default').id)
+      end
+    end
+    delete
   end
 end
 
@@ -57,11 +78,22 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class NodeResource < Sequel::Model
-  many_to_one :projects
+  many_to_one :project
+  one_to_one :node_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+class NodeResourcesProject < Sequel::Model
+  many_to_one :project
+  one_to_one :node_resource
 end
 
 # Database Resource data model
@@ -74,11 +106,22 @@ end
 # DateTime  :modified
 # Boolean     :active, default: true
 class DbResource < Sequel::Model
-  many_to_one :projects
+  many_to_one :project
+  one_to_one :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+end
+
+# Project-Node Resource data model
+# A Project-Node belongs to one Project
+# Projects may own many Project-Nodes
+# Integer    :project_id
+# Integer    :node_id
+class DbResourcesProject < Sequel::Model
+  many_to_one :project
+  one_to_one :db_resource
 end
 
 # Collector stats data model

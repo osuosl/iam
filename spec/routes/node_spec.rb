@@ -115,4 +115,16 @@ describe 'The NodeResource endpoint' do
       Node.create(name: 'node1')
     end.to raise_error(StandardError)
   end
+
+  it 'allows us to set a node to inactive, redirects to the list' do
+    node = NodeResource.create(name: 'Edit Type', type: 'Delete Me')
+
+    inactive_node = { id: node.id,
+                      name: node.name,
+                      active: false }
+
+    delete "/nodes/#{node.id}", inactive_node
+    expect(last_request.path).to eq("/nodes/#{node.id}")
+    expect(last_response.status).to eq(302)
+  end
 end

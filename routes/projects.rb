@@ -49,6 +49,9 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
+        @exclude_keys = [:id, :project_id, :created, :modified, :active,
+                         :db_project_id, :node_project_id]
+
         erb :'projects/show'
       end
 
@@ -78,13 +81,16 @@ module Sinatra
         project.update(name:  params[:name] || project.name,
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
+
         redirect "/projects/#{params[:id]}"
       end
 
       app.delete '/projects/:id/?' do
         # delete a project
         project = Project[id: params[:id]]
-        project.delete unless project.nil?
+        # disassociate this projects' resources to the default project and
+        # delete this project
+        project.reassign_resources unless project.name == 'default'
         redirect '/projects' unless project.nil?
         404
       end
