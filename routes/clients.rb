@@ -62,8 +62,8 @@ module Sinatra
           begin
             client = Client.create(name: params[:name],
                                    description: params[:description] || '',
-                                   contact_email: params[:contact_name] || '',
-                                   contact_name: params[:contact_email] || '')
+                                   contact_email: params[:contact_email] || '',
+                                   contact_name: params[:contact_name] || '')
           rescue StandardError
             @err = 1
             redirect "/clients/new/#{@err}"
