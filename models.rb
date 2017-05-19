@@ -147,7 +147,6 @@ end
 class Sku < Sequel::Model
   many_to_many :node_resources_projects
   many_to_many :db_resources_projects
-  
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
