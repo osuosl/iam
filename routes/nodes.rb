@@ -109,8 +109,7 @@ module Sinatra
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
           rescue StandardError
-            @err = 1
-            redirect "/node/new/#{@err}"
+            redirect 'node/new/1'
           end
           redirect "/node/#{node.id}"
         end

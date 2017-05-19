@@ -65,8 +65,7 @@ module Sinatra
                                    contact_email: params[:contact_email] || '',
                                    contact_name: params[:contact_name] || '')
           rescue StandardError
-            @err = 1
-            redirect "/clients/new/#{@err}"
+            redirect '/clients/new/1'
           end
           redirect "/clients/#{client.id}"
         end

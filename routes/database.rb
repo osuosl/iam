@@ -90,8 +90,7 @@ module Sinatra
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
           rescue StandardError
-            @err = 1
-            redirect "/db/new/#{@err}"
+            redirect '/db/new/1'
           end
           redirect "/db/#{db.id}"
         end

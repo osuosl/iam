@@ -61,8 +61,7 @@ module Sinatra
                                      client_id:   params[:client_id] || '',
                                      description: params[:description] || '')
           rescue StandardError
-            @err = 1
-            redirect "/projects/new/#{@err}"
+            redirect '/projects/new/1'
           end
           redirect "/projects/#{project.id}"
         end
