@@ -111,8 +111,8 @@ module Sinatra
           rescue StandardError
             @err = 1
             redirect "/node/new/#{@err}"
-         end
-        redirect "/node/#{node.id}"
+          end
+          redirect "/node/#{node.id}"
         end
       end
 

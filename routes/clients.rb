@@ -13,7 +13,7 @@ module Sinatra
       ##
       app.get '/clients/new/?:error?' do
         # get new client form
-         @error = true if params[:error]
+        @error = true if params[:error]
         erb :'clients/create'
       end
 
@@ -68,7 +68,7 @@ module Sinatra
             @err = 1
             redirect "/clients/new/#{@err}"
           end
-        redirect "/clients/#{client.id}"
+          redirect "/clients/#{client.id}"
         end
       end
 
