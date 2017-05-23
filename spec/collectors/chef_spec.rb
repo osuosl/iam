@@ -21,8 +21,8 @@ describe 'IaM Chef Collector' do
           'name' => 'testNode1',
           'automatic' => {
             'cpu' => {
-              'total' => 2,
-              'real' => 1
+              'total' => '2',
+              'real' => '1'
             },
             'memory' => {
               'total' => '501924kB',
@@ -40,10 +40,10 @@ describe 'IaM Chef Collector' do
     test_data['nodes'].each do |_key, val|
       @expected.push(
         val['name'] => {
-          'disk_size' => val['automatic']['memory']['total'],
-          'disk_free' => val['automatic']['memory']['free'],
-          'num_cpus'  => val['automatic']['cpu']['total'],
-          'num_rcpus' => val['automatic']['cpu']['real']
+          'ram_total' => val['automatic']['memory']['total'],
+          'ram_free' => val['automatic']['memory']['free'],
+          'cpus_total' => val['automatic']['cpu']['total'],
+          'cpus_real' => val['automatic']['cpu']['real']
         }
       )
     end
@@ -75,7 +75,8 @@ describe 'IaM Chef Collector' do
     c.collect_chef(
       server.url,          # The url of the server to collect from
       'test',              # an arbitrary user name
-      File.expand_path('./chef_test.pem') # path to a properly formatted private key
+      # path to a properly formatted private key
+      File.expand_path('../chef_test.pem', __FILE__)
     )
     cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
 

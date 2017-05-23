@@ -13,11 +13,14 @@ require_relative 'logging/logs'
 class Collectors
   def initialize
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
+    @chef_cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
 
     @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
                            nil, '%'
     @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
+                             nil, '%'
+    @chef_template = ERB.new File.new('cache_templates/chef_template.erb').read,
                              nil, '%'
   end
 
@@ -55,6 +58,29 @@ class Collectors
       MyLog.log.fatal "Error getting ganeti data from #{cluster}: #{e}"
     end
     @node_cache.write
+  end
+
+  def collect_chef(url, client, key)
+    ChefAPI::Connection.new do |connection|
+      connection.endpoint = url
+      connection.client = client
+      connection.key = key
+
+      connection.nodes.each do |n|
+        # Ram, disk sizes, cpu count, network interfaces,
+        # including byte counts in and out
+
+        node_name = n.name || 'unknown'
+        ram_total = n.automatic['memory']['total'] || 'unknown'
+        ram_free = n.automatic['memory']['free'] || 'unknown'
+        cpus_total = n.automatic['cpu']['total'] || 'unknown'
+        cpus_real = n.automatic['cpu']['real'] || 'unknown'
+
+        @chef_cache.set(node_name, JSON.parse(@chef_template.result(binding)))
+        @chef_cache.set(node_name + ':datetime', Time.new.inspect)
+      end
+    end
+    @chef_cache.write
   end
 
   # meta-function used to check the databases
