@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative '../spec_helper.rb'
 
 describe 'The NodeResource endpoint' do
@@ -103,5 +104,17 @@ describe 'The NodeResource endpoint' do
     expect(last_request.path).to eq("/node/#{node.id}")
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('Not Boring!')
+  end
+
+  it 'allows us to set a node to inactive, redirects to the list' do
+    node = NodeResource.create(name: 'Edit Type', type: 'Delete Me')
+
+    inactive_node = { id: node.id,
+                      name: node.name,
+                      active: false }
+
+    delete "/nodes/#{node.id}", inactive_node
+    expect(last_request.path).to eq("/nodes/#{node.id}")
+    expect(last_response.status).to eq(302)
   end
 end

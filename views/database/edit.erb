@@ -1,7 +1,4 @@
 <div class="container">
-  <form action='/dbs' method='post'>
-    <input type="hidden" name="_method" value="patch">
-    <input type="hidden" name="id" value="<%= @db.id %>">
     <table class="table">
       <thead>
         <tr>
@@ -11,16 +8,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Name</td>
-          <td>
-            <% if @db %>
-              <%= @db.name %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
+        <form action='/dbs' method='post'>
+          <input type="hidden" name="_method" value="patch">
+          <input type="hidden" name="id" value="<%= @db.id %>">
+          <tr>
+            <td>Name</td>
+            <td>
+              <% if @db %>
+                <%= @db.name %>
+              <% else %>
+                N/A
+              <% end %>
+              </td>
+              <td>
             <input type="text" name="name" placeholder="New name">
           </td>
         </tr>
@@ -70,21 +70,18 @@
           </td>
         </tr>
         <tr>
-          <td>Active state</td>
           <td>
-            <% if @db %>
-              <%= @db.active %>
-            <% else %>
-              N/A
-            <% end %>
+            <input type="submit" value="Update" class="btn btn-primary">
           </td>
           <td>
-            <input type="radio" name="active" value="True"> True
-            <input type="radio" name="active" value="False"> False
+          </form>
+          <form action="/dbs/<%= @db.id %>" method='post'>
+            <input type="hidden" name="_method" value="delete">
+            <input type="submit" value="Deactivate" class="btn btn-primary">
+          </form>
           </td>
         </tr>
       </tbody>
     </table>
-    <input type="submit" value="Update" class="btn btn-primary">
   </form>
 </div>

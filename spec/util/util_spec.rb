@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require File.expand_path '../../spec_helper.rb', __FILE__
 require_relative '../../lib/util.rb'
 require 'time'
