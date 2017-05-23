@@ -15,19 +15,15 @@ class Collectors
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
     @chef_cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
-
-    @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
-                           nil, '%'
-    @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
-                             nil, '%'
-    @chef_template = ERB.new File.new('cache_templates/chef_template.erb').read,
-                             nil, '%'
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
   #         RAPI. Stores the information in the file cache.
   # rubocop:disable LineLength, AbcSize, CyclomaticComplexity, PerceivedComplexity, MethodLength
   def collect_ganeti(cluster)
+    node_template = ERB.new File.new('cache_templates/node_template.erb').read,
+                            nil, '%'
+
     # for each cluster, append port number, endpoint, and query.
     uri = URI("https://#{cluster}.osuosl.bak:5080/2/instances?bulk=1")
     begin
@@ -50,7 +46,7 @@ class Collectors
           active_meas = node['oper_state']
           type = 'ganeti'
 
-          @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
+          @node_cache.set(node_name, JSON.parse(node_template.result(binding)))
           @node_cache.set(node_name + ':datetime', Time.new.inspect)
         end
       end
@@ -61,6 +57,9 @@ class Collectors
   end
 
   def collect_chef(url, client, key)
+    chef_template = ERB.new File.new('cache_templates/chef_template.erb').read,
+                            nil, '%'
+
     ChefAPI::Connection.new do |connection|
       connection.endpoint = url
       connection.client = client
@@ -76,7 +75,7 @@ class Collectors
         cpus_total = n.automatic['cpu']['total'] || 'unknown'
         cpus_real = n.automatic['cpu']['real'] || 'unknown'
 
-        @chef_cache.set(node_name, JSON.parse(@chef_template.result(binding)))
+        @chef_cache.set(node_name, JSON.parse(chef_template.result(binding)))
         @chef_cache.set(node_name + ':datetime', Time.new.inspect)
       end
     end
@@ -98,6 +97,8 @@ class Collectors
   end
 
   def collect_mysql(host, user, password)
+    db_template = ERB.new File.new('cache_templates/db_template.erb').read,
+                          nil, '%'
     # Establish a connection to the database
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
@@ -127,7 +128,7 @@ class Collectors
       type = 'mysql'
       server = host
 
-      @db_cache.set(var[:"DB Name"], JSON.parse(@db_template.result(binding)))
+      @db_cache.set(var[:"DB Name"], JSON.parse(db_template.result(binding)))
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
     @db_cache.write
