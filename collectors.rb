@@ -10,6 +10,7 @@ require_relative 'logging/logs'
 
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
+# rubocop:disable Metrics/ClassLength
 class Collectors
   def initialize
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
@@ -60,31 +61,21 @@ class Collectors
     chef_template = ERB.new File.new('cache_templates/chef_template.erb').read,
                             nil, '%'
 
-    ChefAPI::Connection.new do |connection|
-      connection.endpoint = url
-      connection.client = client
-      connection.key = key
-
+    ChefAPI::Connection.new(endpoint: url, client: client, key: key) do |connection|
       connection.nodes.each do |n|
-        # Ram, disk sizes, cpu count, network interfaces,
-        # including byte counts in and out
-
         node_name = n.name || 'unknown'
         ram_total = n.automatic['memory']['total'] || 'unknown'
         ram_free = n.automatic['memory']['free'] || 'unknown'
         cpus_total = n.automatic['cpu']['total'] || 'unknown'
         cpus_real = n.automatic['cpu']['real'] || 'unknown'
 
-        #Collect disk size
-        disk_size = 0
-        disk_usage = 0
-        disk_count = 0
+        # Collect disk size
+        disk_size = disk_usage = disk_count = 0
         n.automatic['filesystem2']['by_device'].each do |_key, device|
-          if device['fs_type'] == 'ext4'
-            disk_size += device['kb_size'].to_i
-            disk_usage += device['kb_used'].to_i
-            disk_count += 1
-          end
+          next unless device['fs_type'] == 'ext4'
+          disk_size += device['kb_size'].to_i
+          disk_usage += device['kb_used'].to_i
+          disk_count += 1
         end
 
         @chef_cache.set(node_name, JSON.parse(chef_template.result(binding)))

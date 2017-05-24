@@ -28,17 +28,17 @@ describe 'IaM Chef Collector' do
               'total' => '501924kB',
               'free' => '196504kB'
             },
-            'filesystem2'=>{
-             'by_device'=>{
-                '/dev/vda3'=>{
-                   'kb_size'=>'2',
-                   'kb_used'=>'1',
-                   'fs_type'=>'ext4',
+            'filesystem2' => {
+              'by_device' => {
+                '/dev/vda3' => {
+                  'kb_size' => '2',
+                  'kb_used' => '1',
+                  'fs_type' => 'ext4'
                 },
-                '/dev/vda1'=>{
-                   'kb_size'=>'4',
-                   'kb_used'=>'3',
-                   'fs_type'=>'ext4'
+                '/dev/vda1' => {
+                  'kb_size' => '4',
+                  'kb_used' => '3',
+                  'fs_type' => 'ext4'
                 }
               }
             }
@@ -46,8 +46,6 @@ describe 'IaM Chef Collector' do
         }
       }
     }
-
-
 
     @expected = []
     # Populate the expected array the same way as the collector
