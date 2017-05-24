@@ -1,53 +1,82 @@
 
 <div class="container">
-       <form action='/clients' name="createForm" method='post' onsubmit="return validateForm()">
-         <table class="table">
-           <thead>
-             <tr>
-               <th>Name</th>
-               <th>New</th>
-             </tr>
-           </thead>
-           <tbody>
-             <tr>
-               <td>name</td>
-               <td>
-                 <input type="text" name="name" placeholder="New name">
-               </td>
-             </tr>
-             <tr>
-               <td>contact_name</td>
-               <td>
-                 <input type="text" name="contact_name" placeholder="New contact_name">
-               </td>
-             </tr>
+  <form action='/clients' name="createForm" method='post' onsubmit="return validateForm()">
+    <fieldset>
+      <legend> New Client </legend>
 
-             <tr>
-               <td>description</td>
-               <td>
-                 <input type="text" name="description" placeholder="New description">
-               </td>
-             </tr>
-             <tr>
-               <td>contact_email</td>
-               <td>
-                 <input type="text" name="contact_email" placeholder="New contact_email">
-               </td>
-             </tr>
-           </tbody>
-         </table>
-         <input type="submit" value="Create" class="btn btn-primary">
-       </form>
-     </div>
-   </div>
-   <br>
+      <% if @error %>
+        <div class="alert alert-danger" align="left">
+          <strong>Invalid Input:</strong>
+           That clients already exists!
+         </div>
+      <% end %>
 
-   <script>
-   function validateForm() {
-       var x = document.forms["createForm"]["name"].value;
-       if (x == null || x == "") {
-           alert("Name must be filled out");
-           return false;
-       }
-   }
-   </script>
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Name</label>
+           <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+             <div class="input-group">
+               <span class="input-group-addon">
+                 <i class="glyphicon glyphicon-briefcase"></i>
+               </span>
+               <input name="name" placeholder="New Name" class="form-control" type="text">
+             </div>
+           </div>
+        </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Contact Name</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-user"></i>
+             </span>
+             <input name="contact_name" placeholder="Contact Name" class="form-control"  type="text">
+           </div>
+         </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Description</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-pencil"></i>
+             </span>
+        	   <textarea class="form-control" name="description"></textarea>
+           </div>
+         </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Contact Email</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-envelope"></i>
+             </span>
+             <input name="contact_email" placeholder="Contact Email" class="form-control"  type="text">
+           </div>
+         </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2"></label>
+         <div class="col-md-offset-2  col-md-5  col-md-offset-2">
+           <button type="submit" class="btn btn-success" >Create Client
+             <span class="glyphicon glyphicon-saved"></span>
+           </button>
+         </div>
+       </div>
+
+    </fieldset>
+  </form>
+
+  <script>
+     function validateForm() {
+         var x = document.forms["createForm"]["name"].value;
+         if (x == null || x == "") {
+             alert("Name must be filled out");
+             return false;
+         }
+     }
+  </script>

@@ -52,3 +52,12 @@ Content
 .jumbotron p{
   color: #f87e2c
 }
+
+/*
+Tables
+*/
+div.ellipsis {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}

@@ -106,6 +106,16 @@ describe 'The NodeResource endpoint' do
     expect(last_response.body).to include('Not Boring!')
   end
 
+  it 'cannot create a node with a non-unique name' do
+    node1 = NodeResource.create(name: 'node1')
+
+    expect(node1).to exist
+
+    expect do
+      Node.create(name: 'node1')
+    end.to raise_error(StandardError)
+  end
+
   it 'allows us to set a node to inactive, redirects to the list' do
     node = NodeResource.create(name: 'Edit Type', type: 'Delete Me')
 

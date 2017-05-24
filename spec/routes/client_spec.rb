@@ -211,4 +211,14 @@ describe 'The Clients endpoint' do
       expect(last_response.status).to eq(404)
     end
   end
+
+  it 'cannot create a client with a non-unique name' do
+    client1 = Client.create(name: 'client1')
+
+    expect(client1).to exist
+
+    expect do
+      Client.create(name: 'client1')
+    end.to raise_error(StandardError)
+  end
 end
