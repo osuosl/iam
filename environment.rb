@@ -61,11 +61,14 @@ class Iam < Sinatra::Base
     ENV['CACHE_FILE'] = cachefile
     ENV['LOG_FILE_PATH'] = logfile
     ENV['GANETI_CLUSTERS'] = 'ganeti'
-
-    ENV['CHEF_CLIENT'] = 'test_client'
-    ENV['CHEF_KEY'] = './test_chef_client.pem'
-
   end
+
+  ENV['CHEF_CLIENT'] = 'test_client'
+  ENV['CHEF_KEY'] = File.expand_path(
+    './test_chef_client.pem',
+    File.dirname(__FILE__)
+  )
+  ENV['CHEF_HOST'] = ''
 
   # Bundler.require(...) requires all gems necessary regardless of
   # environment (:default) in addition to all environment-specific gems.
