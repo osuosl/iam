@@ -27,11 +27,27 @@ describe 'IaM Chef Collector' do
             'memory' => {
               'total' => '501924kB',
               'free' => '196504kB'
+            },
+            'filesystem2'=>{
+             'by_device'=>{
+                '/dev/vda3'=>{
+                   'kb_size'=>'2',
+                   'kb_used'=>'1',
+                   'fs_type'=>'ext4',
+                },
+                '/dev/vda1'=>{
+                   'kb_size'=>'4',
+                   'kb_used'=>'3',
+                   'fs_type'=>'ext4'
+                }
+              }
             }
           }
         }
       }
     }
+
+
 
     @expected = []
     # Populate the expected array the same way as the collector
@@ -43,7 +59,10 @@ describe 'IaM Chef Collector' do
           'ram_total' => val['automatic']['memory']['total'],
           'ram_free' => val['automatic']['memory']['free'],
           'cpus_total' => val['automatic']['cpu']['total'],
-          'cpus_real' => val['automatic']['cpu']['real']
+          'cpus_real' => val['automatic']['cpu']['real'],
+          'disk_size' => '6',
+          'disk_usage' => '4',
+          'disk_count' => '2'
         }
       )
     end

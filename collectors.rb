@@ -75,6 +75,18 @@ class Collectors
         cpus_total = n.automatic['cpu']['total'] || 'unknown'
         cpus_real = n.automatic['cpu']['real'] || 'unknown'
 
+        #Collect disk size
+        disk_size = 0
+        disk_usage = 0
+        disk_count = 0
+        n.automatic['filesystem2']['by_device'].each do |_key, device|
+          if device['fs_type'] == 'ext4'
+            disk_size += device['kb_size'].to_i
+            disk_usage += device['kb_used'].to_i
+            disk_count += 1
+          end
+        end
+
         @chef_cache.set(node_name, JSON.parse(chef_template.result(binding)))
         @chef_cache.set(node_name + ':datetime', Time.new.inspect)
       end
