@@ -14,7 +14,7 @@ module Sinatra
 
       app.get '/node/new/?:error?' do
         # get new node form
-        @error = 'That node already exists' if params[:error]
+        @error = true if params[:error]
         @projects = Project.all
         erb :'nodes/create'
       end
@@ -106,8 +106,12 @@ module Sinatra
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
           rescue StandardError
+<<<<<<< HEAD
             @err = 1
             redirect "node/new/#{@err}"
+=======
+            redirect 'node/new/1'
+>>>>>>> 13e580e3ec77d5c2d73667581e45bc13774d4261
           end
           redirect "/node/#{node.id}"
         end

@@ -14,8 +14,7 @@ module Sinatra
 
       app.get '/projects/new/?:error?' do
         # get new project form
-
-        @error = 'That project already exists' if params[:error]
+        @error = true if params[:error]
         @clients = Client.all
         erb :'projects/create'
       end
@@ -65,8 +64,12 @@ module Sinatra
                                      client_id:   params[:client_id] || '',
                                      description: params[:description] || '')
           rescue StandardError
+<<<<<<< HEAD
             @err = 1
             redirect "/projects/new/#{@err}"
+=======
+            redirect '/projects/new/1'
+>>>>>>> 13e580e3ec77d5c2d73667581e45bc13774d4261
           end
           redirect "/projects/#{project.id}"
         end

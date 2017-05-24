@@ -4,7 +4,7 @@
           <a href="/clients/new">Create</a>
         </div>
         <br>
-        <table class="table">
+        <table class="table" style='table-layout:fixed'>
           <thead>
             <tr>
               <th>#</th>
@@ -12,7 +12,6 @@
               <th>Contact Name</th>
               <th>Contact Email</th>
               <th>Description</th>
-              <th>Edit</th>
             </tr>
           </thead>
           <tbody>
@@ -21,18 +20,26 @@
             <tr>
               <th scope="row"><%= @client.id %></th>
                 <td>
-                  <a href="clients/<%= @client.id %>">
-                    <%= @client.name %>
-                  </a>
+                  <div class="ellipsis">
+                    <a href="clients/<%= @client.id %>">
+                      <%= @client.name %>
+                    </a>
+                  </div>
                 </td>
                 <td>
-                  <%= @client.contact_name %>
+                  <div class="ellipsis">
+                    <%= @client.contact_name %>
+                  </div>
                 </td>
                 <td>
-                  <%= @client.contact_email %>
+                  <div class="ellipsis">
+                    <%= @client.contact_email %>
+                  </div>
                 </td>
                 <td>
-                  <%= @client.description %>
+                  <div class="ellipsis">
+                    <%= @client.description %>
+                  </div>
                 </td>
                 <td>
                   <a href="clients/<%= @client.id %>/edit" >

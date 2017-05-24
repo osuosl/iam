@@ -1,48 +1,79 @@
 <div class="container">
   <form action='/nodes' name="createNode" method='post' onsubmit="return validateForm()">
-    <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>New Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Node name</td>
-        <td>
-           <input type="text" name="name" placeholder="New Node">
-        </td>
-      </tr>
-      <tr>
-        <td>Project Id</td>
-        <td>
-          <select  name="project_id">
-          <% for @project in @projects %>
-             <% if @project.active %>
-                <option value="<%= @project.id %>"><%= @project.name %></option>
-            <% end %>
-          <% end %>
-          </select>
-        </td>
-      </tr>
-      </tr>
-      <tr>
-        <td>Type</td>
-        <td>
-          <input type="text" name="type" placeholder="New Type">
-        </td>
-      </tr>
-      <tr>
-        <td>Cluster</td>
-        <td>
-          <input type="text" name="cluster" placeholder="New Cluster">
-        </td>
-      </tr>
-    </table>
-    <input type="submit" value="Create Node" class="btn btn-primary">
-  </form>
-</div>
+    <fieldset>
+      <legend> New Node </legend>
+      <% if @error %>
+        <div class="alert alert-danger" align="left">
+          <strong>Invalid Input:</strong>
+           That node already exists!
+         </div>
+      <% end %>
+
+      <div class="form-group row">
+        <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Name</label>
+          <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <i class="glyphicon glyphicon-briefcase"></i>
+              </span>
+              <input name="name" placeholder="New Name" class="form-control" type="text">
+            </div>
+          </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Select Project</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-list"></i>
+             </span>
+             <select name="project_id" class="form-control selectpicker" >
+               <% for @project in @projects %>
+                  <% if @project.active %>
+                     <option value="<%= @project.id %>"><%= @project.name %></option>
+                 <% end %>
+               <% end %>
+             </select>
+          </div>
+        </div>
+     </div>
+
+     <div class="form-group row">
+       <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Type</label>
+         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-tree-conifer"></i>
+             </span>
+             <input name="type" placeholder="Type" class="form-control" type="text">
+           </div>
+         </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Cluster</label>
+          <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <i class="glyphicon glyphicon-tree-conifer"></i>
+              </span>
+              <input name="cluster" placeholder="Cluster" class="form-control" type="text">
+            </div>
+          </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2"></label>
+         <div class="col-md-offset-2  col-md-5 col-md-offset-2">
+           <button type="submit" class="btn btn-success" >Create Node
+             <span class="glyphicon glyphicon-saved"></span>
+           </button>
+         </div>
+       </div>
+
+     </fieldset>
+    </form>
 
 <script>
 function validateForm() {

@@ -14,7 +14,7 @@ module Sinatra
 
       app.get '/db/new/?:error?' do
         # get new database form
-        @error = 'That database already exists' if params[:error]
+        @error = true if params[:error]
         @projects = Project.all
         erb :'database/create'
       end
@@ -90,8 +90,7 @@ module Sinatra
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
           rescue StandardError
-            @err = 1
-            redirect "db/new/#{@err}"
+            redirect '/db/new/1'
           end
           redirect "/db/#{db.id}"
         end

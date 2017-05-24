@@ -116,6 +116,15 @@ describe 'The Projects endpoint' do
     expect(last_response.body).to include('i edited this')
   end
 
+  it 'cannot create a client with a non-unique name' do
+    project1 = Project.create(name: 'project1')
+
+    expect(project1).to exist
+
+    expect do
+      Project.create(name: 'project1')
+    end.to raise_error(StandardError)
+  end
   it 'allows us to delete a project with no nodes/db, redirects to the list' do
     project = Project.create(name: 'Delete me', active: true)
 
