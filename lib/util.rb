@@ -218,7 +218,7 @@ class Report
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       resources.each do |resource|
-        next if !resource.active
+        next unless resource.active
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
