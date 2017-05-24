@@ -6,12 +6,14 @@ Sequel.migration do
       primary_key :id
       foreign_key :db_resource_id, :db_resources
       foreign_key :project_id, :projects
+      foreign_key :sku_id
     end
 
     create_table(:node_resources_projects) do
       primary_key :id
       foreign_key :project_id, :projects
       foreign_key :node_resource_id, :node_resources
+      foreign_key :sku_id
     end
   end
 end

@@ -94,6 +94,7 @@ end
 class NodeResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :node_resource
+  one_to_one :skus
 end
 
 # Database Resource data model
@@ -122,6 +123,7 @@ end
 class DbResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :db_resource
+  one_to_one :skus
 end
 
 # Collector stats data model
@@ -145,8 +147,8 @@ end
 # Float       :rate
 # Boolean     :active, default: true
 class Sku < Sequel::Model
-  many_to_many :node_resources_projects
-  many_to_many :db_resources_projects
+  one_to_one :node_resources_projects
+  one_to_one :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
