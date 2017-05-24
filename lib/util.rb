@@ -209,9 +209,6 @@ class Report
   def self.project_data(project, start_date, end_date)
     project_data = {}
 
-    start_date = Time.at(start_date.to_i)
-    end_date = Time.at(end_date.to_i)
-
     # for each resource type in the matrix, get a list of all that type
     # of resource each project has
     plugin_matrix.each do |resource_type, measurements|
@@ -221,6 +218,7 @@ class Report
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       resources.each do |resource|
+        next if !resource.active
         resource_data[resource.name] ||= {}
         resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
