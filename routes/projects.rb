@@ -78,10 +78,9 @@ module Sinatra
 
         # recieve an updated project
         project = Project[id: params[:id]]
-        project.update(name:  params[:name] || project.name,
+        project.update(name: params[:name] || project.name,
                        description: params[:description] || project.description,
                        active: params[:active] || project.active)
-
         redirect "/projects/#{params[:id]}"
       end
 
