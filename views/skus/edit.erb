@@ -1,0 +1,55 @@
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Old</th>
+        <th>New</th>
+      </tr>
+    </thead>
+    <tbody>
+      <form action='/skus' method='post'>
+        <input type="hidden" name="_method" value="patch">
+        <input type="hidden" name="id" value="<%= @sku.id %>">
+        <tr>
+          <td>name</td>
+          <td>
+            <% if @sku %>
+              <%= @sku.name %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="name" placeholder="New name">
+          </td>
+        </tr>
+        <tr>
+          <td>description</td>
+          <td>
+            <% if @sku %>
+              <%= @sku.description %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="description" placeholder="New description">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="submit" value="Update" class="btn btn-primary">
+          </td>
+          <td>
+          </form>
+          <form action="/skus/<%= @sku.id %>" method='post'>
+            <input type="hidden" name="_method" value="delete">
+            <input type="submit" value="Delete" class="btn btn-primary">
+          </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>

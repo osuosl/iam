@@ -25,6 +25,11 @@ FactoryGirl.define do
     "Node number #{n}"
   end
 
+  # Skus
+  sequence :sku_name do |n|
+    "Sku number #{n}"
+  end
+
   factory :client, class: Client do
     # this lets factory girl save Sequel models
     to_create(&:save)
@@ -46,5 +51,11 @@ FactoryGirl.define do
     name        { generate(:node_name) }
     type        'VM'
     cluster     'Ganetti'
+  end
+
+  factory :sku, class: Sku do
+    to_create(&:save)
+    name        { generate(:sku_name) }
+    description 'An important sku'
   end
 end
