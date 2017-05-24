@@ -28,6 +28,9 @@ The environment variables that are currently in develop are:
   it is, then ``cachefile`` gets set to ``testcache``. This variable is required
   for the production app settings.
 
+- ``PER_PAGE`` - This specifies how many data entries are displayed per page of
+    pagination. The default number is 10.
+
 - ``LOG_FILE_PATH`` - This is set to ``logfile`` which is the file that contains
   all the logs from the app. This variable is required for the production app
   settings.
@@ -42,11 +45,12 @@ The environment variables that are currently in develop are:
   path which directs to the app's base directory, currently ``/data/code``.
   These variables are required for the production settings.
 
-- ``TEST_MYSQL_DB`` - Is used to test IAM by allowing the db collector test
-  suite to run. This var should be set to true.
+- ``TEST_MYSQL_DB`` and ``TEST_PG_DB`` - Is used to test IAM by allowing the db
+  collector test suite to run. This var should be set to true.
 
 - ``DB_COLLECTOR_DBS`` - This is the database that the collector test suite
   queries.
+
 
 The following four environment variables specify how the spec interacts with the
 docker mysql:
@@ -66,9 +70,9 @@ Environment
 -----------
 
 In the environment.rb file, it sets the paths for files such as the
-cachefile, logfile, and db_url. It then checks if things like the actual
-database from the ``DB_URL`` exists or if ``DB_COLLECTOR_DBS`` is set. If the
-``ENV[DB_COLLECTOR_DBS]`` variable has not been set in the ``app.env.dist``,
+cachefile, logfile, and db_url. It then checks if the actual database from the
+``DB_URL`` exists or if ``DB_COLLECTOR_DBS`` is set. If the
+``DB_COLLECTOR_DBS`` variable has not been set in the ``app.env.dist``,
 then the database declared in the config.ru is used in it's place.
 
 App.env Files
@@ -76,9 +80,8 @@ App.env Files
 
 The app.env and app.env.dist files contain the environment variables for the
 docker development process. The .dist file contains environment variables with
-general passwords and users for the databases. The app.env.dist file is copied
-into the app.env file which is used by docker and once copied into app.env, the
-real passwords and users are used in the variables.
+general passwords and users for the databases and the .dist file is copied
+into app.env where the real passwords and users are assigned to variables.
 
 Env.yml-dist
 ------------
