@@ -62,6 +62,9 @@ class Iam < Sinatra::Base
     ENV['LOG_FILE_PATH'] = logfile
     ENV['GANETI_CLUSTERS'] = 'ganeti'
 
+    ENV['CHEF_CLIENT'] = 'test_client'
+    ENV['CHEF_KEY'] = './test_chef_client.pem'
+
   end
 
   # Bundler.require(...) requires all gems necessary regardless of

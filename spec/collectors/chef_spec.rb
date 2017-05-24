@@ -78,8 +78,6 @@ describe 'IaM Chef Collector' do
 
   it 'Correctly reads and stores data' do
     c = Collectors.new
-    # call chef collector
-
     # Chef zero is running in no-auth mode,
     # so it only needs to be provided with valid
     # input in order to respond to REST requests
