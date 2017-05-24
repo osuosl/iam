@@ -84,16 +84,14 @@ describe 'IaM Chef Collector' do
     # so it only needs to be provided with valid
     # input in order to respond to REST requests
 
-    # The private key will need to be added to the
-    # project files and linked in environment variables
-    # For the purposes of testing, this key is arbitrary
+    # For the purposes of testing, this key is arbitrary so long as
+    # it's properly formatted
     # In the live collector, a chef user's private key will
     # need to be passed in
     c.collect_chef(
-      server.url,          # The url of the server to collect from
-      'test',              # an arbitrary user name
-      # path to a properly formatted private key
-      File.expand_path('../chef_test.pem', __FILE__)
+      server.url,
+      ENV['CHEF_CLIENT'],
+      ENV['CHEF_KEY']
     )
     cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
 
