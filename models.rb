@@ -2,6 +2,7 @@
 # if we are in test mode, run the migrations first to make sure
 # the test db is all set up
 Sequel::Migrator.run(Iam.settings.DB, 'migrations') if ENV['RACK_ENV'] == 'test'
+Sequel::Model.plugin :json_serializer
 
 # Client data model
 # Client has many Projects
@@ -94,6 +95,7 @@ end
 class NodeResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :node_resource
+  one_to_one :skus
 end
 
 # Database Resource data model
@@ -122,6 +124,7 @@ end
 class DbResourcesProject < Sequel::Model
   many_to_one :project
   one_to_one :db_resource
+  one_to_one :skus
 end
 
 # Collector stats data model
@@ -131,6 +134,22 @@ end
 # Time      :end
 # Boolean   :success
 class CollectorStat < Sequel::Model
+  def validate
+    super
+    errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+end
+
+# SKU stats data model
+# primary_key :id
+# String      :family
+# String      :sku_num
+# String      :description
+# Float       :rate
+# Boolean     :active, default: true
+class Sku < Sequel::Model
+  one_to_one :node_resources_projects
+  one_to_one :db_resources_projects
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
