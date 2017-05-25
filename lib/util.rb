@@ -253,7 +253,7 @@ class Report
           resource_hash.each do |hash, _value|
             hash.each do |_resource_name, meas_hash|
               meas_hash.each do |meas_key, meas_value|
-                next if meas_key == 'id' || meas_hash.empty?
+                next if %w(id).include?(meas_key) || meas_hash.empty?
                 if res_type == 'node'
                   type = meas_hash.fetch('DiskTemplate')
                   drdb = type == 'plain' ? 1 : 2

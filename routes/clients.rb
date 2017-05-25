@@ -28,8 +28,8 @@ module Sinatra
 
         @projects = @client.projects
 
-        start_date = params[:startdate].nil? ? Time.now - 2_592_000 : params[:startdate]
-        end_date = params[:enddate].nil? ? Time.now : params[:enddate]
+        start_date = params[:startdate].nil? ? Time.now - 2_592_000 : Time.at(params[:startdate].to_i)
+        end_date = params[:enddate].nil? ? Time.now : Time.at(params[:enddate].to_i)
 
         unless @projects.nil?
           @client_data = {}
@@ -57,7 +57,7 @@ module Sinatra
 
         @projects = @client.projects
 
-        @start_date = params[:startdate].nil? ? Time.now - 2_592_000 : Time.at(params[:enddate].to_i)
+        @start_date = params[:startdate].nil? ? Time.now - 2_592_000 : Time.at(params[:startdate].to_i)
         @end_date = params[:enddate].nil? ? Time.now : Time.at(params[:enddate].to_i)
 
         unless @projects.nil?

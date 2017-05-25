@@ -118,13 +118,15 @@
   });
 
   function validateForm(){
-    var x = document.forms["changeDate"]["startdate"].value;
-    var y = document.forms["changeDate"]["enddate"].value;
-
-    if (x == null || x == "" || y == null || y == ""){
+    var a = document.forms["changeDate"]["startdate"].value;
+    var b = document.forms["changeDate"]["enddate"].value;
+    if (a == null || a == "" || b == null || b == ""){
       alert("Please enter a start date and an end date")
       return false;
     }
+
+    var x = document.forms["changeDate"]["@start_date"].value;
+    var y = document.forms["changeDate"]["@end_date"].value;
     if (x > y) {
       alert("Invalid Date Range:\n Start Date must be before End Date");
       return false;
