@@ -28,14 +28,26 @@ out of date, see DataExporter below for instructions on exporting new data.
   development instance of the application. MAKE SURE YOUR INSTANCE IS NOT
   CONFIGURED TO USE THE PRODUCTION OR STAGING DATABASES!
 
-In the environment of a development instance of the application in docker or on
-a workstation:
+If using docker-compose to run a dev instance, first make sure the DB_URL
+variable in dockerfiles/app.env is **not** set to sqlite://test.sqlite. The test
+runner will overwrite test.sqlite on every docker launch.
+
+If it was set to this value before, you will probably need to rebuild your
+docker image to pick up the new db filename.
+
+If using docker-compose, start a bash shell on the docker instance:
+
+.. code-block:: bash
+
+  docker-compose run dev bash
+
+Run the import-data rake task:
 
 .. code-block:: bash
 
   rake import_data
 
-If you are running an RVM ruby:
+If you are running ruby from RVM:
 
 .. code-block:: bash
 
