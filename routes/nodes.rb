@@ -71,10 +71,7 @@ module Sinatra
         @page = params[:page].to_f
         @page = 1 if @page.zero?
 
-        # The number of resources displayed on a page
-        @per_page = 10
-
-        @data = Report.get_data(@project, @page, @per_page, 'node')
+        @data = Report.get_data(@project, @page, ENV['PER_PAGE'].to_i, 'node')
 
         erb :'nodes/summary'
       end
