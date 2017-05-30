@@ -58,6 +58,7 @@ class Scheduler
     @rufus_scheduler = Rufus::Scheduler.new
   end
 
+  # rubocop:disable MethodLength
   def setup_jobs
     @rufus_scheduler.every '30m', first_in: 0.4 do
       db_collector_job
@@ -67,6 +68,10 @@ class Scheduler
       ganeti_collector_job
     end
 
+    @rufus_scheduler.every '30m', first_in: 0.4 do
+      timesync_collector_job
+    end
+
     # offset schedule for plugins - run the store methods 15 minutes after
     # the collector methods run
     @rufus_scheduler.every '30m', first_in: '15m' do
@@ -74,6 +79,7 @@ class Scheduler
       plugins_job
     end
   end
+  # rubocop:enable MethodLength
 
   # Run the store method of every registered plugin on all the collected data
   # in the cache
@@ -119,6 +125,19 @@ class Scheduler
     clusters =  Iam.settings.ganeti_collector_clusters
     clusters.each do |v|
       collector.collect_ganeti(v)
+    end
+  end
+
+  def timesync_collector_job
+    # Collect entered time sheet data every 30 minutes
+    collector = Collectors.new
+
+    servers = Iam.settings.timesync_collector_servers
+    servers.each do |v|
+      collector.collect_timesync(v['uri'],
+                                 v['user'],
+                                 v['password'],
+                                 v['auth_type'])
     end
   end
 end
