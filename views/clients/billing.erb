@@ -62,7 +62,7 @@
                          and find all the values that are associated with that plugin
                          skipping 'id' and 'DiskTemplate'-->
                          <% next if %w(id DiskTemplate).include?(key) %>
-                         <!-- keep a hash that contains the arrays of plugins and their values -->
+                         <!-- store the arrays of plugins and their values in total_hash-->
                          <% @total_hash[key] ||= {} %>
                          <% res_hash[0].each do |res_name, res_values| %>
                           <%  val = res_values.values_at(key)  %>
@@ -72,24 +72,40 @@
                     <% end %>
                   <% end %>
                 <% end %>
+                <!-- total_hash is stored as:
+                    {pluginType=>{"resourceName"=>[value],
+                                  "resourceName"=>[value]},
+                     pluginType=>{"resourceName"=>[value],
+                                  "resourceName"=>[value]}
+                     ...}  -->
                 <% unless @total_hash.empty? %>
                   <% @total_hash.each do |plugin, hash| %>
                     <% hash.each do |name, value| %>
+                    <!-- display each plugin's resource and value with converted units -->
                       <tr>
                         <td><%= plugin == "DBSize" ? "Database" : plugin %></td>
                         <td><%= name %></td>
-                        <td><%= val = DataUtil.unit_conversion(plugin,value[0]) %></td>
+                        <td>
+                          <% if value[0] < 1 %>
+                             1 (<%= value[0] %>)
+                          <% else %>
+                             <%= value[0] %>
+                          <% end %>
+                        </td>
                       </tr>
                     <% end %>
                     <tr>
                       <td></td><td></td>
                       <td>
+                        <!-- display the total of the plugin's values with units-->
                       <b>
                         <%= plugin == "DBSize" ? "Database" : plugin %> Total:
                       </b>
-                      <%= @sum_data.values_at(plugin)[0] %></td>
+                       <%=@sum_data.values_at(plugin)[0]%>
+                       <%= "GB" unless plugin == 'VCPUCount' %></td>
                       <td></td>
                     </tr>
+                  <!-- for formatting... -->
                   <tr class="blank_row">
                     <td colspan="3"></td>
                   </tr>
