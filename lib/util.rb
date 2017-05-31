@@ -93,7 +93,7 @@ class DataUtil
 
   def self.average_value(data)
     return 0 if data.empty?
-    (data.reduce(0) { |a, e| a + e[:value] }) / data.length
+    (data.reduce(0) { |a, e| a + e[:value].to_i }) / data.length
   end
 
   # Return the number of days in a range of hashes
@@ -119,6 +119,35 @@ class DataUtil
     day = 60 * 60 * 24
     ((latest - earliest + day) / day).round(2)
   end
+
+  # this method takes a hash of  measurments and performs calculations based on
+  # the type of data, then adds their value to the final hash of sums
+  def self.sum_data(sums, key, value, drdb)
+    drdb = 1 if drdb.nil?
+    # if sums already contains this key, add the value to the existing value;
+    # else add the key and value to sums
+    sums[key] = if sums.key?(key)
+                  (value * drdb) + sums[key]
+                else
+                  value * drdb
+                end
+  end
+
+  # this method converts units of plugins from their original form to GB
+  def self.unit_conversion(key, value)
+    # convervion from MB -> GB and bytes -> GB
+    value = if %w(RamSize DiskSize).include?(key)
+              # convert from MB -> GB
+              ((value / 1024.00) * 100).round.to_f / 100
+            elsif key == 'DBSize'
+              # convert from Bytes -> GB
+              (value / (1024.00 * 1024.00 * 1024.00) * 100).round.to_f / 100
+            else
+              # no conversion needed
+              value
+            end
+    value
+  end
 end
 
 # methods for gathering measurement data into hashes
@@ -140,6 +169,8 @@ class Report
     matrix
   end
 
+  # this method takes a project and resource type then returns a specific number
+  # of measurements according to how many were specified by per_page
   def self.get_data(project, page, per_page, res)
     resource_data = {}
 
@@ -162,20 +193,12 @@ class Report
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
           data = plugin.report(resource_type.to_sym => resource.name)
-          if data[0].nil?
-            data_average = 0
-          else
-            data_average = if data[0][:value].number?
-                             DataUtil.average_value(data)
-                           else
-                             data[-1][:value]
-                           end
-          end
+          data_average = data.nil? ? 0 : DataUtil.average_value(data)
           plugin_data[resource.name].merge!(measurement => data_average)
         end
       end
       (resource_data[resource_type] ||= []) << (
-                        @page_count / per_page.to_f).ceil
+                                    @page_count / per_page.to_f).ceil
       (resource_data[resource_type] ||= []) << plugin_data
     end
     resource_data
@@ -183,7 +206,7 @@ class Report
 
   # this method takes a project name and returns a nice hash of all its
   # resources and their measurments
-  def self.project_data(project)
+  def self.project_data(project, start_date, end_date)
     project_data = {}
 
     # for each resource type in the matrix, get a list of all that type
@@ -195,12 +218,16 @@ class Report
       # for each of those resources, get all the measuremnts for that
       # type of resource. Put it all in a big hash.
       resources.each do |resource|
+        next unless resource.active
         resource_data[resource.name] ||= {}
+        resource_data[resource.name]['id'] = resource[:id]
         measurements.each do |measurement|
           plugin = Object.const_get(measurement).new
-          data = plugin.report(resource_type.to_sym => resource.name)
-          next if data[0].nil?
-          data_average = if data[0][:value].number?
+          data = plugin.report({ resource_type.to_sym => resource.name },
+                               start_date, end_date)
+          data_average = if data[0].nil?
+                           0
+                         elsif data[0][:value].number?
                            DataUtil.average_value(data)
                          else
                            data[-1][:value]
@@ -211,5 +238,36 @@ class Report
       (project_data[resource_type] ||= []) << resource_data
     end
     project_data
+  end
+
+  # this method takes a hash of data and two dates. It takes the data that falls
+  # between the two dates, then returns the sum of their measurements
+  def self.sum_data_in_range(input_hash)
+    sum = {}
+
+    input_hash.each do |_project_name, project_resource|
+      project_resource.each do |resource|
+        resource.each do |res_type, resource_hash|
+          # Isolate each projects resource then get those that fall between the
+          # start and end date.
+          resource_hash.each do |hash, _value|
+            hash.each do |_resource_name, meas_hash|
+              meas_hash.each do |meas_key, meas_value|
+                next if %w(id).include?(meas_key) || meas_hash.empty?
+                if res_type == 'node'
+                  type = meas_hash.fetch('DiskTemplate')
+                  drdb = type == 'plain' ? 1 : 2
+                end
+                unless meas_key == 'DiskTemplate'
+                  meas_value = DataUtil.unit_conversion(meas_key, meas_value)
+                  DataUtil.sum_data(sum, meas_key, meas_value, drdb)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    sum
   end
 end

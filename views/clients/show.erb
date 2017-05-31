@@ -6,7 +6,8 @@
     Name: <%= @client.contact_name %> <br>
     Email: <%= @client.contact_email %> <br>
     Description: <%= @client.description %> <br>
-    <%= @client.active ? 'Active' : 'Inactive' %>
+    <%= @client.active ? 'Active' : 'Inactive' %><br>
+    <a href="/clients/<%= @client.id %>/billing"> <h4>Billing</h4> </a>
 </p>
 
 <% if @projects.empty? %>
@@ -14,99 +15,39 @@
     <%= @client.name %> has no projects
   </p>
 <% else %>
-  <table class="table">
-    <% if @client.name != 'default' %>
-    <h4>Summary</h4>
-    (Last 30 days)
-    <tr>
-      <td>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Nodes</th>
-              <th>Ram (GB)</th>
-              <th>VCPU </th>
-              <th>Disk Size (GB)</th>
-              <th>DRBD</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for @project in @projects %>
-              <% for @node in @project.node_resources %>
-                <% if @node.active %>
-                  <tr>
+  <% if @client.name != 'default' %>
+    <% Report.plugin_matrix.each do |resource_type, resource_measurements| %>
+      <table class="table">
+        <thead>
+          <h4><%= resource_type.capitalize%></h4>
+          <th>Name</th>
+          <%resource_measurements.each do |header| %>
+            <th><%= header %></th>
+          <% end %>
+        </thead>
+        <tbody>
+          <% @client_data.each do |project_name, project_resource|%>
+            <% project_resource.each do |resource|%>
+              <% resource[resource_type][0].each do |name, res_hash| %>
+              <tr>
+                <% res_hash.each do |key, value| %>
+                  <% if key == 'id' %>
                     <td>
-                      <a href="/node/<%= @node.id %>" >
-                        <%= @node.name %>
-                      </a>
+                      <a href="/<%= resource_type %>/<%=value%>"><%= name %></a>
                     </td>
-                    <% data = DiskTemplate.new.report({node: @node.name}) %>
-                    <% if data != nil && data.last != nil %>
-                      <% disk_template = 'Yes' if data.last[:value] == 'drbd' %>
-                    <% else %>
-                      <% disk_template = 'No' %>
-                    <% end %>
+                  <% elsif key != 'drdb'%>
                     <td>
-                      <% data = RamSize.new.report({node: @node.name}) %>
-                      <%= DataUtil.average_value(data) %>
+                      <%= value %>
                     </td>
-                    <td>
-                      <% data = VCPUCount.new.report({node: @node.name}) %>
-                      <%= DataUtil.average_value(data) %>
-                    </td>
-                    <td>
-                      <% data = DiskSize.new.report({node: @node.name}) %>
-                      <%= DataUtil.average_value(data) %>
-                    </td>
-                    <td>
-                      <%= disk_template %>
-                    </td>
-                  </tr>
+                  <% end %>
                 <% end %>
-              <% end %>
-            <% end %>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Database</th>
-              <th>Size (GB)</th>
-              <th>Project</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% for @project in @projects %>
-              <% for @db in @project.db_resources %>
-                <% if @db.active %>
-                <tr>
-                  <td>
-                    <a href="/db/<%= @db.id %>" >
-                      <%= @db.name %>
-                    </a>
-                  </td>
-                  <td>
-                    <% data = DBSize.new.report({db: @db.name}) %>
-                    <%= DataUtil.average_value(data) %>
-                  </td>
-                  <td>
-                    <a href="/projects/<%= @project.id %>" >
-                      <%= @project.name %>
-                    </a>
-                  </td>
                 </tr>
-                <% end %>
               <% end %>
             <% end %>
-          </tbody>
-        </table>
-      </td>
-    </tr>
+          <% end %>
+        </tbody>
+      </table>
     <% end %>
-  </table>
+  <% end %>
 <% end %>
 </div>

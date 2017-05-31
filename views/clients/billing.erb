@@ -1,0 +1,128 @@
+<div class="container">
+  <form action='/clients/<%= @client.id %>/billing' name="changeDate" method='post' onsubmit="return validateForm()">
+    <h2>
+      <a href="/clients/<%= @client.id %>">
+        <%= @client.name %>
+      </a>- Billing
+    </h2>
+    <div class="row">
+      <div class="col-sm-4">
+        <label class="control-label">Start Date</label>
+        <div class="form-group">
+          <div class="input-group date" id="startdate">
+            <input type="text" name="startdate" class="form-control" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+        <input type="submit" value="Search" class="btn btn-primary">
+      </div>
+
+      <div class="col-sm-4">
+        <label class="control-label">End Date</label>
+        <div class="form-group">
+          <div class="input-group date" id="enddate">
+            <input type="text" name="enddate" class="form-control" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+    <% if @projects.empty? %>
+      <p>
+        <%= @client.name %> has no projects
+      </p>
+    <% else %>
+      <% if @client.name != 'default' %>
+      <h4>For time period:  <%= @start_date.strftime("%m/%d/%Y") %> - <%= @end_date.strftime("%m/%d/%Y") %></h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Description</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @total_hash = {} %>
+            <% @client_data.each do |project_name, entire_hash| %>
+              <% entire_hash[0].each do |res_type, res_hash| %>
+                <% next if res_hash[0].empty? %>
+                <% res_hash[0].each do |res_name, res_values| %>
+                  <!-- Keep an array of the plugin hash keys for each resource type -->
+                  <% @keys = [] %>
+                  <% @keys = res_values.keys %>
+                  <% @keys.each do |key| %>
+                    <!-- for each key loop through all the resources a project has
+                         and find all the values that are associated with that plugin
+                         skipping 'id' and 'DiskTemplate'-->
+                         <% next if %w(id DiskTemplate).include?(key) %>
+                         <!-- keep a hash that contains the arrays of plugins and their values -->
+                         <% @total_hash[key] ||= {} %>
+                         <% res_hash[0].each do |res_name, res_values| %>
+                          <%  val = res_values.values_at(key)  %>
+                          <% @total_hash[key][res_name] = val %>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <% unless @total_hash.empty? %>
+                  <% @total_hash.each do |plugin, hash| %>
+                    <% hash.each do |name, value| %>
+                      <tr>
+                        <td><%= plugin == "DBSize" ? "Database" : plugin %></td>
+                        <td><%= name %></td>
+                        <td><%= val = DataUtil.unit_conversion(plugin,value[0]) %></td>
+                      </tr>
+                    <% end %>
+                    <tr>
+                      <td></td><td></td>
+                      <td>
+                      <b>
+                        <%= plugin == "DBSize" ? "Database" : plugin %> Total:
+                      </b>
+                      <%= @sum_data.values_at(plugin)[0] %></td>
+                      <td></td>
+                    </tr>
+                  <tr class="blank_row">
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="blank_row">
+                    <td colspan="3"></td>
+                  </tr>
+                <% end %>
+              <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    <% end %>
+  </form>
+</div>
+
+<script>
+  $("#startdate").datetimepicker({
+    useCurrent: false
+  }).on('dp.show', function() {
+    return $(this).data('DateTimePicker').defaultDate(new Date());
+  });
+  $("#enddate").datetimepicker({
+    useCurrent: false
+  }).on('dp.show', function() {
+    return $(this).data('DateTimePicker').defaultDate(new Date());
+  });
+
+  function validateForm(){
+    var x = document.forms["changeDate"]["startdate"].value;
+    var y = document.forms["changeDate"]["enddate"].value;
+    if (x == null || x == "" || y == null || y == "" || x > y){
+      alert("Invalid Date Range")
+      return false;
+    }
+  }
+</script>

@@ -31,7 +31,7 @@ end
 group :production do
   gem 'pg', '0.18.4'
   gem 'mysql', '2.9.1'
-  gem 'unicorn'
+  gem 'unicorn', '5.3.0'
 end
 
 # Testing

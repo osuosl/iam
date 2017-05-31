@@ -28,10 +28,13 @@ module Sinatra
 
         @projects = @client.projects
 
+        start_date = params[:startdate].nil? ? Time.now - 2_592_000 : Time.at(params[:startdate].to_i)
+        end_date = params[:enddate].nil? ? Time.now : Time.at(params[:enddate].to_i)
+
         unless @projects.nil?
           @client_data = {}
           @projects.each do |project|
-            data = Report.project_data(project)
+            data = Report.project_data(project, start_date, end_date)
             (@client_data[project.name] ||= []) << data
           end
         end
@@ -49,10 +52,44 @@ module Sinatra
         erb :'clients/edit'
       end
 
+      app.get '/clients/:id/billing/?:startdate?/?:enddate?' do
+        @client = Client[id: params[:id]]
+
+        @projects = @client.projects
+
+        @start_date = params[:startdate].nil? ? Time.now - 2_592_000 : Time.at(params[:startdate].to_i)
+        @end_date = params[:enddate].nil? ? Time.now : Time.at(params[:enddate].to_i)
+
+        unless @projects.nil?
+          @client_data = {}
+          @projects.each do |project|
+            @data = Report.project_data(project, @start_date, @end_date)
+            (@client_data[project.name] ||= []) << @data
+          end
+        end
+        @sum_data = Report.sum_data_in_range(@client_data)
+        erb :'clients/billing'
+      end
+
       app.get '/clients/?' do
         # get a list of all clients
         @clients = Client.all
         erb :'clients/index'
+      end
+
+      app.post '/clients/:id/billing/?' do
+        @client = Client[id: params[:id]]
+
+        start_date = params[:startdate]
+        start_date = start_date.tr('/', '-')
+        start_in_seconds = Date.strptime(start_date, '%m-%d-%Y %H:%M').to_time.to_i
+
+        end_date = params[:enddate]
+        end_date = end_date.tr('/', '-')
+        end_in_seconds = Date.strptime(end_date, '%m-%d-%Y %H:%M').to_time.to_i
+
+        redirect "/clients/#{@client.id}/billing/#{start_in_seconds}/"\
+                                                "#{end_in_seconds}"
       end
 
       # This could also be PUT
