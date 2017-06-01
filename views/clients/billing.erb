@@ -68,29 +68,49 @@
                          <% res_hash[0].each do |res_name, res_values| %>
                           <%  val = res_values.values_at(key)  %>
                           <% @total_hash[key][res_name] = val %>
+                          <% if res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "drbd" %>
+                            <% @total_hash[key][res_name].push(2) %>
+                          <% elsif res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "N/A" %>
+                            <% @total_hash[key][res_name].push(1) %>
+                          <% end %>
                         <% end %>
                       <% end %>
                     <% end %>
                   <% end %>
                 <% end %>
                 <!-- total_hash is stored as:
-                    {pluginType=>{"resourceName"=>[value],
-                                  "resourceName"=>[value]},
-                     pluginType=>{"resourceName"=>[value],
-                                  "resourceName"=>[value]}
+                    {pluginType=>{"projectName"=>[value, drdb_flag],
+                                  "projectName"=>[value, drdb_flag]},
+                     pluginType=>{"projectName"=>[value, drdb_flag],
+                                  "projectName"=>[value, drdb_flag]}
                      ...}  -->
                 <% unless @total_hash.empty? %>
                   <% @total_hash.each do |plugin, hash| %>
                     <% hash.each do |name, value| %>
-                    <!-- display each plugin's resource and value with converted units -->
+                    <!-- display each plugin's resource and value with either
+                          a min num or just the units-->
                       <tr>
                         <td><%= plugin == "DBSize" ? "Database" : plugin %></td>
                         <td><%= name %></td>
                         <td>
-                          <% if value[0] < 1 %>
-                             1 (<%= value[0] %>)
+                          <% if value[1] == 1 %>
+                            <%= 'N/A' %>
                           <% else %>
-                             <%= value[0] %>
+                            <!-- minimum billable value (actual value) -->
+                            <% if value[0] < 1 %>
+                                <% if value.count == 2 %>
+                                  1 (<%= value[0] %>)*
+                                <% else %>
+                                  1 (<%= value[0] %>)
+                                <% end %>
+                            <!-- actual value -->
+                            <% else %>
+                                <% if value.count == 2 %>
+                                  <%= value[0] %>*
+                                <% else %>
+                                  <%= value[0] %>
+                                <% end %>
+                            <% end %>
                           <% end %>
                         </td>
                       </tr>
