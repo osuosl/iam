@@ -97,14 +97,14 @@
                           <% if value[1] == 1 %>
                             <%= 'N/A' %>
                           <% else %>
-                            <!-- minimum billable value (actual value) -->
+                            <!-- using minimum billable value (actual value) -->
                             <% if value[0] < 1 && plugin == "DBSize"%>
                                 <% if value.count == 2 %>
                                   1 (<%= value[0] %>)*
                                 <% else %>
                                   1 (<%= value[0] %>)
                                 <% end %>
-                            <!-- actual value -->
+                            <!-- using actual value -->
                             <% else %>
                                 <% if value.count == 2 %>
                                   <%= value[0] %>*
