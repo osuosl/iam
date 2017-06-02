@@ -40,7 +40,7 @@
     <% else %>
       <% if @client.name != 'default' %>
         <h4>For time period:  <%= @start_date.strftime("%m/%d/%Y") %> - <%= @end_date.strftime("%m/%d/%Y") %></h4>
-        <p><b>*</b> Indicates a DRDB DiskTemplate </p>
+        <p><b>*</b> Indicates a DRBD DiskTemplate </p>
         <table class="table">
           <thead>
             <tr>
@@ -68,6 +68,7 @@
                          <% res_hash[0].each do |res_name, res_values| %>
                           <%  val = res_values.values_at(key)  %>
                           <% @total_hash[key][res_name] = val %>
+                          <!-- create flags for a 'drbd'
                           <% if res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "drbd" %>
                             <% @total_hash[key][res_name].push(2) %>
                           <% elsif res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "N/A" %>
@@ -97,7 +98,7 @@
                             <%= 'N/A' %>
                           <% else %>
                             <!-- minimum billable value (actual value) -->
-                            <% if value[0] < 1 %>
+                            <% if value[0] < 1 && plugin == "DBSize"%>
                                 <% if value.count == 2 %>
                                   1 (<%= value[0] %>)*
                                 <% else %>
