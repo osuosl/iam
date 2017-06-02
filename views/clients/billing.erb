@@ -68,7 +68,7 @@
                          <% res_hash[0].each do |res_name, res_values| %>
                           <%  val = res_values.values_at(key)  %>
                           <% @total_hash[key][res_name] = val %>
-                          <!-- create flags for a 'drbd'
+                          <!-- create flags for a 'drbd' DiskTemplate or missing data -->
                           <% if res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "drbd" %>
                             <% @total_hash[key][res_name].push(2) %>
                           <% elsif res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "N/A" %>
@@ -80,10 +80,10 @@
                   <% end %>
                 <% end %>
                 <!-- total_hash is stored as:
-                    {pluginType=>{"projectName"=>[value, drdb_flag],
-                                  "projectName"=>[value, drdb_flag]},
-                     pluginType=>{"projectName"=>[value, drdb_flag],
-                                  "projectName"=>[value, drdb_flag]}
+                    {pluginType=>{"projectName"=>[value, drdb/nil_flag],
+                                  "projectName"=>[value, drdb/nil_flag]},
+                     pluginType=>{"projectName"=>[value, drdb/nil_flag],
+                                  "projectName"=>[value, drdb/nil_flag]}
                      ...}  -->
                 <% unless @total_hash.empty? %>
                   <% @total_hash.each do |plugin, hash| %>
