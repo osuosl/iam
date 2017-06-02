@@ -40,7 +40,6 @@
     <% else %>
       <% if @client.name != 'default' %>
         <h4>For time period:  <%= @start_date.strftime("%m/%d/%Y") %> - <%= @end_date.strftime("%m/%d/%Y") %></h4>
-        <p><b>*</b> Indicates a DRBD DiskTemplate </p>
         <table class="table">
           <thead>
             <tr>
@@ -121,7 +120,7 @@
                             <% else %>
                               <% if value[1] == 2 %>
                                 <!-- if 'drdb', drdb_value (actual value) -->
-                                <%= value[0] * 2 %> (<%= value[0] %>)*
+                                <%= value[0] * 2 %> (<%= value[0] %>)
                               <% else %>
                                 <!-- showing actual value -->
                                 <%= value[0] %>
