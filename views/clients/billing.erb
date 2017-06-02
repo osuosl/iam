@@ -55,23 +55,28 @@
               <% entire_hash[0].each do |res_type, res_hash| %>
                 <% next if res_hash[0].empty? %>
                 <% res_hash[0].each do |res_name, res_values| %>
-                  <!-- Keep an array of the plugin hash keys for each resource type -->
+                  <!-- Keep an array of the plugin hash keys for each resource
+                       type -->
                   <% @keys = [] %>
                   <% @keys = res_values.keys %>
                   <% @keys.each do |key| %>
-                    <!-- for each key loop through all the resources a project has
-                         and find all the values that are associated with that plugin
-                         skipping 'id' and 'DiskTemplate'-->
+                    <!-- for each key loop through all the resources a project
+                         has and find all the values that are associated with
+                         that plugin skipping 'id' and 'DiskTemplate'-->
                          <% next if %w(id DiskTemplate).include?(key) %>
-                         <!-- store the arrays of plugins and their values in total_hash-->
+                         <!-- store the arrays of plugins and their values in
+                              total_hash-->
                          <% @total_hash[key] ||= {} %>
                          <% res_hash[0].each do |res_name, res_values| %>
                           <%  val = res_values.values_at(key)  %>
                           <% @total_hash[key][res_name] = val %>
-                          <!-- create flags for a 'drbd' DiskTemplate or missing data -->
+                          <!-- create flags for a 'drbd' DiskTemplate or missing
+                               data -->
                           <% if res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "drbd" %>
                             <% @total_hash[key][res_name].push(2) %>
                           <% elsif res_values.key?("DiskTemplate") && res_values["DiskTemplate"] == "N/A" %>
+                            <% @total_hash[key][res_name].push(1) %>
+                          <% elsif res_values["DBSize"] == 0.00 %>
                             <% @total_hash[key][res_name].push(1) %>
                           <% end %>
                         <% end %>
@@ -80,37 +85,47 @@
                   <% end %>
                 <% end %>
                 <!-- total_hash is stored as:
-                    {pluginType=>{"projectName"=>[value, drdb/nil_flag],
-                                  "projectName"=>[value, drdb/nil_flag]},
-                     pluginType=>{"projectName"=>[value, drdb/nil_flag],
-                                  "projectName"=>[value, drdb/nil_flag]}
+                    {pluginType=>{"projectName"=>[value, drbd/nil_flag],
+                                  "projectName"=>[value, drbd/nil_flag]},
+                     pluginType=>{"projectName"=>[value, drbd/nil_flag],
+                                  "projectName"=>[value, drbd/nil_flag]}
                      ...}  -->
                 <% unless @total_hash.empty? %>
                   <% @total_hash.each do |plugin, hash| %>
                     <% hash.each do |name, value| %>
-                    <!-- display each plugin's resource and value with either
-                          a min num or just the units-->
+                      <!-- display each plugin, project, and unit value -->
                       <tr>
-                        <td><%= plugin == "DBSize" ? "Database" : plugin %></td>
-                        <td><%= name %></td>
+                        <td>
+                          <!-- fix and display plugin names -->
+                          <% if plugin == "DBSize" %>
+                            Database
+                          <% elsif plugin == 'VCPUCount' %>
+                            CPU Count
+                          <% else %>
+                            <%= plugin %>
+                          <% end %>
+                        </td>
+                        <td>
+                          <!-- project name -->
+                          <%= name %>
+                        </td>
                         <td>
                           <% if value[1] == 1 %>
+                            <!-- if no data -->
                             <%= 'N/A' %>
                           <% else %>
-                            <!-- using minimum billable value (actual value) -->
                             <% if value[0] < 1 && plugin == "DBSize"%>
-                                <% if value.count == 2 %>
-                                  1 (<%= value[0] %>)*
-                                <% else %>
-                                  1 (<%= value[0] %>)
-                                <% end %>
-                            <!-- using actual value -->
+                              <!--if the Database value is < 1, use minimum
+                                  billable value (actual value) -->
+                              1 (<%= value[0] %>)
                             <% else %>
-                                <% if value.count == 2 %>
-                                  <%= value[0] %>*
-                                <% else %>
-                                  <%= value[0] %>
-                                <% end %>
+                              <% if value[1] == 2 %>
+                                <!-- if 'drdb', drdb_value (actual value) -->
+                                <%= value[0] * 2 %> (<%= value[0] %>)*
+                              <% else %>
+                                <!-- showing actual value -->
+                                <%= value[0] %>
+                              <% end %>
                             <% end %>
                           <% end %>
                         </td>
@@ -119,12 +134,13 @@
                     <tr>
                       <td></td><td></td>
                       <td>
-                        <!-- display the total of the plugin's values with units-->
-                      <b>
-                        <%= plugin == "DBSize" ? "Database" : plugin %> Total:
-                      </b>
-                       <%=@sum_data.values_at(plugin)[0]%>
-                       <%= "GB" unless plugin == 'VCPUCount' %></td>
+                        <!-- display total of the plugin's value with units-->
+                        <b>
+                          <%= plugin == "DBSize" ? "Database" : plugin %> Total:
+                        </b>
+                        <%=@sum_data.values_at(plugin)[0]%>
+                        <%= "GB" unless plugin == 'VCPUCount' %>
+                      </td>
                       <td></td>
                     </tr>
                   <!-- for formatting... -->

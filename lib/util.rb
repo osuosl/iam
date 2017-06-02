@@ -125,7 +125,7 @@ class DataUtil
   def self.sum_data(sums, key, value, drdb)
     drdb = 1 if drdb.nil?
     # convert value to minimum billable for DBSize if value < 1
-    value = value < 1 && key == 'DBSize' ? 1 : value
+    value = value < 1 && value > 0.00 && key == 'DBSize' ? 1 : value
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
     sums[key] = if sums.key?(key)
