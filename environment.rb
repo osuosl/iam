@@ -19,6 +19,8 @@ class Iam < Sinatra::Base
   set :bind, '0.0.0.0'
   set :root, File.dirname(__FILE__)
   set :public_folder, proc { File.join(root, 'static') }
+  set :static_cache_control, [:public, max_age: 300]
+  set :cache_max_age, 300
 
   # basic Ruby stuff
   require 'rubygems'
@@ -36,6 +38,7 @@ class Iam < Sinatra::Base
   require 'json'
   require 'yaml'
   require_relative 'lib/util.rb'
+  require 'rack/cache'
 
   # Test stuff
   if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
