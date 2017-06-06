@@ -15,3 +15,5 @@ dump.rdb
 *.log
 env.yml
 Gemfile.lock
+cache
+test_data
