@@ -40,6 +40,11 @@
     <% else %>
       <% if @client.name != 'default' %>
         <h4>For time period:  <%= @start_date.strftime("%m/%d/%Y") %> - <%= @end_date.strftime("%m/%d/%Y") %></h4>
+        <br>
+        <p><i>
+            Values between () are actual values compared to billable values
+            which vary on the fee type. Please see fee book for more information.
+            </i></p>
         <table class="table">
           <thead>
             <tr>
@@ -135,7 +140,13 @@
                       <td>
                         <!-- display total of the plugin's value with units-->
                         <b>
-                          <%= plugin == "DBSize" ? "Database" : plugin %> Total:
+                          <% if plugin == "DBSize" %>
+                            Database
+                          <% elsif plugin == 'VCPUCount' %>
+                            CPU Count
+                          <% else %>
+                            <%= plugin %>
+                          <% end %> Total:
                         </b>
                         <%=@sum_data.values_at(plugin)[0]%>
                         <%= "GB" unless plugin == 'VCPUCount' %>
