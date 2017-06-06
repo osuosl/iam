@@ -19,6 +19,7 @@ group :default do
   gem 'rubocop', '0.41.1', require: false
   gem 'rufus-scheduler', '3.2.1'
   gem 'logging', '2.1.0'
+  gem 'rack-cache', '1.7.0'
 end
 
 # Development

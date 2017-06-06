@@ -13,6 +13,11 @@ class Iam < Sinatra::Base
     require file
   end
 
+  # load the cache_control protocol for each page on IAM
+  before do
+    cache_control :public, :must_revalidate, max_age: Iam.settings.cache_max_age
+  end
+
   # initialize the app with some default clients, projects and nodeResources
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
