@@ -221,4 +221,25 @@ describe 'The Clients endpoint' do
       Client.create(name: 'client1')
     end.to raise_error(StandardError)
   end
+
+  it '/billing renders the default billing template' do
+    client1 = Client.create(name: 'client1')
+    get "clients/#{client1.id}/billing"
+    expect(last_response.status).to eq(200)
+  end
+
+  it '/billing renders the billing template when given correct perameters' do
+    client1 = Client.create(name: 'client1')
+    get "clients/#{client1.id}/billing/1490486400/1494547200"
+    expect(last_response.status).to eq(200)
+  end
+
+  it '/billing renders billing template with an error when given bad perams' do
+    client1 = Client.create(name: 'client1')
+
+    # start date after end date
+    get "clients/#{client1.id}/billing/1494547200/1490486400"
+    expect(last_response.status).to eq(200)
+    expect(last_response.body).to include('Invalid Date Range')
+  end
 end

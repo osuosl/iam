@@ -124,6 +124,8 @@ class DataUtil
   # the type of data, then adds their value to the final hash of sums
   def self.sum_data(sums, key, value, drdb)
     drdb = 1 if drdb.nil?
+    # convert value to minimum billable for DBSize if value < 1
+    value = value < 1 && value > 0.00 && key == 'DBSize' ? 1 : value
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
     sums[key] = if sums.key?(key)
@@ -226,12 +228,13 @@ class Report
           data = plugin.report({ resource_type.to_sym => resource.name },
                                start_date, end_date)
           data_average = if data[0].nil?
-                           0
+                           measurement == 'DiskTemplate' ? 'N/A' : 0
                          elsif data[0][:value].number?
                            DataUtil.average_value(data)
                          else
                            data[-1][:value]
                          end
+          data_average = DataUtil.unit_conversion(measurement, data_average)
           resource_data[resource.name].merge!(measurement => data_average)
         end
       end
@@ -259,7 +262,6 @@ class Report
                   drdb = type == 'plain' ? 1 : 2
                 end
                 unless meas_key == 'DiskTemplate'
-                  meas_value = DataUtil.unit_conversion(meas_key, meas_value)
                   DataUtil.sum_data(sum, meas_key, meas_value, drdb)
                 end
               end
