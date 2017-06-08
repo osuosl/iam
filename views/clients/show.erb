@@ -1,4 +1,4 @@
-<div class="container">
+<div class='container'>
 <h2> Client: <%= @client.name %> -
 <a href="/clients/<%= @client.id %>/edit"> Edit</a>
 </h2>
@@ -19,16 +19,16 @@
   <% if @client.name != 'default' %>
     <% @client_data.each do |project_name, array_hash| %>
       <% array_hash[0].each do |resource_type, resource_hash| %>
-        <table class="table">
-          <h4><%= resource_type == "db" ? "Database" : resource_type.capitalize %></h4>
+        <table class='table'>
+          <h4><%= resource_type == 'db' ? 'Database' : resource_type.capitalize %></h4>
           <thead>
-            <% @keys = resource_hash[0].values[0].keys - ["id"] %>
+            <% @keys = resource_hash[0].values[0].keys - ['id'] %>
             <tr>
               <th>Name</th>
               <% @keys.each do |k| %>
-                <% if k == "DBSize" %>
+                <% if k == 'DBSize' %>
                   <th>Database Size</th>
-                <% elsif k == "VCPUCount" %>
+                <% elsif k == 'VCPUCount' %>
                   <th>CPU Count</th>
                 <% else %>
                   <th><%= k.underscore.humanize.titleize %></th>
@@ -40,7 +40,7 @@
             <% resource_hash[0].each do |resource_name, resource_values| %>
               <tr>
                 <td><%= resource_name %></td>
-                <% resource_values.except("id").each do |key, value| %>
+                <% resource_values.except('id').each do |key, value| %>
                   <td><%= value %></td>
                 <% end #resource_values%>
               </tr>
@@ -48,9 +48,9 @@
           </tbody>
           <tfoot>
             <tr>
-              <td>Total</td>
+              <td><b>Total:</b></td>
               <% @keys.each do |k| %>
-                <td>- </td>
+                <td><b><%= @sum_data[k] unless !@sum_data.has_key?(k)%></b></td>
               <% end %>
             </tr>
           </tfoot>

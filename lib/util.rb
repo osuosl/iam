@@ -261,7 +261,9 @@ class Report
                   type = meas_hash.fetch('DiskTemplate')
                   drdb = type == 'plain' ? 1 : 2
                 end
-                unless meas_key == 'DiskTemplate'
+                if meas_key == 'DiskTemplate'
+                  sum[meas_key] = '-'
+                else
                   DataUtil.sum_data(sum, meas_key, meas_value, drdb)
                 end
               end
