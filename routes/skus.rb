@@ -104,7 +104,7 @@ module Sinatra
                      rate:              params[:rate] || sku.rate,
                      active:            params[:active] || sku.active)
           redirect "/skus/#{params[:id]}"
-        rescue StandardError
+          # rescue StandardError
         end
       end
 
