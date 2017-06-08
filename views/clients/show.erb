@@ -1,5 +1,5 @@
 <div class="container">
-<h2> Client: <%= @client.name %>
+<h2> Client: <%= @client.name %> -
 <a href="/clients/<%= @client.id %>/edit"> Edit</a>
 </h2>
 <p>
@@ -9,6 +9,7 @@
     <%= @client.active ? 'Active' : 'Inactive' %><br>
     <a href="/clients/<%= @client.id %>/billing"> <h4>Billing</h4> </a>
 </p>
+<br>
 
 <% if @projects.empty? %>
   <p>
@@ -21,40 +22,40 @@
         <table class="table">
           <h4><%= resource_type == "db" ? "Database" : resource_type.capitalize %></h4>
           <thead>
-          <% keys = resource_hash[0].values[0].keys %>
-          <td>
+            <% @keys = resource_hash[0].values[0].keys - ["id"] %>
             <tr>
               <th>Name</th>
-              <% keys.each do |k| %>
-                <% next if k == "id" %>
-                <th>
-                  <% if k == "DBSize" %>
-                    Database
-                  <% elsif k == "VCPUCount" %>
-                    CPU Count
-                  <% else %>
-                    <%= k.underscore.humanize.titleize %>
-                  <% end %>
-                </th>
+              <% @keys.each do |k| %>
+                <% if k == "DBSize" %>
+                  <th>Database Size</th>
+                <% elsif k == "VCPUCount" %>
+                  <th>CPU Count</th>
+                <% else %>
+                  <th><%= k.underscore.humanize.titleize %></th>
+                <% end #if %>
+              <% end #keys %>
+            </tr>
+          </thead>
+          <tbody>
+            <% resource_hash[0].each do |resource_name, resource_values| %>
+              <tr>
+                <td><%= resource_name %></td>
+                <% resource_values.except("id").each do |key, value| %>
+                  <td><%= value %></td>
+                <% end #resource_values%>
+              </tr>
+            <% end #resource_hash %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <% @keys.each do |k| %>
+                <td>- </td>
               <% end %>
             </tr>
-          </td>
-        </thead>
-        <tbody>
-          <% resource_hash[0].each do |resource_name, resource_values| %>
-          <tr>
-            <td>
-              <%= resource_name %>
-            </td>
-            <% resource_values.each do |key, value| %>
-              <td>
-                <%= value unless key == "id" %>
-              </td>
-            <% end #resource_values%>
-        </tr>
-          <% end #resource_hash %>
-        </tbody>
+          </tfoot>
         </table>
+        <br>
       <% end #array_hash%>
     <% end #client_data%>
   <% end #if default%>
