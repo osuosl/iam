@@ -32,8 +32,8 @@
                   <th>CPU Count</th>
                 <% else %>
                   <th><%= k.underscore.humanize.titleize %></th>
-                <% end #if %>
-              <% end #keys %>
+                <% end %>
+              <% end %>
             </tr>
           </thead>
           <tbody>
@@ -42,9 +42,9 @@
                 <td><%= resource_name %></td>
                 <% resource_values.except('id').each do |key, value| %>
                   <td><%= value %></td>
-                <% end #resource_values%>
+                <% end %>
               </tr>
-            <% end #resource_hash %>
+            <% end %>
           </tbody>
           <tfoot>
             <tr>
@@ -56,8 +56,8 @@
           </tfoot>
         </table>
         <br>
-      <% end #array_hash%>
-    <% end #client_data%>
-  <% end #if default%>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>
 </div>
