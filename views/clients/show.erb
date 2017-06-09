@@ -22,19 +22,22 @@
         <table class='table'>
           <h4><%= resource_type == 'db' ? 'Database' : resource_type.capitalize %></h4>
           <thead>
-            <% @keys = resource_hash[0].values[0].keys - ['id'] %>
-            <tr>
-              <th>Name</th>
-              <% @keys.each do |k| %>
-                <% if k == 'DBSize' %>
-                  <th>Database Size</th>
-                <% elsif k == 'VCPUCount' %>
-                  <th>CPU Count</th>
-                <% else %>
-                  <th><%= k.underscore.humanize.titleize %></th>
+            <% unless resource_hash[0].values[0].nil?%>
+              <% @keys = resource_hash[0].values[0].keys - ['id'] %>
+
+              <tr>
+                <th>Name</th>
+                <% @keys.each do |k| %>
+                  <% if k == 'DBSize' %>
+                    <th>Database Size</th>
+                  <% elsif k == 'VCPUCount' %>
+                    <th>CPU Count</th>
+                  <% else %>
+                    <th><%= k.underscore.humanize.titleize %></th>
+                  <% end %>
                 <% end %>
-              <% end %>
-            </tr>
+              </tr>
+            <% end %>
           </thead>
           <tbody>
             <% resource_hash[0].each do |resource_name, resource_values| %>
@@ -48,9 +51,13 @@
           </tbody>
           <tfoot>
             <tr>
-              <td><b>Total:</b></td>
-              <% @keys.each do |k| %>
-                <td><b><%= @sum_data[k] unless !@sum_data.has_key?(k)%></b></td>
+              <% if @keys.nil? %>
+                There are no resources
+                <% else %>
+                <td><b>Total:</b></td>
+                <% @keys.each do |k| %>
+                  <td><b><%= @sum_data[k] unless !@sum_data.has_key?(k)%></b></td>
+                <% end %>
               <% end %>
             </tr>
           </tfoot>
