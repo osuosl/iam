@@ -43,7 +43,8 @@
             <% resource_hash[0].each do |resource_name, resource_values| %>
               <tr>
                 <td><%= resource_name %></td>
-                <% resource_values.except('id').each do |key, value| %>
+                <% resource_values.each do |key, value| %>
+                  <% next if key == 'id' %>
                   <td><%= value %></td>
                 <% end %>
               </tr>
@@ -56,7 +57,9 @@
                 <% else %>
                 <td><b>Total:</b></td>
                 <% @keys.each do |k| %>
-                  <td><b><%= @sum_data[k] unless !@sum_data.has_key?(k)%></b></td>
+                  <td>
+                    <b><%= @sum_data[k] unless !@sum_data.has_key?(k)%></b>
+                  </td>
                 <% end %>
               <% end %>
             </tr>
