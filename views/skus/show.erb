@@ -1,3 +1,11 @@
-<%= @sku.name %>
-<%= @sku.description %>
-<! need to add to this file, just a little confused on what needs to be added to the show.erb for the SKU's>
+<div class="container">
+  <h2>SKU: <%= @sku.name %>
+    <a href="/skus/<%= @sku.id %>/edit">Edit</a>
+  </h2>
+  <p>
+    SKU Name: <%= @sku.name %> <br>
+    SKU Number: <%= @sku.sku_num %> <br>
+    Description: <%= @sku.description %> <br>
+    Active/Inactive: <%= @sku.active ? "Active" : "Inactive" %> <br>
+  </p>
+</div>
