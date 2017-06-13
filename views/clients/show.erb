@@ -33,7 +33,7 @@
                   <% elsif k == 'VCPUCount' %>
                     <th>CPU Count</th>
                   <% else %>
-                    <th><%= k.underscore.humanize.titleize %></th>
+                    <th><%= k.scan(/[A-Z][a-z]+/).reject(&:empty?).join(' ') %></th>
                   <% end %>
                 <% end %>
               </tr>
