@@ -1,18 +1,16 @@
 <div class="container">
-  <h2>Node: <%= @node.name %> -
-    <a href="/node/<%= @node.id %>/edit">edit</a>
-  </h2>
+  <legend><%= @node.name %></legend>
   <p>
-    Type: <%= @node.type %><br>
-    Cluster: <%= @node.cluster %><br>
-    Active: <%= @node.active %><br>
+    <b>Type:</b> <%= @node.type %><br>
+    <b>Cluster:</b> <%= @node.cluster %><br>
+    <b>Active:</b> <%= @node.active %><br>
     <% if @projects %>
-    Project: <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
     <% else %>
-    Project: Unknown
-    <% end %>
+    <b>Project:</b> Unknown
+    <% end %><br>
+    <b><a href="/node/<%= @node.id %>/edit">Edit</a></b>
   </p>
-  <h4>Node Data</h4>
   <sub>
     Last updated:
     <% if @update_time %>
@@ -21,6 +19,7 @@
       Unknown
     <% end %>
   </sub>
+
   <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
@@ -49,7 +48,6 @@
       </td>
     </tr>
   </table>
-
-   <br>
+  <br>
   <br>
 </div>

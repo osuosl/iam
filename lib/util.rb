@@ -122,10 +122,12 @@ class DataUtil
 
   # this method takes a hash of  measurments and performs calculations based on
   # the type of data, then adds their value to the final hash of sums
-  def self.sum_data(sums, key, value, drdb)
+  def self.sum_data(sums, key, value, drdb, bills)
     drdb = 1 if drdb.nil?
-    # convert value to minimum billable for DBSize if value < 1
-    value = value < 1 && value > 0.00 && key == 'DBSize' ? 1 : value
+    # if sum data is being called to calculate the billing totals,convert
+    # values to minimum billable for DBSize if value < 1
+    value = (0.001..1).cover?(value) && key == 'DBSize' ? 1 : value if bills
+
     # if sums already contains this key, add the value to the existing value;
     # else add the key and value to sums
     sums[key] = if sums.key?(key)
@@ -245,7 +247,7 @@ class Report
 
   # this method takes a hash of data and two dates. It takes the data that falls
   # between the two dates, then returns the sum of their measurements
-  def self.sum_data_in_range(input_hash)
+  def self.sum_data_in_range(input_hash, billing)
     sum = {}
 
     input_hash.each do |_project_name, project_resource|
@@ -264,7 +266,7 @@ class Report
                 if meas_key == 'DiskTemplate'
                   sum[meas_key] = '-'
                 else
-                  DataUtil.sum_data(sum, meas_key, meas_value, drdb)
+                  DataUtil.sum_data(sum, meas_key, meas_value, drdb, billing)
                 end
               end
             end
