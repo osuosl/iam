@@ -11,6 +11,7 @@
       <th>SKU Name</th>
       <th>SKU Number</th>
       <th>Description</th>
+      <th>Family</th>
     </tr>
   </thead>
   <tbody>
@@ -33,6 +34,11 @@
         <td>
           <div class="ellipsis">
             <%= @sku.description %>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <%= @sku.family %>
           </div>
         </td>
         <td>
