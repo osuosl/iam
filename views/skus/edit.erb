@@ -12,7 +12,7 @@
         <input type="hidden" name="_method" value="patch">
         <input type="hidden" name="id" value="<%= @sku.id %>">
         <tr>
-          <td>name</td>
+          <td>Name</td>
           <td>
             <% if @sku %>
               <%= @sku.name %>
@@ -25,7 +25,20 @@
           </td>
         </tr>
         <tr>
-          <td>description</td>
+          <td>SKU Number</td>
+          <td>
+            <% if @sku %>
+              <%= @sku.sku_num %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="sku number" placeholder="New SKU number">
+          </td>
+        </tr>
+        <tr>
+          <td>Description</td>
           <td>
             <% if @sku %>
               <%= @sku.description %>
@@ -35,6 +48,32 @@
           </td>
           <td>
             <input type="text" name="description" placeholder="New description">
+          </td>
+        </tr>
+        <tr>
+          <td>Family</td>
+          <td>
+            <% if @sku %>
+              <%= @sku.family %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="family" placeholder="New family">
+          </td>
+        </tr>
+        <tr>
+          <td>Rate</td>
+          <td>
+            <% if @sku %>
+              <%= @sku.rate %>
+            <% else %>
+              N/A
+            <% end %>
+          </td>
+          <td>
+            <input type="text" name="rate" placeholder="New rate">
           </td>
         </tr>
         <tr>

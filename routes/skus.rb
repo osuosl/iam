@@ -15,7 +15,6 @@ module Sinatra
       app.get '/skus/new/?:error?' do
         # get new sku form
         @error = true if params[:error]
-        @skus = Sku.all
         erb :'skus/create'
       end
 
@@ -57,10 +56,6 @@ module Sinatra
           MyLog.log.fatal 'routes/sku: sku not found [edit]'
           halt 404, 'sku not found'
         end
-
-        # get data from plugins
-        @skus = Sku.all
-        erb :'skus/edit'
       end
 
       app.get '/skus/?' do
@@ -94,12 +89,13 @@ module Sinatra
           params[:family] = nil if params[:family] == ''
           params[:rate] = nil if params[:rate] == ''
           params[:sku_num] = nil if params[:sku_num] == ''
-          params[:active] = nil if params[:description] == ''
+          params[:active] = nil if params[:active] == ''
 
           # recieve an updated sku
           sku = Sku[id: params[:id]]
           sku.update(name:              params[:name] || sku.name,
                      description:       params[:description] || sku.description,
+                     sku_num:           params[:sku_num] || sku.sku_num,
                      family:            params[:family] || sku.family,
                      rate:              params[:rate] || sku.rate,
                      active:            params[:active] || sku.active)

@@ -1,7 +1,7 @@
 <div class="container">
   <form action='/skus' name="createSku" method='post' onsubmit="return validateForm()">
     <fieldset>
-    <legend> New Project </legend>
+    <legend> New SKU </legend>
     <% if @error %>
       <div class="alert alert-danger" align="left">
         <strong>Invalid Input:</strong>
@@ -21,22 +21,16 @@
         </div>
      </div>
 
-     <div class="form-group row">
-       <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Client</label>
-       <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
-         <div class="input-group">
-           <span class="input-group-addon">
-             <i class="glyphicon glyphicon-list"></i>
-           </span>
-           <select name="sku_id" class="form-control selectpicker" >
-             <% for @sku in @skus %>
-                <% if @sku.active %>
-                   <option value="<%= @sku.id %>"><%= @sku.name %></option>
-               <% end %>
-             <% end %>
-           </select>
-         </div>
-       </div>
+    <div class="form-group row">
+      <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Sku Number</label>
+        <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <i class="glyphicon glyphicon-book"></i>
+            </span>
+            <input name="sku_num" placeholder="New SKU Number" class="form-control" type="text">
+          </div>
+        </div>
      </div>
 
      <div class="form-group row">
@@ -58,7 +52,7 @@
            <span class="input-group-addon">
              <i class="glyphicon glyphicon-pencil"></i>
            </span>
-           <textarea class="form-control" name="description"></textarea>
+           <textarea class="form" name="description"></textarea>
          </div>
        </div>
      </div>
@@ -66,7 +60,7 @@
      <div class="form-group row">
        <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2"></label>
        <div class="col-md-offset-2  col-md-5  col-md-offset-2">
-         <button type="submit" class="btn btn-success" >Create Project
+         <button type="submit" class="btn btn-success" >Create SKU
            <span class="glyphicon glyphicon-saved"></span>
          </button>
        </div>
