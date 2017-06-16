@@ -56,6 +56,7 @@ module Sinatra
           MyLog.log.fatal 'routes/sku: sku not found [edit]'
           halt 404, 'sku not found'
         end
+        erb :'skus/edit'
       end
 
       app.get '/skus/?' do
