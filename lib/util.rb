@@ -206,39 +206,43 @@ class Report
     resource_data
   end
 
-  # this method takes a project name and returns a nice hash of all its
+  # this method takes a list of project ids and returns a nice hash of all their
   # resources and their measurments
-  def self.project_data(project, start_date, end_date)
+
+  def self.project_data(project_ids, start_date, end_date)
     project_data = {}
 
-    # for each resource type in the matrix, get a list of all that type
-    # of resource each project has
-    plugin_matrix.each do |resource_type, measurements|
-      resource_data = {}
-      resources = project.send("#{resource_type}_resources")
-      next if resources.nil?
-      # for each of those resources, get all the measuremnts for that
-      # type of resource. Put it all in a big hash.
-      resources.each do |resource|
-        next unless resource.active
-        resource_data[resource.name] ||= {}
-        resource_data[resource.name]['id'] = resource[:id]
-        measurements.each do |measurement|
-          plugin = Object.const_get(measurement).new
-          data = plugin.report({ resource_type.to_sym => resource.name },
-                               start_date, end_date)
-          data_average = if data[0].nil?
-                           measurement == 'DiskTemplate' ? 'N/A' : 0
-                         elsif data[0][:value].number?
-                           DataUtil.average_value(data)
-                         else
-                           data[-1][:value]
-                         end
-          data_average = DataUtil.unit_conversion(measurement, data_average)
-          resource_data[resource.name].merge!(measurement => data_average)
+    plugin_tables = Plugin.select_map([:name, :resource_name, :storage_table])
+
+    plugin_tables.each do |row|
+      resource_key = (row[1] + '_resource').to_sym
+      resources_table = (row[1] + '_resources').to_sym
+      project_data[row[1]] ||= {}
+
+      data = Iam.settings.DB[resources_table].where(project_id: project_ids)
+                .join_table(:inner,
+                            Iam.settings.DB[row[2].to_sym],
+                            { resource_key => :id,
+                              created: start_date..end_date })
+                .select_hash_groups([resource_key, row[1].to_sym], :value)
+
+      data.each do |keys, values|
+        res_name = keys[1]
+        res_id = keys[0]
+
+        if values[0].is_a? String
+          average = values[0]
+        else
+          # get the average of the values
+          average = (values.inject { |a, e| a + e }.to_f / values.size).to_i
         end
+
+        meas_array = {
+          res_name => { id: res_id, row[0].to_sym => average }}
+
+        project_data[row[1]][res_name] ||= {}
+        project_data[row[1]][res_name].merge!(meas_array[res_name])
       end
-      (project_data[resource_type] ||= []) << resource_data
     end
     project_data
   end
@@ -247,24 +251,21 @@ class Report
   # between the two dates, then returns the sum of their measurements
   def self.sum_data_in_range(input_hash)
     sum = {}
-
-    input_hash.each do |_project_name, project_resource|
-      project_resource.each do |resource|
-        resource.each do |res_type, resource_hash|
+    input_hash.each do | _project_name, resource_hash |
+      resource_hash.each do |_res_type, resources|
+        resources.each do |_res_name, meas_hash|
           # Isolate each projects resource then get those that fall between the
           # start and end date.
-          resource_hash.each do |hash, _value|
-            hash.each do |_resource_name, meas_hash|
-              meas_hash.each do |meas_key, meas_value|
-                next if %w(id).include?(meas_key) || meas_hash.empty?
-                if res_type == 'node'
-                  type = meas_hash.fetch('DiskTemplate')
-                  drdb = type == 'plain' ? 1 : 2
-                end
-                unless meas_key == 'DiskTemplate'
-                  DataUtil.sum_data(sum, meas_key, meas_value, drdb)
-                end
-              end
+          meas_hash.each do |meas, value|
+            next if %w(id).include?(meas) || value.nil?
+            if meas == 'DiskTemplate'
+              drdb = value == 'plain' ? 1 : 2
+            end
+
+            if meas == :DiskTemplate
+              sum[meas] = '-'
+            else
+              DataUtil.sum_data(sum, meas, value, drdb)
             end
           end
         end
