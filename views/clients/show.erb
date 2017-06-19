@@ -9,7 +9,6 @@
     <%= @client.active ? 'Active' : 'Inactive' %><br>
     <a href="/clients/<%= @client.id %>/billing"> <h4>Billing</h4> </a>
 </p>
-
 <% if @projects.empty? %>
   <p>
     <%= @client.name %> has no projects
@@ -21,28 +20,32 @@
         <thead>
           <h4><%= resource_type.capitalize%></h4>
           <th>Name</th>
+          <th>Project</th>
           <%resource_measurements.each do |header| %>
             <th><%= header %></th>
           <% end %>
         </thead>
         <tbody>
-          <% @client_data.each do |project_name, project_resource|%>
-            <% project_resource.each do |resource|%>
-              <% resource[resource_type][0].each do |name, res_hash| %>
+          <% @client_data.each do |project_id, project_resource|%>
+            <% project_resource[resource_type].each do |name, res_hash|%>
               <tr>
                 <% res_hash.each do |key, value| %>
-                  <% if key == 'id' %>
+                  <% if key == :id %>
                     <td>
                       <a href="/<%= resource_type %>/<%=value%>"><%= name %></a>
                     </td>
-                  <% elsif key != 'drdb'%>
+                    <td>
+                      <a href="/projects/<%= project_id %>">
+                        <%= (@projects.detect {|project| project[:id] == project_id })[:name] %>
+                      </a>
+                    </td>
+                  <% elsif key != :drdb %>
                     <td>
                       <%= value %>
                     </td>
                   <% end %>
                 <% end %>
-                </tr>
-              <% end %>
+              </tr>
             <% end %>
           <% end %>
         </tbody>
