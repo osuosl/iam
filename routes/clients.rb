@@ -32,7 +32,6 @@ module Sinatra
         end_date = params[:enddate].nil? ? Time.now : Time.at(params[:enddate].to_i)
 
         unless @projects.nil?
-          puts @projects
           @client_data = {}
           @projects.each do |project|
             data = Report.project_data([project.id], start_date, end_date)
@@ -64,8 +63,8 @@ module Sinatra
         unless @projects.nil?
           @client_data = {}
           @projects.each do |project|
-            @data = Report.project_data(project, @start_date, @end_date)
-            (@client_data[project.name] ||= []) << @data
+            @data = Report.project_data([project.id], @start_date, @end_date)
+            @client_data[project.id] = @data
           end
         end
         @sum_data = Report.sum_data_in_range(@client_data)
