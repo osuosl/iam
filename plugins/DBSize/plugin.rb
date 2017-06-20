@@ -43,11 +43,12 @@ class DBSize < BasePlugin
                                db_info['server'])
     end
 
+
     # Insert data into db_size_measurements table
     @database[@table].insert(
       db:            db_host,
       value:         db_info['db_size'].to_i,
-      active:        db_info['active'],
+      active:        db_info['active'].true?,
       created:       DateTime.now,
       db_resource:   db_resource
     )

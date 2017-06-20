@@ -43,7 +43,7 @@ class VCPUCount < BasePlugin
     @database[@table].insert(
       node:          fqdn,
       value:         node_info['num_cpus'].to_i,
-      active:        node_info['active'],
+      active:        node_info['active'].true?,
       created:       DateTime.now,
       node_resource: node_resource
     )
