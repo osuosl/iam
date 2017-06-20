@@ -1,7 +1,7 @@
 <div class="container">
   <form action='/skus' name="createSku" method='post' onsubmit="return validateForm()">
     <fieldset>
-    <legend> New SKU </legend>
+    <legend> Create a New SKU </legend>
     <% if @error %>
       <div class="alert alert-danger" align="left">
         <strong>Invalid Input:</strong>
@@ -29,6 +29,30 @@
               <i class="glyphicon glyphicon-book"></i>
             </span>
             <input name="sku_num" placeholder="New SKU Number" class="form-control" type="text">
+          </div>
+        </div>
+     </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Family</label>
+        <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <i class="glyphicon glyphicon-book"></i>
+            </span>
+            <input name="family" placeholder="Family name" class="form-control" type="text">
+          </div>
+        </div>
+     </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Rate</label>
+        <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <i class="glyphicon glyphicon-book"></i>
+            </span>
+            <input name="rate" placeholder="Add rate" class="form-control" type="text">
           </div>
         </div>
      </div>

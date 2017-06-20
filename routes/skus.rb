@@ -27,26 +27,9 @@ module Sinatra
         end
 
         # get sku data from plugins
-        @skus = Sku.filter(id: @sku.id).first
+        # @skus = Sku.filter(id: @sku.id).first
 
         erb :'skus/show'
-      end
-
-      app.get '/skus/summary/:id/?:page?' do
-        # view list of sku resources and their measurements
-        @sku = Sku.filter(id: params[:id]).first
-        @skus = Sku[id: params[:id]]
-
-        # current page
-        @page = params[:page].to_f
-        @page = 1 if @page.zero?
-
-        # The number of resources displayed on a page
-        @per_page = 10
-
-        @data = Report.get_data(@sku, @page, @per_page, 'sku')
-
-        erb :'skus/summary'
       end
 
       app.get '/skus/:id/edit/?' do
