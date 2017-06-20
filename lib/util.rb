@@ -222,8 +222,8 @@ class Report
       data = Iam.settings.DB[resources_table].where(project_id: project_ids)
                 .join_table(:inner,
                             Iam.settings.DB[row[2].to_sym],
-                            { resource_key => :id,
-                              created: start_date..end_date })
+                            resource_key => :id,
+                            created: start_date..end_date)
                 .select_hash_groups([resource_key, row[1].to_sym], :value)
 
       data.each do |keys, values|
@@ -237,8 +237,7 @@ class Report
           average = (values.inject { |a, e| a + e }.to_f / values.size).to_i
         end
 
-        meas_array = {
-          res_name => { id: res_id, row[0].to_sym => average }}
+        meas_array = { res_name => { id: res_id, row[0].to_sym => average } }
 
         project_data[row[1]][res_name] ||= {}
         project_data[row[1]][res_name].merge!(meas_array[res_name])
@@ -251,16 +250,14 @@ class Report
   # between the two dates, then returns the sum of their measurements
   def self.sum_data_in_range(input_hash)
     sum = {}
-    input_hash.each do | _project_name, resource_hash |
+    input_hash.each do |_project_name, resource_hash|
       resource_hash.each do |_res_type, resources|
         resources.each do |_res_name, meas_hash|
           # Isolate each projects resource then get those that fall between the
           # start and end date.
           meas_hash.each do |meas, value|
             next if %w(id).include?(meas) || value.nil?
-            if meas == 'DiskTemplate'
-              drdb = value == 'plain' ? 1 : 2
-            end
+            drdb = value == 'plain' ? 1 : 2
 
             if meas == :DiskTemplate
               sum[meas] = '-'
