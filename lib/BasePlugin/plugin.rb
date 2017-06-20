@@ -86,7 +86,7 @@ class BasePlugin
   end
 
   def true?(obj)
-    obj.to_s == "true"
+    obj.to_s == 'true'
   end
 end
 

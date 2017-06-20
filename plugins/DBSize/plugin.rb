@@ -43,7 +43,6 @@ class DBSize < BasePlugin
                                db_info['server'])
     end
 
-
     # Insert data into db_size_measurements table
     @database[@table].insert(
       db:            db_host,
