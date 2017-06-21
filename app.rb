@@ -31,4 +31,5 @@ class Iam < Sinatra::Base
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
   register Sinatra::DbRoutes
+  register Sinatra::SkuRoutes
 end
