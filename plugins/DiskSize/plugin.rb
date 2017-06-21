@@ -28,7 +28,7 @@ class DiskSize < BasePlugin
     # Check for valid data
     if node_info['disk_sizes'].nil? || node_info['disk_sizes'] == 'unknown'
       MyLog.log.warn "DiskSize: No disk_sizes information for #{fqdn}"
-      raise "DiskTemplate: No disk_template information for #{fqdn}"
+      raise "DiskSize: No disk_size information for #{fqdn}"
     end
 
     # check if node resource exist, otherwise set it to default
