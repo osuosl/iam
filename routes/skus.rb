@@ -25,10 +25,6 @@ module Sinatra
           MyLog.log.fatal 'routes/sku: sku not found'
           halt 404, 'sku resource not found'
         end
-
-        # get sku data from plugins
-        # @skus = Sku.filter(id: @sku.id).first
-
         erb :'skus/show'
       end
 
@@ -84,7 +80,6 @@ module Sinatra
                      rate:              params[:rate] || sku.rate,
                      active:            params[:active] || sku.active)
           redirect "/skus/#{params[:id]}"
-          # rescue StandardError
         end
       end
 
