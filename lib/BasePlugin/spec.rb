@@ -3,8 +3,11 @@ require_relative './plugin.rb'
 describe 'BasePlugin plugin' do
   before(:all) do
     @db_table = Iam.settings.DB[:test_plugin_measurements]
+    @plugins_table = Iam.settings.DB[:plugins]
   end
-
+  after(:all) do
+    @plugins_table.where(name: 'TestingPlugin').delete
+  end
   # Register method
   describe '.register method' do
     it 'does not raise an error when invoked' do
