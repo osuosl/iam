@@ -208,8 +208,9 @@ class Report
 
   # this method takes a list of project ids and returns a nice hash of all their
   # resources and their measurments
-
-  def self.project_data(project_ids, start_date, end_date)
+  def self.project_data(project_ids,
+                        start_date = Time.now - 2_592_000,
+                        end_date = Time.now)
     project_data = {}
 
     plugin_tables = Plugin.select_map([:name, :resource_name, :storage_table])
@@ -224,20 +225,31 @@ class Report
                             Iam.settings.DB[row[2].to_sym],
                             resource_key => :id,
                             created: start_date..end_date)
-                .select_hash_groups([resource_key, row[1].to_sym], :value)
+                .select_hash_groups([resource_key, row[1].to_sym],
+                                    [:value,
+                                     Sequel.qualify(:t1, :active),
+                                     Sequel.qualify(:t1, :created)])
 
       data.each do |keys, values|
         res_name = keys[1]
         res_id = keys[0]
 
-        if values[0].is_a? String
-          average = values[0]
+        #  measurement = value[0]
+        #  active = value[1]
+        #  date = value[2]
+
+        if values[0][0].is_a? String
+          ave = values[0][0]
         else
           # get the average of the values
-          average = (values.inject { |a, e| a + e }.to_f / values.size).to_i
+          ave = (values.inject(0) { |a, e| a + e[0] }.to_f / values.size).to_i
         end
 
-        meas_array = { res_name => { id: res_id, row[0].to_sym => average } }
+        # one measurment every 30 minutes, 48 measurements per day
+        days_active = values.count { |x| x[1] == true } / 48
+        meas_array = { res_name => { id: res_id,
+                                     row[0].to_sym => ave,
+                                     :days_active => days_active } }
 
         project_data[row[1]][res_name] ||= {}
         project_data[row[1]][res_name].merge!(meas_array[res_name])

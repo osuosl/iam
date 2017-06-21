@@ -38,6 +38,9 @@ module Sinatra
             @client_data[project.id] = data
           end
         end
+
+        puts @client_data
+
         @sum_data = Report.sum_data_in_range(@client_data)
         erb :'clients/show'
       end

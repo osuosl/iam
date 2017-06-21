@@ -21,6 +21,7 @@
           <h4><%= resource_type.capitalize%></h4>
           <th>Name</th>
           <th>Project</th>
+          <th>Days Active</th>
           <%resource_measurements.each do |header| %>
             <th><%= header %></th>
           <% end %>
@@ -39,7 +40,10 @@
                         <%= (@projects.detect {|project| project[:id] == project_id })[:name] %>
                       </a>
                     </td>
-                  <% elsif key != :drdb %>
+                    <td>
+                      <%= res_hash[:days_active] %>  
+                    </td>
+                  <% elsif key != :drdb && key != :days_active %>
                     <td>
                       <%= value %>
                     </td>
