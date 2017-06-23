@@ -64,7 +64,7 @@
                   <td>
                     <b>
                       <%= @sum_data[k] unless !@sum_data.has_key?(k) %>
-                      <%= "GB" unless k == 'DiskTemplate' %>
+                      <%= "GB" unless %w(DiskTemplate VCPUCount).include?(k) %>
                     </b>
                   </td>
                 <% end %>
