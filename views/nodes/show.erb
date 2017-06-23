@@ -1,43 +1,47 @@
 <div class="container">
-  <legend><%= @node.name %></legend>
+  <legend>
+    <h2><%= @node.name %> -
+      <a href="/node/<%= @node.id %>/edit">Edit</a>
+    </h2>
+  </legend>
   <p>
     <b>Type:</b> <%= @node.type %><br>
     <b>Cluster:</b> <%= @node.cluster %><br>
-    <b>Active:</b> <%= @node.active %><br>
     <% if @projects %>
     <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
     <% else %>
     <b>Project:</b> Unknown
     <% end %><br>
-    <b><a href="/node/<%= @node.id %>/edit">Edit</a></b>
-  </p>
-  <sub>
-    Last updated:
+    <b>Last updated:</b>
     <% if @update_time %>
       <%= @update_time.asctime %>
     <% else %>
       Unknown
-    <% end %>
-  </sub>
+    <% end %><br>
+    <%= @node.active ? "Active" : "Inactive" %> <br>
+  </p>
 
+  <h3>Node Data</h3>
   <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
-        <th>VCPUCount</th>
-        <th>RamSize</th>
-        <th>DiskSize</th>
-        <th>DiskTemplate</th>
+        <th>CPU Count</th>
+        <th>Ram Size</th>
+        <th>Disk Size</th>
+        <th>Disk Template</th>
       </tr>
     </thead>
     <tr>
       <td>
-        <%= DataUtil.average_value(@vcpu_data) %>
+        <%= DataUtil.unit_conversion('VCPUCount',DataUtil.average_value(@vcpu_data)) %>
       </td>
       <td>
-        <%= DataUtil.average_value(@ramsize_data) %>
+        <%= DataUtil.unit_conversion('RamSize',DataUtil.average_value(@ramsize_data)) %>
+        GB
       </td>
       <td>
-        <%= DataUtil.average_value(@disksize_data) %>
+        <%= DataUtil.unit_conversion('DiskSize',DataUtil.average_value(@disksize_data)) %>
+        GB
       </td>
       <td>
         <% if @disktemplate_data != nil && @disktemplate_data.last != nil %>
@@ -48,6 +52,7 @@
       </td>
     </tr>
   </table>
-  <br>
+
+   <br>
   <br>
 </div>

@@ -1,10 +1,13 @@
 <div class='container'>
-<legend><h2><%= @client.name %> - <a href="/clients/<%= @client.id %>/billing"> Billing </a></h2></legend>
+<legend>
+  <h2><%= @client.name %> -
+    <a href="/clients/<%= @client.id %>/billing"> Billing </a>
+  </h2>
+</legend>
 <p>
     <b>Name:</b> <%= @client.contact_name %> <br>
     <b>Email:</b> <%= @client.contact_email %> <br>
     <b>Description:</b> <%= @client.description %> <br>
-    <%= @client.active ? 'Active' : 'Inactive' %> -
     <b><a href="/clients/<%= @client.id %>/edit"> Edit</a></b></br>
 </p>
 <br>
