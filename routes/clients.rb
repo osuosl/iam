@@ -38,7 +38,7 @@ module Sinatra
             (@client_data[project.name] ||= []) << data
           end
         end
-        @sum_data = Report.sum_data_in_range(@client_data, false)
+        @sum_data = Report.sum_data_in_range(@client_data, false, true)
         erb :'clients/show'
       end
 

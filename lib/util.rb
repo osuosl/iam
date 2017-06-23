@@ -247,7 +247,7 @@ class Report
 
   # this method takes a hash of data and two dates. It takes the data that falls
   # between the two dates, then returns the sum of their measurements
-  def self.sum_data_in_range(input_hash, billing)
+  def self.sum_data_in_range(input_hash, billing, original = false)
     sum = {}
 
     input_hash.each do |_project_name, project_resource|
@@ -257,17 +257,13 @@ class Report
           # start and end date.
           resource_hash.each do |hash, _value|
             hash.each do |_resource_name, meas_hash|
-              meas_hash.each do |meas_key, meas_value|
-                next if %w(id).include?(meas_key) || meas_hash.empty?
+              meas_hash.each do |m_key, m_value|
+                next if %w(id DiskTemplate).include?(m_key) || meas_hash.empty?
                 if res_type == 'node'
                   type = meas_hash.fetch('DiskTemplate')
-                  drdb = type == 'plain' ? 1 : 2
+                  drdb = type == 'plain' || original ? 1 : 2
                 end
-                if meas_key == 'DiskTemplate'
-                  sum[meas_key] = '-'
-                else
-                  DataUtil.sum_data(sum, meas_key, meas_value, drdb, billing)
-                end
+                DataUtil.sum_data(sum, m_key, m_value, drdb, billing)
               end
             end
           end
