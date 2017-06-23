@@ -1,19 +1,15 @@
 <div class="container">
-  <h2>Project: <%= @project.name %> -
-    <a href="/projects/<%= @project.id %>/edit">edit</a>
-  </h2>
+  <legend><%= @project.name %></legend>
   <p>
     <% if @client.active %>
-      Client:
-        <a href="/clients/<%= @client.id %>" >
-          <%= @client.name %>
-        </a>
-    <% end %>
-
-    <br>
+      Client: <a href="/clients/<%= @client.id %>" ><%= @client.name %></a>
+    <% end %><br>
     Description: <%= @project.description %> <br>
-    <%= @project.active ? "Active" : "Inactive" %><br><br>
+    <%= @project.active ? "Active" : "Inactive" %><br>
+    <b><a href="/projects/<%= @project.id %>/edit">Edit</a></b><br>
+  </p>
 
+  
     <% Report.plugin_matrix.each do |resource_type, _resource_meas| %>
     <table class="table">
       <h3>
@@ -56,5 +52,4 @@
       <% end %>
     </table>
     <% end %>
-  </p>
 </div>

@@ -1,55 +1,58 @@
 <div class="container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Project Name</th>
-        <th>Old</th>
-        <th>New</th>
-      </tr>
-    </thead>
-    <tbody>
-      <form action='/projects' method='post'>
-        <input type="hidden" name="_method" value="patch">
-        <input type="hidden" name="id" value="<%= @project.id %>">
-        <tr>
-          <td>name</td>
-          <td>
-            <% if @project %>
-              <%= @project.name %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="name" placeholder="New name">
-          </td>
-        </tr>
-        <tr>
-          <td>description</td>
-          <td>
-            <% if @project %>
-              <%= @project.description %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="description" placeholder="New description">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <input type="submit" value="Update" class="btn btn-primary">
-          </td>
-          <td>
-          </form>
-          <form action="/projects/<%= @project.id %>" method='post'>
-            <input type="hidden" name="_method" value="delete">
-            <input type="submit" value="Delete" class="btn btn-primary">
-          </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </form>
+  <legend> Edit Project </legend>
+
+  <form action='/projects' method='post'>
+    <input type="hidden" name="_method" value="patch">
+    <input type="hidden" name="id" value="<%= @project.id %>">
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Name</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-book"></i>
+          </span>
+          <input name="name" placeholder="<%= @project.name %>" class="form-control" type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Resource</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-tree-conifer"></i>
+          </span>
+          <input name="resources" placeholder="<%= @project.resources %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-4">Description</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-4">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-tree-conifer"></i>
+          </span>
+          <input name="description" placeholder="<%= @project.description %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success" >Update</button>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form action="/projects/<%= @project.id %>" method='post'>
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="Deactivate" class="btn btn-primary">
+      </form>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
 </div>
+<br>
