@@ -16,6 +16,7 @@ module Sinatra
         # get new node form
         @error = true if params[:error]
         @projects = Project.all
+        @skus = Sku.all
         erb :'nodes/create'
       end
 
@@ -28,7 +29,7 @@ module Sinatra
           halt 404, 'node not found'
         end
         # get data from plugins
-        @projects = Project.filter(id: @node.project_id).first
+        @project = Project.filter(id: @node.project_id).first
 
         # get data from plugins
         @vcpu_data = VCPUCount.new.report({ node: @node.name })
@@ -83,8 +84,9 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
-        @projects = Project.all
-        @project = @projects.find(@node.project_id).first
+        @project = Project.filter(id: @node.project_id).first
+        nr = NodeResourcesProject.filter(node_resource_id: @node.id).first
+        @sku = Sku.filter(id: nr.sku_id).first
         erb :'nodes/edit'
       end
 
@@ -105,6 +107,9 @@ module Sinatra
                                        cluster:    params[:cluster] || '',
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
+           NodeResourcesProject.create(project_id: params[:project_id] || '',
+                                       node_resource_id: node.id || '',
+                                       sku_id: params[:sku_id] || '')
           rescue StandardError
             redirect 'node/new/1'
           end
@@ -121,6 +126,7 @@ module Sinatra
 
         # recieve an updated node
         node = NodeResource[id: params[:id]]
+        project_node = NodeResourcesProject[node_resource_id: params[:id]]
 
         node.update(project_id:  params[:project_id] || node.project_id,
                     name:       params[:name] || node.name,
@@ -128,14 +134,17 @@ module Sinatra
                     cluster:    params[:cluster] || node.cluster,
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
-
+        project_node.update(project_id: params[:project_id] || '',
+                            node_resource_id: node.id || '',
+                            sku_id: params[:sku_id] || '')
         redirect "/node/#{params[:id]}"
       end
 
       app.delete '/nodes/:id/?' do
         # delete a node
         node = NodeResource[id: params[:id]]
-        node.update(active: false)
+        # disassociate this nodes sku's and deactivate the node
+        node.reassign_resources
         redirect '/nodes/?' unless node.nil?
         404
       end

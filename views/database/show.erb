@@ -1,22 +1,25 @@
 <div class="container">
-  <legend><%= @db.name %></legend>
+  <h2>Database: <%= @db.name %> -
+    <a href="/db/<%= @db.id %>/edit">edit</a>
+  </h2>
+
   <p>
-    <b>Active:</b> <%= @db.active %><br>
-    <% if @projects %>
-    <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    Active: <%= @db.active %><br>
+    <% if @project %>
+    Project: <a href="/projects/<%= @project.id %>" ><%= @project.name %></a>
     <% else %>
-    <b>Project:</b> Unknown
+    Project: Unknown
     <% end %><br>
-    <b>Last updated:</b>
+    Last updated:
     <% if @update_time %>
       <%= @update_time.asctime %>
     <% else %>
       Unknown
-    <% end %><br>
-    <b><a href="/db/<%= @db.id %>/edit">Edit</a></b>
+    <% end %>
   </p>
 
-  <table class="table" style='table-layout:fixed'>
+  <h4>Database Data</h4>
+  <table class="table">
     <thead>
       <tr>
         <th>Size</th>
@@ -38,6 +41,7 @@
       </tr>
     </tbody>
   </table>
+
   <br>
   <br>
 </div>

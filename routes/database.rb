@@ -16,6 +16,7 @@ module Sinatra
         # get new database form
         @error = true if params[:error]
         @projects = Project.all
+        @skus = Sku.all
         erb :'database/create'
       end
 
@@ -28,7 +29,7 @@ module Sinatra
         end
 
         # get data from plugins
-        @projects = Project.filter(id: @db.project_id).first
+        @project = Project.filter(id: @db.project_id).first
         @db_size = DBSize.new.report(db: @db.name)
 
         # find most recent time and store into @update_time
@@ -68,7 +69,10 @@ module Sinatra
 
         # get data from plugins
         @projects = Project.all
-        @project = @projects.find(@db.project_id).first
+        @skus = Sku.all
+        @project = Project.filter(id: @db.project_id).first
+        @dr = DbResourcesProject.filter(db_resource_id: @db.id).first
+        @sku = Sku.filter(id: @dr.sku_id).first
         erb :'database/edit'
       end
 
@@ -89,6 +93,9 @@ module Sinatra
                                    server:    params[:server] || '',
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
+           DbResourcesProject.create(project_id: params[:project_id] || '',
+                                       db_resource_id: db.id || '',
+                                       sku_id: params[:sku_id] || '')
           rescue StandardError
             redirect '/db/new/1'
           end
@@ -105,6 +112,7 @@ module Sinatra
 
         # recieve an updated database
         db = DbResource[id: params[:id]]
+        project_db = DbResourcesProject[db_resource_id: params[:id]]
 
         db.update(project_id:  params[:project_id] || db.project_id,
                   name:       params[:name] || db.name,
@@ -112,6 +120,9 @@ module Sinatra
                   server:    params[:server] || db.server,
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
+        project_db.update(project_id: params[:project_id] || '',
+                            node_resource_id: node.id || '',
+                            sku_id: params[:sku_id] || '')
 
         redirect "/db/#{params[:id]}"
       end
@@ -119,7 +130,8 @@ module Sinatra
       app.delete '/dbs/:id/?' do
         # delete a database
         db = DbResource[id: params[:id]]
-        db.update(active: false)
+        # disassociate this db sku's and deactivate the db
+        db.reassign_resources
         redirect '/dbs/?' unless db.nil?
         404
       end

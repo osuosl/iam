@@ -10,8 +10,8 @@
       <% end %>
 
       <div class="form-group row">
-        <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Name</label>
-          <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+        <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Name</label>
+          <div class="col-md-offset-3 col-md-5 inputGroupContainer col-md-offset-3">
             <div class="input-group">
               <span class="input-group-addon">
                 <i class="glyphicon glyphicon-briefcase"></i>
@@ -23,8 +23,8 @@
 
 
        <div class="form-group row">
-         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Select Project</label>
-         <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+         <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Select Project</label>
+         <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
            <div class="input-group">
              <span class="input-group-addon">
                <i class="glyphicon glyphicon-list"></i>
@@ -41,8 +41,26 @@
        </div>
 
        <div class="form-group row">
-         <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Type</label>
-           <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+         <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Select SKU</label>
+         <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+           <div class="input-group">
+             <span class="input-group-addon">
+               <i class="glyphicon glyphicon-barcode"></i>
+             </span>
+             <select name="sku_id" class="form-control selectpicker" >
+               <% for @sku in @skus %>
+                  <% if @sku.active %>
+                     <option value="<%= @sku.id %>"><%= @sku.name %></option>
+                 <% end %>
+               <% end %>
+             </select>
+           </div>
+         </div>
+       </div>
+
+       <div class="form-group row">
+         <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Type</label>
+           <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
              <div class="input-group">
                <span class="input-group-addon">
                  <i class="glyphicon glyphicon-tree-conifer"></i>
@@ -53,8 +71,8 @@
         </div>
 
         <div class="form-group row">
-          <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2">Server</label>
-            <div class="col-md-offset-2  col-md-5 inputGroupContainer col-md-offset-2">
+          <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Server</label>
+            <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
               <div class="input-group">
                 <span class="input-group-addon">
                   <i class="glyphicon glyphicon-list-alt"></i>
@@ -65,8 +83,8 @@
          </div>
 
          <div class="form-group row">
-           <label class="col-md-offset-2 col-md-5 control-label col-md-offset-2"></label>
-           <div class="col-md-offset-2  col-md-5  col-md-offset-2">
+           <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3"></label>
+           <div class="col-md-offset-3  col-md-5  col-md-offset-3">
              <button type="submit" class="btn btn-success" >Create Database
                <span class="glyphicon glyphicon-saved"></span>
              </button>

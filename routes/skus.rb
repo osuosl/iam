@@ -86,7 +86,7 @@ module Sinatra
       app.delete '/skus/:id/?' do
         # delete a sku
         sku = Sku[id: params[:id]]
-        sku.delete unless sku.nil?
+        sku.reassign_resources unless sku.name == 'default'
         redirect '/skus/?' unless sku.nil?
         404
       end

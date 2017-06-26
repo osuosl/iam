@@ -22,9 +22,15 @@ class Iam < Sinatra::Base
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
                                          description: 'The default client')
-  Project.find_or_create(name: 'default',
-                         client_id: default_client.id,
-                         description: 'The default project')
+  default_project = Project.find_or_create(name: 'default',
+                                           client_id: default_client.id,
+                                           description: 'The default project')
+  default_sku = Sku.find_or_create(name: 'default',
+                                   description: 'The default SKU')
+  NodeResourcesProject.find_or_create(project_id: default_project.id,
+                                      sku_id: default_sku.id)
+  DbResourcesProject.find_or_create(project_id: default_project.id,
+                                    sku_id: default_sku.id)
 
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
