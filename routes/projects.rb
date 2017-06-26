@@ -49,6 +49,12 @@ module Sinatra
           halt 404, "Project's Client not found"
         end
 
+        @project_data = {}
+        Report.plugin_matrix.each do |res_type, _resource_meas|
+          @project_data ||= {}
+          @project_data[res_type] = @project.send("#{res_type}_resources")
+        end
+
         @exclude_keys = [:id, :project_id, :created, :modified, :active,
                          :db_project_id, :node_project_id]
 
