@@ -1,45 +1,48 @@
 <div class="container">
-  <h2>Node: <%= @node.name %> -
-    <a href="/node/<%= @node.id %>/edit">edit</a>
-  </h2>
+  <legend>
+    <h2><%= @node.name %> -
+      <a href="/node/<%= @node.id %>/edit">Edit</a>
+    </h2>
+  </legend>
   <p>
-    Type: <%= @node.type %><br>
-    Cluster: <%= @node.cluster %><br>
-    Active: <%= @node.active %><br>
-    <% if @project %>
-    Project: <a href="/projects/<%= @project.id %>" ><%= @project.name %></a>
+    <b>Type:</b> <%= @node.type %><br>
+    <b>Cluster:</b> <%= @node.cluster %><br>
+    <% if @projects %>
+    <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
     <% else %>
-    Project: Unknown
+    <b>Project:</b> Unknown
     <% end %><br>
-    SKU: <%= @sku.name %><br>
+    <b>SKU:</b> <%= @sku.name %><br>
+    <b>Last updated:</b>
+   <% if @update_time %>
+     <%= @update_time.asctime %>
+   <% else %>
+     Unknown
+   <% end %><br>
+   <%= @node.active ? "Active" : "Inactive" %> <br>
   </p>
-  <h4>Node Data</h4>
-  <sub>
-    Last updated:
-    <% if @update_time %>
-      <%= @update_time.asctime %>
-    <% else %>
-      Unknown
-    <% end %>
-  </sub>
+
+  <h3>Node Data</h3>
   <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
-        <th>VCPUCount</th>
-        <th>RamSize</th>
-        <th>DiskSize</th>
-        <th>DiskTemplate</th>
+        <th>CPU Count</th>
+        <th>Ram Size</th>
+        <th>Disk Size</th>
+        <th>Disk Template</th>
       </tr>
     </thead>
     <tr>
       <td>
-        <%= DataUtil.average_value(@vcpu_data) %>
+        <%= DataUtil.unit_conversion('VCPUCount',DataUtil.average_value(@vcpu_data)) %>
       </td>
       <td>
-        <%= DataUtil.average_value(@ramsize_data) %>
+        <%= DataUtil.unit_conversion('RamSize',DataUtil.average_value(@ramsize_data)) %>
+        GB
       </td>
       <td>
-        <%= DataUtil.average_value(@disksize_data) %>
+        <%= DataUtil.unit_conversion('DiskSize',DataUtil.average_value(@disksize_data)) %>
+        GB
       </td>
       <td>
         <% if @disktemplate_data != nil && @disktemplate_data.last != nil %>
