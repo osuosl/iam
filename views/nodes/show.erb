@@ -10,7 +10,8 @@
     Project: <a href="/projects/<%= @project.id %>" ><%= @project.name %></a>
     <% else %>
     Project: Unknown
-    <% end %>
+    <% end %><br>
+    SKU: <%= @sku.name %><br>
   </p>
   <h4>Node Data</h4>
   <sub>

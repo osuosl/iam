@@ -10,6 +10,7 @@
     <% else %>
     Project: Unknown
     <% end %><br>
+    SKU: <%= @sku.name %><br>
     Last updated:
     <% if @update_time %>
       <%= @update_time.asctime %>

@@ -85,6 +85,7 @@ class NodeResource < Sequel::Model
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+
   def reassign_resources
     NodeResourcesProject.where(node_resource_id: id).delete
     update(active: false)
@@ -118,6 +119,7 @@ class DbResource < Sequel::Model
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+
   def reassign_resources
     DbResourcesProject.where(db_resource_id: id).delete
     update(active: false)
@@ -162,6 +164,7 @@ class Sku < Sequel::Model
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
+
   def reassign_resources
     DbResourcesProject.where(sku_id: id).delete
     NodeResourcesProject.where(sku_id: id).delete

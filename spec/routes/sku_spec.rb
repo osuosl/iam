@@ -19,6 +19,13 @@ describe 'The skus endpoint' do
     expect(last_response).to be_ok
   end
 
+  it 'verifies the default project exists' do
+    sku = Sku.find(name: 'default')
+    expect(sku).to exist
+    get "/skus/#{sku.id}"
+    expect(last_response.status).to eq(200)
+  end
+
   it 'includes the names of existing skus' do
     FactoryGirl.create(:sku, name: 'sku X')
     FactoryGirl.create(:sku, name: 'sku Y')

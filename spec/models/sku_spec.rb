@@ -8,8 +8,8 @@ describe 'The SKU Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has zero skus' do
-    expect(Sku.count).to be(0)
+  it 'has only a default sku initially' do
+    expect(Sku.count).to be(1)
   end
 
   it 'has a model name' do

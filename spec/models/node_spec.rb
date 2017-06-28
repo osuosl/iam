@@ -49,8 +49,8 @@ describe 'The NodeResource Model and table' do
   it 'can delete a node' do
     node = NodeResource.create(name: 'Delete Me')
     expect(node).to exist
-    expect { node.delete }.to_not raise_error
-    expect(node).to_not exist
+    expect { node.reassign_resources }.to_not raise_error
+    expect(node.active).to be false
   end
 
   it 'can update a node' do

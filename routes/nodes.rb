@@ -30,6 +30,8 @@ module Sinatra
         end
         # get data from plugins
         @project = Project.filter(id: @node.project_id).first
+        node_sku = NodeResourcesProject.find(node_resource_id: params[:id])
+        @sku = Sku.find(id: node_sku.sku_id)
 
         # get data from plugins
         @vcpu_data = VCPUCount.new.report({ node: @node.name })
@@ -107,9 +109,9 @@ module Sinatra
                                        cluster:    params[:cluster] || '',
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
-           NodeResourcesProject.create(project_id: params[:project_id] || '',
-                                       node_resource_id: node.id || '',
-                                       sku_id: params[:sku_id] || '')
+            NodeResourcesProject.create(project_id: params[:project_id] || '',
+                                        node_resource_id: node.id || '',
+                                        sku_id: params[:sku_id] || '')
           rescue StandardError
             redirect 'node/new/1'
           end

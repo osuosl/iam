@@ -28,6 +28,9 @@ module Sinatra
           halt 404, 'database resource not found'
         end
 
+        db_sku = DbResourcesProject.find(db_resource_id: params[:id])
+        @sku = Sku.find(id: db_sku.sku_id)
+
         # get data from plugins
         @project = Project.filter(id: @db.project_id).first
         @db_size = DBSize.new.report(db: @db.name)
@@ -93,9 +96,9 @@ module Sinatra
                                    server:    params[:server] || '',
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
-           DbResourcesProject.create(project_id: params[:project_id] || '',
-                                       db_resource_id: db.id || '',
-                                       sku_id: params[:sku_id] || '')
+            DbResourcesProject.create(project_id: params[:project_id] || '',
+                                      db_resource_id: db.id || '',
+                                      sku_id: params[:sku_id] || '')
           rescue StandardError
             redirect '/db/new/1'
           end
@@ -121,8 +124,8 @@ module Sinatra
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
         project_db.update(project_id: params[:project_id] || '',
-                            node_resource_id: node.id || '',
-                            sku_id: params[:sku_id] || '')
+                          node_resource_id: node.id || '',
+                          sku_id: params[:sku_id] || '')
 
         redirect "/db/#{params[:id]}"
       end
