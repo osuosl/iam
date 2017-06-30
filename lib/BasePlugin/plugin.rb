@@ -84,6 +84,10 @@ class BasePlugin
     NodeResource.find_or_create(name: name, type: type, project_id: project,
                                 cluster: cluster)[:id]
   end
+
+  def true?(obj)
+    obj.to_s == 'true'
+  end
 end
 
 # our base level testing initialization
