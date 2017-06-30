@@ -86,9 +86,8 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
-        @project = Project.filter(id: @node.project_id).first
-        nr = NodeResourcesProject.filter(node_resource_id: @node.id).first
-        @sku = Sku.filter(id: nr.sku_id).first
+        @projects = Project.all
+        @skus = Sku.all
         erb :'nodes/edit'
       end
 
@@ -109,7 +108,7 @@ module Sinatra
                                        cluster:    params[:cluster] || '',
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
-            NodeResourcesProject.create(project_id: params[:project_id] || '',
+            NodeResourcesProject.create(project_id: node.project_id || '',
                                         node_resource_id: node.id || '',
                                         sku_id: params[:sku_id] || '')
           rescue StandardError
@@ -124,11 +123,11 @@ module Sinatra
         params[:name] = nil if params[:name] == ''
         params[:type] = nil if params[:type] == ''
         params[:cluster] = nil if params[:cluster] == ''
-        params[:active] = nil if params[:description] == ''
+        params[:active] = nil if params[:active] == ''
 
         # recieve an updated node
         node = NodeResource[id: params[:id]]
-        project_node = NodeResourcesProject[node_resource_id: params[:id]]
+        project_node = NodeResourcesProject.filter(node_resource_id: node.id).first
 
         node.update(project_id:  params[:project_id] || node.project_id,
                     name:       params[:name] || node.name,
@@ -136,9 +135,9 @@ module Sinatra
                     cluster:    params[:cluster] || node.cluster,
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
-        project_node.update(project_id: params[:project_id] || '',
-                            node_resource_id: node.id || '',
-                            sku_id: params[:sku_id] || '')
+        project_node.update(project_id: params[:project_id] || project_node.project_id,
+                            node_resource_id: node.id || project_node.node_resource_id,
+                            sku_id: params[:sku_id] || project_node.sku_id)
         redirect "/node/#{params[:id]}"
       end
 

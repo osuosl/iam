@@ -11,7 +11,12 @@
     <% else %>
       <b>Project:</b> Unknown
     <% end %><br>
-    <b>SKU:</b> <%= @sku.name %><br>
+    <b>SKU:</b>
+    <% if @sku %>
+     <%= @sku.name %>
+    <% else %>
+      Unknown
+    <% end %><br>
     <b>Last updated:</b>
     <% if @update_time %>
       <%= @update_time.asctime %>

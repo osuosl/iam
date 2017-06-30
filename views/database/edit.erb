@@ -24,9 +24,9 @@
             <i class="glyphicon glyphicon-list"></i>
           </span>
           <select name="project_id" class="form-control selectpicker" >
-            <% for @p in @projects %>
-               <% if @p.active %>
-                  <option value="<%= @p.id %>"><%= @p.name %></option>
+            <% for @project in @projects %>
+               <% if @project.active %>
+                  <option value="<%= @project.id %>"><%= @project.name %></option>
               <% end %>
             <% end %>
           </select>
@@ -42,9 +42,9 @@
             <i class="glyphicon glyphicon-barcode"></i>
           </span>
           <select name="sku_id" class="form-control selectpicker" >
-            <% for @s in @skus %>
-               <% if @s.active %>
-                  <option value="<%= @s.id %>"><%= @s.name %></option>
+            <% for @sku in @skus %>
+               <% if @sku.active %>
+                  <option value="<%= @sku.id %>"><%= @sku.name %></option>
               <% end %>
             <% end %>
           </select>

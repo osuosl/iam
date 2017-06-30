@@ -40,6 +40,7 @@
          </div>
        </div>
 
+       <% unless @skus.nil? %>
        <div class="form-group row">
          <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Select SKU</label>
          <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
@@ -49,7 +50,7 @@
              </span>
              <select name="sku_id" class="form-control selectpicker" >
                <% for @sku in @skus %>
-                  <% if @sku.active %>
+                  <% if @sku.active && @sku %>
                      <option value="<%= @sku.id %>"><%= @sku.name %></option>
                  <% end %>
                <% end %>
@@ -57,6 +58,7 @@
            </div>
          </div>
        </div>
+       <% end %>
 
        <div class="form-group row">
          <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Type</label>

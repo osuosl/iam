@@ -29,7 +29,7 @@ module Sinatra
         end
 
         db_sku = DbResourcesProject.find(db_resource_id: params[:id])
-        @sku = Sku.find(id: db_sku.sku_id)
+        @sku = Sku.find(id: db_sku.sku_id) unless db_sku.nil?
 
         # get data from plugins
         @project = Project.filter(id: @db.project_id).first
@@ -73,9 +73,6 @@ module Sinatra
         # get data from plugins
         @projects = Project.all
         @skus = Sku.all
-        @project = Project.filter(id: @db.project_id).first
-        @dr = DbResourcesProject.filter(db_resource_id: @db.id).first
-        @sku = Sku.filter(id: @dr.sku_id).first
         erb :'database/edit'
       end
 
@@ -96,7 +93,7 @@ module Sinatra
                                    server:    params[:server] || '',
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
-            DbResourcesProject.create(project_id: params[:project_id] || '',
+            d = DbResourcesProject.create(project_id: db.project_id || '',
                                       db_resource_id: db.id || '',
                                       sku_id: params[:sku_id] || '')
           rescue StandardError
@@ -111,11 +108,11 @@ module Sinatra
         params[:name] = nil if params[:name] == ''
         params[:type] = nil if params[:type] == ''
         params[:server] = nil if params[:server] == ''
-        params[:active] = nil if params[:description] == ''
+        params[:active] = nil if params[:active] == ''
 
         # recieve an updated database
         db = DbResource[id: params[:id]]
-        project_db = DbResourcesProject[db_resource_id: params[:id]]
+        project_db = DbResourcesProject.filter(db_resource_id: db.id).first
 
         db.update(project_id:  params[:project_id] || db.project_id,
                   name:       params[:name] || db.name,
@@ -123,9 +120,9 @@ module Sinatra
                   server:    params[:server] || db.server,
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
-        project_db.update(project_id: params[:project_id] || '',
-                          node_resource_id: node.id || '',
-                          sku_id: params[:sku_id] || '')
+        project_db.update(project_id: params[:project_id] || project_db.project_id,
+                          db_resource_id: db.id || project_db.db_resource_id,
+                          sku_id: params[:sku_id] || project_db.sku_id)
 
         redirect "/db/#{params[:id]}"
       end

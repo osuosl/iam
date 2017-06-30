@@ -19,7 +19,7 @@ describe 'The skus endpoint' do
     expect(last_response).to be_ok
   end
 
-  it 'verifies the default project exists' do
+  it 'verifies the default SKU exists' do
     sku = Sku.find(name: 'default')
     expect(sku).to exist
     get "/skus/#{sku.id}"
