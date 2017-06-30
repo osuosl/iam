@@ -93,7 +93,7 @@ module Sinatra
                                    server:    params[:server] || '',
                                    created:    DateTime.now || '',
                                    modified:   DateTime.now || '')
-            d = DbResourcesProject.create(project_id: db.project_id || '',
+            DbResourcesProject.create(project_id: db.project_id || '',
                                       db_resource_id: db.id || '',
                                       sku_id: params[:sku_id] || '')
           rescue StandardError

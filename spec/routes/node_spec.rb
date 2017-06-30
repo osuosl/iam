@@ -48,7 +48,13 @@ describe 'The NodeResource endpoint' do
   end
 
   it 'responds ok when asked for the form to edit an existing node' do
-    node = NodeResource.create(name: 'Editable')
+    project = Project.create(name: 'edit')
+    node = NodeResource.create(name: 'Editable', project_id: project.id)
+    sku = Sku.create(name: 'edit')
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
+
     get "/node/#{node.id}/edit"
     expect(last_response.status).to eq(200)
   end
@@ -81,7 +87,6 @@ describe 'The NodeResource endpoint' do
     NodeResourcesProject.create(project_id: project.id,
                                 node_resource_id: node.id,
                                 sku_id: sku.id)
-    edited_np = NodeResourcesProject.filter(node_resource_id: node.id).first
 
     edited_node = { id:         node.id,
                     project_id: project.id,
@@ -89,10 +94,6 @@ describe 'The NodeResource endpoint' do
                     type:       node.type,
                     cluster:    node.cluster,
                     sku_id:     sku.id }
-    edited_np = {id:   edited_np.id,
-                 project_id: project2.id,
-                 node_resource_id: node.id,
-                 sku_id: sku.id}
 
     patch '/nodes', edited_node
 

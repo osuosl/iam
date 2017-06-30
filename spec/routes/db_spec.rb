@@ -76,19 +76,15 @@ describe 'The DbResource endpoint' do
   it 'allows us to edit a db, then redirects to the list' do
     db = DbResource.create(name: 'Edit Me')
     project = Project.create(name: 'First Project')
-    project2 = Project.create(name: 'Second Project')
     sku = Sku.create(name: 'Edit S')
     DbResourcesProject.create(project_id: project.id,
                               db_resource_id: db.id,
                               sku_id: sku.id)
-    edited_dbp = DbResourcesProject.filter(db_resource_id: db.id).first
 
     edited_db = { id:       db.id,
                   name:     'Edited Db',
                   project_id: project.id,
-                  sku_id:     sku.id}
-
-
+                  sku_id:     sku.id }
 
     patch '/dbs', edited_db
 
@@ -104,8 +100,8 @@ describe 'The DbResource endpoint' do
     project = Project.create(name: 'Edit P')
     sku = Sku.create(name: 'Edit S')
     DbResourcesProject.create(project_id: project.id,
-                                db_resource_id: db.id,
-                                sku_id: sku.id)
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
     edited_db = { id: db.id, type: 'Not Boring!' }
 
     patch '/dbs', edited_db

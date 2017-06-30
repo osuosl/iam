@@ -139,8 +139,15 @@ describe 'The Projects endpoint' do
 
   it 'allows us to delete a project with nodes/db, redirects to the list' do
     project = Project.create(name: 'Delete me', active: true)
-    node = NodeResource.create(name: 'Delete Node')
-    db = DbResource.create(name: 'Delete Db')
+    sku = Sku.create(name: 'Delete sku')
+    node = NodeResource.create(name: 'Delete Node', project_id: project.id)
+    np = NodeResourcesProject.create(project_id: project.id,
+                                     node_resource_id: node.id,
+                                     sku_id: sku.id)
+    db = DbResource.create(name: 'Delete Db', project_id: project.id)
+    dbp = DbResourcesProject.create(project_id: project.id,
+                                    db_resource_id: db.id,
+                                    sku_id: sku.id)
 
     deleted_project = { id: project.id,
                         name: project.name,

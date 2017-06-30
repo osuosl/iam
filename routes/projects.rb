@@ -80,7 +80,7 @@ module Sinatra
         # set blanks to nil
         params[:name] = nil if params[:name] == ''
         params[:description] = nil if params[:description] == ''
-        params[:active] = nil if params[:description] == ''
+        params[:active] = nil if params[:active] == ''
 
         # recieve an updated project
         project = Project[id: params[:id]]
@@ -92,10 +92,12 @@ module Sinatra
 
       app.delete '/projects/:id/?' do
         # delete a project
+        resource_type = 'db'
         project = Project[id: params[:id]]
+        default_id = Project.find(name: 'default')
         # disassociate this projects' resources to the default project and
         # delete this project
-        project.reassign_resources unless project.name == 'default'
+        project.reassign_resources default_id unless project.name == 'default'
         redirect '/projects' unless project.nil?
         404
       end
