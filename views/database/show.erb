@@ -1,47 +1,47 @@
 <div class="container">
-  <h2>Database: <%= @db.name %> -
-    <a href="/db/<%= @db.id %>/edit">edit</a>
-  </h2>
-  
+  <legend>
+    <h2><%= @db.name %> -
+      <a href="/db/<%= @db.id %>/edit">Edit</a>
+    </h2>
+  </legend>
+
   <p>
-    Project Id: <%= @db.project_id %> <br>
-    Type: <%= @db.type %> <br>
-    Server: <%= @db.server %> <br>
-    Active: <%= @db.active %><br>
+    <% if @projects %>
+      <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <% else %>
+      <b>Project:</b> Unknown
+    <% end %><br>
+    <b>Last updated:</b>
+    <% if @update_time %>
+      <%= @update_time.asctime %>
+    <% else %>
+      Unknown
+    <% end %> <br>
+    <%= @db.active ? "Active" : "Inactive" %> <br>
   </p>
+
+  <h3>Database Data</h3>
   <table class="table">
-      <thead>
-        <tr>
-          <th>Project Id</th>
-          <th>Type</th>
-          <th>Server</th>
-          <th>Active</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for @project in @projects %>
-          <% if @project.active %>
-          <tr>
-            <th scope="row"><%= @project.id %></th>
-          <td>
-            <a href="/projects/<%= @project.id %>" >
-              <%= @project.name %>
-            </a>
-          </td>
-          <td>
-            <%= @project.resources %>
-          </td>
-          <td>
-            <%= @project.description %>
-          </td>
-          <td>
-            <%= @project.active %>
-          </td>
-        </tr>
-        <% end %>
-        <% end %>
-      </tbody>
+    <thead>
+      <tr>
+        <th>Size</th>
+        <th>Type</th>
+        <th>Server</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <%= DataUtil.unit_conversion('DBSize',DataUtil.average_value(@db_size)) %>
+          GB
+        </td>
+        <td>
+          <%= @db.type %>
+        </td>
+        <td>
+          <%= @db.server %>
+        </td>
+      </tr>
+    </tbody>
   </table>
-  <br>
-  <br>
 </div>

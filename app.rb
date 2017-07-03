@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sinatra/base'
 require_relative 'environment'
 require_relative 'scheduler'
@@ -10,6 +11,11 @@ class Iam < Sinatra::Base
 
   (Dir['plugins/*/plugin.rb'] + Dir['routes/*.rb']).each do |file|
     require file
+  end
+
+  # load the cache_control protocol for each page on IAM
+  before do
+    cache_control :public, :must_revalidate, max_age: Iam.settings.cache_max_age
   end
 
   # initialize the app with some default clients, projects and nodeResources
@@ -25,4 +31,5 @@ class Iam < Sinatra::Base
   register Sinatra::ProjectRoutes
   register Sinatra::NodeRoutes
   register Sinatra::DbRoutes
+  register Sinatra::SkuRoutes
 end

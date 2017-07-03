@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sequel'
 require 'logging'
 require_relative '../../lib/BasePlugin/plugin.rb'
@@ -39,7 +40,7 @@ class DiskTemplate < BasePlugin
     @database[@table].insert(
       node:          fqdn,
       value:         node_info['disk_template'],
-      active:        node_info['active'],
+      active:        node_info['active'].true?,
       created:       DateTime.now,
       node_resource: node_resource
     )

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'logging'
 require 'sequel'
 require_relative '../../lib/BasePlugin/plugin.rb'
@@ -43,7 +44,7 @@ class DiskSize < BasePlugin
                        .split(',')      # split into array of strings on ','
                        .map(&:to_i)     # convert each element to integer
                        .inject(0, :+),  # inject a + method to sum the array
-      active:        node_info['active'],
+      active:        node_info['active'].true?,
       created:       DateTime.now,
       node_resource: node_resource
     )

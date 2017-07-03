@@ -1,46 +1,58 @@
 <div class="container">
-  <h2>Node: <%= @node.name %> -
-    <a href="/node/<%= @node.id %>/edit">edit</a>
-  </h2>
+  <legend>
+    <h2><%= @node.name %> -
+      <a href="/node/<%= @node.id %>/edit">Edit</a>
+    </h2>
+  </legend>
   <p>
-    Project Id: <%= @node.project_id %> <br>
-    Type: <%= @node.type %> <br>
-    Cluster: <%= @node.cluster %> <br>
-    Active: <%= @node.active %><br>
+    <b>Type:</b> <%= @node.type %><br>
+    <b>Cluster:</b> <%= @node.cluster %><br>
+    <% if @projects %>
+    <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <% else %>
+    <b>Project:</b> Unknown
+    <% end %><br>
+    <b>Last updated:</b>
+    <% if @update_time %>
+      <%= @update_time.asctime %>
+    <% else %>
+      Unknown
+    <% end %><br>
+    <%= @node.active ? "Active" : "Inactive" %> <br>
   </p>
-  <table class="table">
-      <thead>
-        <tr>
-          <th>Project Id</th>
-          <th>Type</th>
-          <th>Cluster</th>
-          <th>Active</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for @project in @projects %>
-          <% if @project.active %>
-          <tr>
-            <th scope="row"><%= @project.id %></th>
-          <td>
-            <a href="/projects/<%= @project.id %>" >
-              <%= @project.name %>
-            </a>
-          </td>
-          <td>
-            <%= @project.resources %>
-          </td>
-          <td>
-            <%= @project.description %>
-          </td>
-          <td>
-            <%= @project.active %>
-          </td>
-        </tr>
+
+  <h3>Node Data</h3>
+  <table class="table" style='table-layout:fixed'>
+    <thead>
+      <tr>
+        <th>CPU Count</th>
+        <th>Ram Size</th>
+        <th>Disk Size</th>
+        <th>Disk Template</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>
+        <%= DataUtil.unit_conversion('VCPUCount',DataUtil.average_value(@vcpu_data)) %>
+      </td>
+      <td>
+        <%= DataUtil.unit_conversion('RamSize',DataUtil.average_value(@ramsize_data)) %>
+        GB
+      </td>
+      <td>
+        <%= DataUtil.unit_conversion('DiskSize',DataUtil.average_value(@disksize_data)) %>
+        GB
+      </td>
+      <td>
+        <% if @disktemplate_data != nil && @disktemplate_data.last != nil %>
+          <%= @disktemplate_data.last[:value] %>
+        <% else %>
+          Not found
         <% end %>
-        <% end %>
-      </tbody>
+      </td>
+    </tr>
   </table>
-  <br>
+
+   <br>
   <br>
 </div>

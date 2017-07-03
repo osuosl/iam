@@ -10,13 +10,25 @@ task run: [:migrate] do
   ruby 'scheduler.rb'
 end
 
+task :require_verify_db do
+  input = ''
+  STDOUT.puts "\n"\
+    "******************************************\n"\
+    "WARNING! ONLY FOR USE IN DEV ENVIRONMENTS!\n"\
+    "******************************************\n\n"\
+    "This will permanently destroy all current data in this instance of the "\
+    "application, are you sure?\n\nType yes in all uppercase to verify:"
+  input = STDIN.gets.chomp
+  abort("Whew, that was close!") unless input == "YES"
+end
+
 task :migrate, [:version] do |t, args|
   if args[:version]
     puts "Migrating to version #{args[:version]}"
-    Sequel::Migrator.run(Iam.DB, 'migrations', target: args[:version].to_i)
+    Sequel::Migrator.run(Iam.settings.DB, 'migrations', target: args[:version].to_i)
   else
     puts 'Migrating to latest'
-    Sequel::Migrator.run(Iam.DB, 'migrations')
+    Sequel::Migrator.run(Iam.settings.DB, 'migrations')
   end
 end
 
@@ -48,4 +60,36 @@ task :plugins do
     # The actual name is the middle part of the path (plugin/<name>/plugin.rb).
     Object.const_get(name.split('/')[1]).new
   end
+end
+
+# rake export_data
+task :export_data => [:plugins] do
+  desc "export data"
+  days = ENV['EXPORT_DATA_DAYS'] ||= '60'
+  clients = ENV['EXPORT_DATA_CLIENTS'] ||= 'all'
+  anon = ENV['EXPORT_DATA_ANON'] == 'false' ? false : true
+
+  STDOUT.puts "\n"\
+    "********\n"\
+    "WARNING!\n"\
+    "********\n\n"\
+    "You are exporting IDENTIFYING DATA\n"\
+    "DO NOT ADD THIS DATA TO A PUBLIC REPOSITORY!\n" unless anon
+
+  require_relative 'lib/datasampler.rb'
+  puts 'Fetching live data'
+  exporter = DataExporter.new
+  exporter.export_data(days: days.to_i,
+                       client_list: clients.split(','),
+                       anon: anon)
+  puts 'Data samples written to ./test_data/'
+end
+
+# rake import_testdata
+task :import_data => [:plugins, :require_verify_db] do
+  require_relative 'lib/datasampler.rb'
+  puts 'Importing test data from ./test_data'
+  importer = DataImporter.new
+  importer.import_data
+  puts 'Data samples imported from ./test_data/'
 end

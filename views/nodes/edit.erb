@@ -1,90 +1,70 @@
 <div class="container">
+  <legend> Edit Node </legend>
+
   <form action='/nodes' method='post'>
     <input type="hidden" name="_method" value="patch">
     <input type="hidden" name="id" value="<%= @node.id %>">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Node Name</th>
-          <th>Old</th>
-          <th>New</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Name</td>
-          <td>
-            <% if @node %>
-              <%= @node.name %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="name" placeholder="New name">
-          </td>
-        </tr>
-        <tr>
-          <td>Project Id</td>
-          <td>
-            <% if @node %>
-              <%= @node.project_id %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <select  name="project_id">
-            <% for @project in @projects %>
-               <% if @project.active %>
-                  <option value="<%= @project.id %>"><%= @project.name %></option>
-              <% end %>
-            <% end %>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Type</td>
-          <td>
-            <% if @node %>
-              <%= @node.type %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="type" placeholder="New type">
-          </td>
-        </tr>
-        <tr>
-          <td>Cluster</td>
-          <td>
-            <% if @node %>
-              <%= @node.cluster %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="text" name="cluster" placeholder="New cluster">
-          </td>
-        </tr>
-        <tr>
-          <td>Active state</td>
-          <td>
-            <% if @node %>
-              <%= @node.active %>
-            <% else %>
-              N/A
-            <% end %>
-          </td>
-          <td>
-            <input type="radio" name="active" value="True"> True
-            <input type="radio" name="active" value="False"> False
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <input type="submit" value="Update" class="btn btn-primary">
-  </form>
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Name</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-briefcase"></i>
+          </span>
+          <input name="name" placeholder="<%= @node.name %>" class="form-control" type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Project Name</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-list"></i>
+          </span>
+          <input name="contact_name" placeholder="<%= @project.name %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Type</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-tree-conifer"></i>
+          </span>
+          <input name="server" placeholder="<%= @node.type %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-4">Cluster</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-4">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-tree-conifer"></i>
+          </span>
+          <input name="server" placeholder="<%= @node.cluster %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success" >Update</button>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form action="/nodes/<%= @node.id %>" method='post'>
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="Deactivate" class="btn btn-primary">
+      </form>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
 </div>
+<br>

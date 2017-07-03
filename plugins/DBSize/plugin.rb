@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'logging'
 require 'sequel'
 require_relative '../../lib/BasePlugin/plugin.rb'
@@ -46,7 +47,7 @@ class DBSize < BasePlugin
     @database[@table].insert(
       db:            db_host,
       value:         db_info['db_size'].to_i,
-      active:        db_info['active'],
+      active:        db_info['active'].true?,
       created:       DateTime.now,
       db_resource:   db_resource
     )

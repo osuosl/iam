@@ -1,99 +1,83 @@
-<div class="container">
-<h2> Client: <%= @client.name %>
-<a href="/clients/<%= @client.id %>/edit">edit</a>
-</h2>
+<div class='container'>
+<legend>
+  <h2><%= @client.name %> -
+    <a href="/clients/<%= @client.id %>/billing"> Billing </a>
+  </h2>
+</legend>
 <p>
-    Name: <%= @client.contact_name %> <br>
-    Email: <%= @client.contact_email %> <br>
-    Description: <%= @client.description %> <br>
-    <%= @client.active ? 'Active' : 'Inactive' %>
+    <b>Name:</b> <%= @client.contact_name %> <br>
+    <b>Email:</b> <%= @client.contact_email %> <br>
+    <b>Description:</b> <%= @client.description %> <br>
+    <b><a href="/clients/<%= @client.id %>/edit"> Edit</a></b></br>
 </p>
-<% unless @projects.nil? %>
-  <table class="table">
-    <h4> Projects </h4>
-         <% for @project in @projects %>
-           <thead>
-            <tr>
-                <th style="font-size: 1.5em;">
-                    <a href="/projects/<%= @project.id %>" >
-                        <%= @project.name %>
-                    </a>
-                </th>
-                <th style="font-size: 1em;">
-                    <%= @project.active ? 'Active' : 'Inactive' %>
-                </th>
-            </tr>
-           </thead> 
-           <tr><td>
-             <table class="table">
-               <h5>Nodes</h5>
-               <thead>
-                <tr>
-                    <th> Node Name</th>
-                    <th> Type</th>
-                    <th> Cluster</th>
-                    <th> Status</th>
-                </tr>
-               </thead>
-               <tbody>
-               <% for node in @project.node_resources %>
-                 <% if node.active %>
-                    <tr>
-                        <td>
-                          <a href="/nodes/<%= node.id %>" >
-                            <%= node.name %>
-                          </a>
-                        </td>
-                        <td>
-                            <%= node.type %>
-                        </td>
-                        <td>
-                            <%= node.cluster %>
-                        </td>
-                        <td>
-                            <%= node.active ? 'Active' : 'Inactive' %>
-                        </td>
-                    </tr>
+<br>
+
+<% if @projects.empty? %>
+  <p>
+    <%= @client.name %> has no projects
+  </p>
+<% else %>
+  <% if @client.name != 'default' %>
+    <% @client_data.each do |project_name, array_hash| %>
+      <% array_hash[0].each do |resource_type, resource_hash| %>
+        <table class='table'>
+          <h4><%= resource_type == 'db' ? 'Database' : resource_type.capitalize %></h4>
+          <thead>
+            <% unless resource_hash[0].values[0].nil?%>
+              <% @keys = resource_hash[0].values[0].keys - ['id'] %>
+
+              <tr>
+                <th>Name</th>
+                <% @keys.each do |k| %>
+                  <% if k == 'DBSize' %>
+                    <th>
+                      Database Size
+                    </th>
+                  <% elsif k == 'VCPUCount' %>
+                    <th>
+                      CPU Count
+                    </th>
+                  <% else %>
+                    <th>
+                      <%= k.scan(/[A-Z][a-z]+/).reject(&:empty?).join(' ') %>
+                    </th>
                   <% end %>
-               <% end %>
-             </tbody>
-            </table>
-            <table class="table">
-              <h5>Databases</h5>
-              <thead>
-                <tr>
-                  <th> Database Name</th>
-                  <th> Type</th>
-                  <th> Server</th>
-                  <th> Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% for db in @project.db_resources %>
-                  <% if db.active %>
-                    <tr>
-                      <td>
-                        <a href="/dbs/<%= db.id %>" >
-                            <%= db.name %>
-                        </a>
-                      </td>
-                      <td>
-                        <%= db.type %>
-                      </td>
-                      <td>
-                        <%= db.server %>
-                      </td>
-                      <td>
-                        <%= db.active ? 'Active' : 'Inactive' %>
-                      </td>
-                   </tr>
-                 <% end %>
-               <% end %>
-             </tbody>
-           </table>
-         <br>
-      </td></tr>
+                <% end %>
+              </tr>
+            <% end %>
+          </thead>
+          <tbody>
+            <% resource_hash[0].each do |resource_name, resource_values| %>
+              <tr>
+                <td><%= resource_name %></td>
+                <% resource_values.each do |key, value| %>
+                  <% next if key == 'id' %>
+                  <td><%= value %></td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <% if @keys.nil? %>
+                There are no resources
+                <% else %>
+                <td><b>Total:</b></td>
+                <% @keys.each do |k| %>
+                  <td>
+                    <b>
+                      <%= @sum_data[k] unless !@sum_data.has_key?(k) %>
+                      <%= "GB" unless %w(DiskTemplate VCPUCount).include?(k) %>
+                    </b>
+                  </td>
+                <% end %>
+              <% end %>
+            </tr>
+          </tfoot>
+        </table>
+        <br>
+      <% end %>
     <% end %>
-   </table>
+  <% end %>
 <% end %>
 </div>

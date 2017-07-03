@@ -1,0 +1,13 @@
+<div class="container">
+  <h2>SKU: <%= @sku.name %>
+    <a href="/skus/<%= @sku.id %>/edit">Edit</a>
+  </h2>
+  <p>
+    Name: <%= @sku.name %> <br>
+    Number: <%= @sku.sku_num %> <br>
+    Description: <%= @sku.description %> <br>
+    Family: <%= @sku.family %> <br>
+    Rate: <%= @sku.rate %> <br>
+    Active or Inactive: <%= @sku.active ? "Active" : "Inactive" %> <br>
+  </p>
+</div>

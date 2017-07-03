@@ -1,0 +1,61 @@
+<br>
+<div class="title">
+  <h2>SKU List</h2>
+  <a href="/skus/new">Create</a>
+</div>
+<br>
+<table class="table" style='table-layout:fixed'>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+      <th>Family</th>
+      <th>Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% for @sku in @skus %>
+    <% if @sku.active %>
+    <tr>
+      <th scope="row"><%= @sku.id %></th>
+        <td>
+          <div class="ellipsis">
+            <a href="/skus/<%= @sku.id %>/">
+            <%= @sku.name %>
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <%= @sku.sku_num %>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <%= @sku.description %>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <%= @sku.family %>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <%= @sku.rate %>
+          </div>
+        </td>
+        <td>
+          <div class="ellipsis">
+            <a href="/skus/<%= @sku.id %>/edit" >
+              Edit
+            </a>
+          </div>
+        </td>
+    </tr>
+    <% end %>
+  <% end %>
+  </tbody>
+</table>

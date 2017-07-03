@@ -1,87 +1,72 @@
 <div class="container">
-       <form action='/clients' method='post'>
-         <input type="hidden" name="_method" value="patch">
-         <input type="hidden" name="id" value="<%= @client.id %>">
-         <table class="table">
-           <thead>
-             <tr>
-               <th>Name</th>
-               <th>Old</th>
-               <th>New</th>
-             </tr>
-           </thead>
-           <tbody>
-             <tr>
-               <td>name</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.name %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
-                 <input type="text" name="name" placeholder="New name">
-               </td>
-             </tr>
-             <tr>
-               <td>contact_name</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.contact_name %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
-                 <input type="text" name="contact_name" placeholder="New contact_name">
-               </td>
-             </tr>
+  <legend> Edit Client </legend>
 
-             <tr>
-               <td>description</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.description %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
-                 <input type="text" name="description" placeholder="New description">
-               </td>
-             </tr>
-             <tr>
-               <td>contact_email</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.contact_email %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
-                 <input type="text" name="contact_email" placeholder="New contact_email">
-               </td>
-             </tr>
-             <tr>
-               <td>Active state</td>
-               <td>
-                 <% if @client %>
-                   <%= @client.active %>
-                 <% else %>
-                   N/A
-                 <% end %>
-               </td>
-               <td>
-                 <input type="radio" name="active" value="True"> True
-                 <input type="radio" name="active" value="False"> False
-               </td>
-             </tr>
-           </tbody>
-         </table>
-         <input type="submit" value="Update" class="btn btn-primary">
-       </form>
-     </div>
-   </div>
-   <br>
+  <form action='/clients' method='post'>
+    <input type="hidden" name="_method" value="patch">
+    <input type="hidden" name="id" value="<%= @client.id %>">
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Name</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-briefcase"></i>
+          </span>
+          <input name="name" placeholder="<%= @client.name %>" class="form-control" type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Contact Name</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-user"></i>
+          </span>
+          <input name="contact_name" placeholder="<%= @client.contact_name %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Description</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-pencil"></i>
+          </span>
+          <textarea class="form-control" placeholder="<%= @client.description %>" name="@client.description"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-md-offset-3 col-md-5 control-label col-md-offset-3">Contact Email</label>
+      <div class="col-md-offset-3  col-md-5 inputGroupContainer col-md-offset-3">
+        <div class="input-group">
+          <span class="input-group-addon">
+            <i class="glyphicon glyphicon-envelope"></i>
+          </span>
+          <input name="contact_email" placeholder="<%= @client.contact_email %>" class="form-control"  type="text">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-3"></div>
+      <div class="col-xs-3">
+        <button type="submit" class="btn btn-success" >Update</button>
+      </form>
+    </div>
+    <div class="col-xs-3">
+      <% unless @client.name == 'default' %>
+      <form action="/clients/<%= @client.id %>" method='post'>
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="Delete" class="btn btn-primary">
+      </form>
+      <% end %>
+    </div>
+    <div class="col-xs-3"></div>
+  </div>
+</div>
+<br>

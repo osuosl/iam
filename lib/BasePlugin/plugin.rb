@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sequel'
 require 'logging'
 require_relative '../../environment.rb'
@@ -41,6 +42,7 @@ class BasePlugin
   def report(resource = { node: '*' },
              start_time = Time.now - (30 * SECONDS_IN_DAY),
              end_time = Time.now)
+
     MyLog.log.error StandardError.new(
       'BasePlugin: start_time and end_time should be Time objects'
     ) unless end_time.is_a?(Time) && start_time.is_a?(Time)
@@ -81,6 +83,10 @@ class BasePlugin
     # use find or create because create() crashes if a duplicate is found
     NodeResource.find_or_create(name: name, type: type, project_id: project,
                                 cluster: cluster)[:id]
+  end
+
+  def true?(obj)
+    obj.to_s == 'true'
   end
 end
 

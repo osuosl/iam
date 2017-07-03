@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative '../spec_helper.rb'
 
 describe 'The Projects endpoint' do
@@ -113,5 +114,45 @@ describe 'The Projects endpoint' do
     expect(last_request.path).to eq("/projects/#{project.id}")
     expect(last_response.status).to eq(200)
     expect(last_response.body).to include('i edited this')
+  end
+
+  it 'cannot create a client with a non-unique name' do
+    project1 = Project.create(name: 'project1')
+
+    expect(project1).to exist
+
+    expect do
+      Project.create(name: 'project1')
+    end.to raise_error(StandardError)
+  end
+  it 'allows us to delete a project with no nodes/db, redirects to the list' do
+    project = Project.create(name: 'Delete me', active: true)
+
+    deleted_project = { id: project.id,
+                        name: project.name,
+                        active: false }
+
+    delete "/projects/#{project.id}", deleted_project
+    expect(last_request.path).to eq("/projects/#{project.id}")
+    expect(last_response.status).to eq(302)
+  end
+
+  it 'allows us to delete a project with nodes/db, redirects to the list' do
+    project = Project.create(name: 'Delete me', active: true)
+    node = NodeResource.create(name: 'Delete Node')
+    db = DbResource.create(name: 'Delete Db')
+
+    deleted_project = { id: project.id,
+                        name: project.name,
+                        active: false }
+
+    delete "/projects/#{project.id}", deleted_project
+    expect(last_request.path).to eq("/projects/#{project.id}")
+    expect(last_response.status).to eq(302)
+
+    get "node/#{node.id}"
+    expect(last_response.status).to eq(200)
+    get "db/#{db.id}"
+    expect(last_response.status).to eq(200)
   end
 end

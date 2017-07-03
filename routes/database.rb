@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sinatra/base'
 require_relative '../logging/logs'
 
@@ -11,8 +12,9 @@ module Sinatra
       # Database Resource
       ##
 
-      app.get '/db/new/?' do
+      app.get '/db/new/?:error?' do
         # get new database form
+        @error = true if params[:error]
         @projects = Project.all
         erb :'database/create'
       end
@@ -24,8 +26,36 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found'
           halt 404, 'database resource not found'
         end
-        @projects = Project.filter(id: @db.project_id).all
+
+        # get data from plugins
+        @projects = Project.filter(id: @db.project_id).first
+        @db_size = DBSize.new.report(db: @db.name)
+
+        # find most recent time and store into @update_time
+        @updated = Time.new(0)
+        if @db_size.last
+          if @db_size.last[:created] > @updated
+            @update_time = @db_size.last[:created]
+          end
+        end
         erb :'database/show'
+      end
+
+      app.get '/db/summary/:id/?:page?' do
+        # view list of db resources and their measurements
+        @project = Project.filter(id: params[:id]).first
+        @dbs = DbResource[project_id: params[:id]]
+
+        # current page
+        @page = params[:page].to_f
+        @page = 1 if @page.zero?
+
+        # The number of resources displayed on a page
+        @per_page = 10
+
+        @data = Report.get_data(@project, @page, @per_page, 'db')
+
+        erb :'database/summary'
       end
 
       app.get '/db/:id/edit/?' do
@@ -35,7 +65,10 @@ module Sinatra
           MyLog.log.fatal 'routes/database: Database Resource not found [edit]'
           halt 404, 'database resource not found'
         end
+
+        # get data from plugins
         @projects = Project.all
+        @project = @projects.find(@db.project_id).first
         erb :'database/edit'
       end
 
@@ -48,13 +81,19 @@ module Sinatra
       # This could also be PUT
       app.post '/dbs/?' do
         # recieve new database
-        db = DbResource.create(project_id:  params[:project_id] || '',
-                               name:       params[:name],
-                               type:       params[:type] || '',
-                               server:    params[:server] || '',
-                               created:    DateTime.now || '',
-                               modified:   DateTime.now || '')
-        redirect "/db/#{db.id}"
+        if params[:name]
+          begin
+            db = DbResource.create(project_id:  params[:project_id] || '',
+                                   name:       params[:name],
+                                   type:       params[:type] || '',
+                                   server:    params[:server] || '',
+                                   created:    DateTime.now || '',
+                                   modified:   DateTime.now || '')
+          rescue StandardError
+            redirect '/db/new/1'
+          end
+          redirect "/db/#{db.id}"
+        end
       end
 
       app.patch '/dbs/?' do
@@ -73,13 +112,14 @@ module Sinatra
                   server:    params[:server] || db.server,
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
+
         redirect "/db/#{params[:id]}"
       end
 
-      app.delete '/db/:id/?' do
+      app.delete '/dbs/:id/?' do
         # delete a database
         db = DbResource[id: params[:id]]
-        db.delete unless db.nil?
+        db.update(active: false)
         redirect '/dbs/?' unless db.nil?
         404
       end

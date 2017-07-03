@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require File.expand_path '../../spec_helper.rb', __FILE__
 require_relative '../../lib/util.rb'
 require 'time'
@@ -90,6 +91,8 @@ describe 'The DataUtil class tests' do
         node: 'alembic-java.osuosl.org', value: -3, active: true }
     ]
     @data_empty = []
+    @plain = {}
+    @drdb = {}
   end
 
   describe 'the max_value method' do
@@ -145,6 +148,23 @@ describe 'The DataUtil class tests' do
     it 'returns nil if called with invalid data' do
       expect(DataUtil.days_in_range(@data_invalid)).to eq(nil)
       expect(DataUtil.days_in_range(@data_future)).to eq(nil)
+    end
+  end
+
+  describe 'the unit_conversion method' do
+    it 'properly converts the units of the plugins' do
+      expect(DataUtil.unit_conversion('DBSize', 268_000_000)).to eq(0.25)
+      expect(DataUtil.unit_conversion('RamSize', 268)).to eq(0.26)
+      expect(DataUtil.unit_conversion('VCPUCount', 10)).to eq(10)
+    end
+  end
+
+  describe 'the sum_data method' do
+    it "properly handles a 'plain' DiskTemplate" do
+      expect(DataUtil.sum_data(@plain, 'DBSize', 10, 1, true)).to eq(10)
+    end
+    it "properly handles a 'drdb' DiskTemplate" do
+      expect(DataUtil.sum_data(@drdb, 'DBSize', 10, 2, true)).to eq(20)
     end
   end
 end

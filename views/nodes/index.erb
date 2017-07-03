@@ -1,11 +1,10 @@
-<div class="container">
   <br>
   <div class="title">
     <h2>Node List</h2>
     <a href="/node/new">Create</a>
   </div>
   <br>
-  <table class="table">
+  <table class="table" style='table-layout:fixed'>
     <thead>
       <tr>
         <th>#</th>
@@ -20,24 +19,31 @@
       <tr>
         <th scope="row"><%= @node.id %></th>
           <td>
-            <a href="/node/<%= @node.id %>">
-              <%= @node.name %>
-            </a>
+            <div class="ellipsis">
+              <a href="/node/<%= @node.id %>">
+                <%= @node.name %>
+              </a>
+            </div>
           </td>
           <td>
-            <%= @node.type %>
+            <div class="ellipsis">
+              <%= @node.type %>
+            </div>
           </td>
           <td>
-            <%= @node.cluster %>
+            <div class="ellipsis">
+              <%= @node.cluster %>
+            </div>
           </td>
           <td>
-            <a href="/node/<%= @node.id %>/edit" >
-              Edit
-            </a>
+            <div class="ellipsis">
+              <a href="/node/<%= @node.id %>/edit" >
+                Edit
+              </a>
+            </div>
           </td>
       </tr>
       <% end %>
     <% end %>
     </tbody>
   </table>
-</div>
