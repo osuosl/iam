@@ -48,7 +48,12 @@ describe 'The DbResource endpoint' do
   end
 
   it 'responds ok when asked for the form to edit an existing db' do
-    db = DbResource.create(name: 'Editable')
+    project = Project.create(name: 'edit')
+    db = DbResource.create(name: 'Editable', project_id: project.id)
+    sku = Sku.create(name: 'edit')
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
     get "/db/#{db.id}/edit"
     expect(last_response.status).to eq(200)
   end

@@ -6,7 +6,7 @@ require_relative '../logging/logs'
 module Sinatra
   # Our Node Routing
   module NodeRoutes
-    # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
+    # rubocop:disable LineLength, ModuleLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
       ##
       # Node Resource
