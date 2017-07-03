@@ -10,6 +10,7 @@ require_relative './util.rb'
 class DataImporter
   def initialize
     @directory = 'test_data/'
+    @date_offset = nil
   end
 
   # Deletes all the extant data. This does not drop tables, only removes rows
@@ -30,12 +31,49 @@ class DataImporter
     Iam.settings.DB[:clients].delete
   end
 
+  def collect_objects
+    json_content = [File.open(@directory + 'clients.json', &:readline),
+                    File.open(@directory + 'projects.json', &:readline)]
+
+    Report.plugin_matrix.each do |resource_name, measurements|
+      filename = @directory + resource_name + '.json'
+      json_content.push JSON.parse(File.open(filename, &:readline))
+
+      measurements.each do |name|
+        filename = Plugin.where(name: name).first.storage_table + '.json'
+        json_content.push File.open(@directory + filename, &:readline)
+      end
+    end
+  end
+
+  # Find the latest date in the information to import
+  def date_offset
+    latest_date = nil
+    collect_objects.each do |file|
+      JSON.parse file .each do |object|
+        object.each do |_key, value|
+          next unless value.is_a?(DateTime)
+          latest_date = value if !latest_date || value > latest_date
+        end
+      end
+    end
+
+    @date_offset = Date.today - latest_date
+  end
+
   # Imports the clients from clients.json
   def import_clients
     # get clients from file, import to Client model
     clients_filename = @directory + 'clients.json'
     clients_json = File.open(clients_filename, &:readline)
-    clients = Client.array_from_json(clients_json,
+
+    conditioned_json = JSON.parse(clients_json).each do |obj|
+      obj.each do |key, value|
+        obj[key] += @date_offset if value.is_a?(DateTime)
+      end
+    end
+
+    clients = Client.array_from_json(conditioned_json.to_str,
                                      fields: Client.columns.map(&:to_s))
 
     clients.each(&:save)
@@ -46,7 +84,14 @@ class DataImporter
     # get projects
     projects_filename = @directory + 'projects.json'
     projects_json = File.open(projects_filename, &:readline)
-    projects = Project.array_from_json(projects_json,
+
+    conditioned_json = JSON.parse(projects_json).each do |obj|
+      obj.each do |key, value|
+        obj[key] += @date_offset if value.is_a?(DateTime)
+      end
+    end
+
+    projects = Project.array_from_json(conditioned_json.to_str,
                                        fields: Project.columns.map(&:to_s))
 
     projects.each(&:save)
@@ -59,16 +104,30 @@ class DataImporter
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
       resource_json = File.open(filename, &:readline)
+
+      conditioned_json = JSON.parse(resource_json).each do |obj|
+        obj.each do |key, value|
+          obj[key] += @date_offset if value.is_a?(DateTime)
+        end
+      end
+
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
-      resources = model.array_from_json(resource_json,
+      resources = model.array_from_json(conditioned_json.to_str,
                                         fields: model.columns.map(&:to_s))
 
       resources.each(&:save)
       measurements.each do |measurement_name|
         table = Plugin.where(name: measurement_name).first.storage_table
         filename = @directory + table + '.json'
-        measurement_data = JSON.parse(File.open(filename, &:readline))
-        Iam.settings.DB[table.to_sym].multi_insert(measurement_data)
+        measurement_data = File.open(filename, &:readline)
+
+        conditioned_json = JSON.parse(measurement_data).each do |obj|
+          obj.each do |key, value|
+            obj[key] += @date_offset if value.is_a?(DateTime)
+          end
+        end
+
+        Iam.settings.DB[table.to_sym].multi_insert(conditioned_json)
       end
     end
   end
@@ -78,6 +137,9 @@ class DataImporter
   def import_data
     # delete all the things, for simplicity
     delete_data
+
+    get_date_offset
+
     import_clients
     import_projects
 
