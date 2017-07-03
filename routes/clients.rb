@@ -130,7 +130,8 @@ module Sinatra
       app.delete '/clients/:id/?' do
         # delete a client
         client = Client[id: params[:id]]
-        client.remove unless client.name == 'default'
+        default_project = Project.find(name: 'default').id
+        client.remove default_project unless client.name == 'default'
         redirect '/clients' unless client.nil?
         404
       end

@@ -92,9 +92,8 @@ module Sinatra
 
       app.delete '/projects/:id/?' do
         # delete a project
-        resource_type = 'db'
         project = Project[id: params[:id]]
-        default_id = Project.find(name: 'default')
+        default_id = Project.find(name: 'default').id
         # disassociate this projects' resources to the default project and
         # delete this project
         project.reassign_resources default_id unless project.name == 'default'

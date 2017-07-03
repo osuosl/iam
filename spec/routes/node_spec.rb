@@ -82,7 +82,6 @@ describe 'The NodeResource endpoint' do
   it 'allows us to edit a node, then redirects to the list' do
     node = NodeResource.create(name: 'Edit Me')
     project = Project.create(name: 'First Project')
-    project2 = Project.create(name: 'Second Project')
     sku = Sku.create(name: 'Edit S')
     NodeResourcesProject.create(project_id: project.id,
                                 node_resource_id: node.id,

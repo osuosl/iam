@@ -155,13 +155,13 @@ describe 'The Clients endpoint' do
     project = Project.create(name: 'Delete project', client_id: client.id)
     sku = Sku.create(name: 'Delete sku')
     node = NodeResource.create(name: 'Delete Node', project_id: project.id)
-    np = NodeResourcesProject.create(project_id: project.id,
-                                     node_resource_id: node.id,
-                                     sku_id: sku.id)
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
     db = DbResource.create(name: 'Delete Db', project_id: project.id)
-    dbp = DbResourcesProject.create(project_id: project.id,
-                                    db_resource_id: db.id,
-                                    sku_id: sku.id)
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
 
     deleted_client = { id: client.id,
                        name: client.name,
