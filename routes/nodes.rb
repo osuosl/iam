@@ -132,11 +132,11 @@ module Sinatra
         project_node = NodeResourcesProject.filter(node_resource_id: node.id).first
 
         node.update(project_id:  params[:project_id] || node.project_id,
-                     name:       params[:name] || node.name,
-                     type:       params[:type] || node.type,
-                     cluster:    params[:cluster] || node.cluster,
-                     modified:   DateTime.now || node.modified,
-                     active: params[:active] || node.active)
+                    name:       params[:name] || node.name,
+                    type:       params[:type] || node.type,
+                    cluster:    params[:cluster] || node.cluster,
+                    modified:   DateTime.now || node.modified,
+                    active: params[:active] || node.active)
         project_node.update(project_id: params[:project_id] || project_node.project_id,
                             node_resource_id: node.id || project_node.node_resource_id,
                             sku_id: params[:sku_id] || project_node.sku_id)

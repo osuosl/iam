@@ -41,6 +41,7 @@
           <tbody>
             <% res_array.each do |entry| %>
               <tr>
+               <% next unless entry.active %>
               <% entry.each do |key, value | %>
               <% next if @exclude_keys.include?(key) %>
               <td>

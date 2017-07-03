@@ -71,8 +71,9 @@ module Sinatra
         end
 
         # get data from plugins
-        @projects = Project.all
-        @skus = Sku.all
+        @project = Project.filter(id: @db.project_id).first
+        db_sku = DbResourcesProject.find(db_resource_id: @db.id)
+        @sku = Sku.find(id: db_sku.sku_id)
         erb :'database/edit'
       end
 
