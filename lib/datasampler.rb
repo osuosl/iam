@@ -48,17 +48,24 @@ class DataImporter
 
   # Find the latest date in the information to import
   def date_offset
+    puts 'Getting Date Offset...'
     latest_date = nil
-    collect_objects.each do |file|
-      JSON.parse file .each do |object|
+    Dir.foreach(@directory) do |file|
+      next if file == '.' || file == '..'
+      puts '  checking file:' + file
+      JSON.parse(File.read(@directory + file)).each do |object|
         object.each do |_key, value|
-          next unless value.is_a?(DateTime)
-          latest_date = value if !latest_date || value > latest_date
+          next unless value.is_a?(String)
+          begin
+            date = DateTime.parse value
+          rescue ArgumentError
+            next
+          end
+          latest_date = date if latest_date.nil? || latest_date < date
         end
       end
     end
-
-    @date_offset = Date.today - latest_date
+    @date_offset = DateTime.now - latest_date
   end
 
   # Imports the clients from clients.json
@@ -67,13 +74,7 @@ class DataImporter
     clients_filename = @directory + 'clients.json'
     clients_json = File.open(clients_filename, &:readline)
 
-    conditioned_json = JSON.parse(clients_json).each do |obj|
-      obj.each do |key, value|
-        obj[key] += @date_offset if value.is_a?(DateTime)
-      end
-    end
-
-    clients = Client.array_from_json(conditioned_json.to_str,
+    clients = Client.array_from_json(clients_json,
                                      fields: Client.columns.map(&:to_s))
 
     clients.each(&:save)
@@ -85,13 +86,7 @@ class DataImporter
     projects_filename = @directory + 'projects.json'
     projects_json = File.open(projects_filename, &:readline)
 
-    conditioned_json = JSON.parse(projects_json).each do |obj|
-      obj.each do |key, value|
-        obj[key] += @date_offset if value.is_a?(DateTime)
-      end
-    end
-
-    projects = Project.array_from_json(conditioned_json.to_str,
+    projects = Project.array_from_json(projects_json,
                                        fields: Project.columns.map(&:to_s))
 
     projects.each(&:save)
@@ -103,31 +98,50 @@ class DataImporter
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
+      next if !File.exist? filename
       resource_json = File.open(filename, &:readline)
-
-      conditioned_json = JSON.parse(resource_json).each do |obj|
-        obj.each do |key, value|
-          obj[key] += @date_offset if value.is_a?(DateTime)
-        end
-      end
+      puts 'Opening file: ' + filename
 
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
-      resources = model.array_from_json(conditioned_json.to_str,
+      resources = model.array_from_json(resource_json,
                                         fields: model.columns.map(&:to_s))
 
       resources.each(&:save)
       measurements.each do |measurement_name|
         table = Plugin.where(name: measurement_name).first.storage_table
         filename = @directory + table + '.json'
-        measurement_data = File.open(filename, &:readline)
+        next if !File.exist? filename
+        puts "Opening file: " + filename
+        # measurement_data = File.open(filename, &:readline)
+        #
+        # json_data = JSON.parse(measurement_data).each do |measurement|
+        #   measurement.each do |key, value|
+        #     next if !value.is_a? String
+        #     begin
+        #       measurement[key] = ( DateTime.parse(value) + @date_offset ).to_s
+        #       puts "Updated date #{value.to_s} to #{measurement[key].to_s}"
+        #     rescue ArgumentError
+        #       next
+        #     end
+        #   end
+        # end
 
-        conditioned_json = JSON.parse(measurement_data).each do |obj|
-          obj.each do |key, value|
-            obj[key] += @date_offset if value.is_a?(DateTime)
+        measurement_data = []
+
+        File.foreach(filename, sep=',').with_index do |measurement, idx|
+          measurement = JSON.parse( measurement.gsub(/[\[\]]/,'') )
+          measurement.each do |key, value|
+            next if !value.is_a? String
+            begin
+              measurement[key] = ( DateTime.parse(value) + @date_offset ).to_s
+            rescue ArgumentError
+              next
+            end
           end
+          measurement_data.push(measurement
         end
 
-        Iam.settings.DB[table.to_sym].multi_insert(conditioned_json)
+        Iam.settings.DB[table.to_sym].multi_insert(measurement_data)
       end
     end
   end
@@ -138,7 +152,7 @@ class DataImporter
     # delete all the things, for simplicity
     delete_data
 
-    get_date_offset
+    date_offset
 
     import_clients
     import_projects
