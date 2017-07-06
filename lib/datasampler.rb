@@ -4,6 +4,14 @@ require_relative '../environment.rb'
 require_relative '../models.rb'
 require_relative './util.rb'
 
+def iterate_lines(file_path)
+  File.foreach(file_path, '|') do |line|
+    line = line.gsub(/[\[\],\|](?!\")/, '') # Remove obj delimeters
+    next if line == ''
+    yield(line)
+  end
+end
+
 ###
 # DataImporter - methods for sampling production data for use in testing
 ###
@@ -31,37 +39,20 @@ class DataImporter
     Iam.settings.DB[:clients].delete
   end
 
-  def collect_objects
-    json_content = [File.open(@directory + 'clients.json', &:readline),
-                    File.open(@directory + 'projects.json', &:readline)]
-
-    Report.plugin_matrix.each do |resource_name, measurements|
-      filename = @directory + resource_name + '.json'
-      json_content.push JSON.parse(File.open(filename, &:readline))
-
-      measurements.each do |name|
-        filename = Plugin.where(name: name).first.storage_table + '.json'
-        json_content.push File.open(@directory + filename, &:readline)
-      end
-    end
-  end
-
   # Find the latest date in the information to import
   def date_offset
-    puts 'Getting Date Offset...'
     latest_date = nil
     Dir.foreach(@directory) do |file|
       next if file == '.' || file == '..'
-      puts '  checking file:' + file
-      JSON.parse(File.read(@directory + file)).each do |object|
-        object.each do |_key, value|
+      iterate_lines(@directory + file) do |line|
+        JSON.parse(line).each do |_key, value|
           next unless value.is_a?(String)
           begin
             date = DateTime.parse value
+            latest_date = date if latest_date.nil? || latest_date < date
           rescue ArgumentError
             next
           end
-          latest_date = date if latest_date.nil? || latest_date < date
         end
       end
     end
@@ -100,8 +91,10 @@ class DataImporter
       filename = @directory + resource_name + '.json'
       next if !File.exist? filename
       resource_json = File.open(filename, &:readline)
-      puts 'Opening file: ' + filename
-
+      iterate_lines(filename) do |line|
+        line.each do |key|
+      end
+      puts "Importing resource #{resource_name} from #{filename}"
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       resources = model.array_from_json(resource_json,
                                         fields: model.columns.map(&:to_s))
@@ -111,26 +104,9 @@ class DataImporter
         table = Plugin.where(name: measurement_name).first.storage_table
         filename = @directory + table + '.json'
         next if !File.exist? filename
-        puts "Opening file: " + filename
-        # measurement_data = File.open(filename, &:readline)
-        #
-        # json_data = JSON.parse(measurement_data).each do |measurement|
-        #   measurement.each do |key, value|
-        #     next if !value.is_a? String
-        #     begin
-        #       measurement[key] = ( DateTime.parse(value) + @date_offset ).to_s
-        #       puts "Updated date #{value.to_s} to #{measurement[key].to_s}"
-        #     rescue ArgumentError
-        #       next
-        #     end
-        #   end
-        # end
-
-        measurement_data = []
-
-        File.foreach(filename, sep=',').with_index do |measurement, idx|
-          measurement = JSON.parse( measurement.gsub(/[\[\]]/,'') )
-          measurement.each do |key, value|
+        puts "  Importing measurement #{measurement_name}"
+        iterate_lines(filename) do |line|
+          JSON.parse(line).each do |key, value|
             next if !value.is_a? String
             begin
               measurement[key] = ( DateTime.parse(value) + @date_offset ).to_s
@@ -138,10 +114,8 @@ class DataImporter
               next
             end
           end
-          measurement_data.push(measurement
+          Iam.settings.DB[table.to_sym].insert(measurement)
         end
-
-        Iam.settings.DB[table.to_sym].multi_insert(measurement_data)
       end
     end
   end
@@ -150,22 +124,29 @@ class DataImporter
   # default client and project
   def import_data
     # delete all the things, for simplicity
+    puts "Deleting existing data..."
     delete_data
 
+    puts "Calculating date offset..."
     date_offset
 
-    import_clients
-    import_projects
-
-    # re-create the default client and project
-    default_client = Client.find_or_create(name: 'default',
-                                           description: 'The default client')
-
-    Project.find_or_create(name: 'default',
-                           client_id: default_client.id,
-                           description: 'The default project')
-    # import the resources
-    import_resources
+    # puts "Importing clients..."
+    # import_clients
+    #
+    # puts "Importing projects..."
+    # import_projects
+    #
+    # puts "Creating defaults..."
+    # # re-create the default client and project
+    # default_client = Client.find_or_create(name: 'default',
+    #                                        description: 'The default client')
+    #
+    # Project.find_or_create(name: 'default',
+    #                        client_id: default_client.id,
+    #                        description: 'The default project')
+    # # import the resources
+    # puts "Importing resources..."
+    # import_resources
   end
 end
 
@@ -242,14 +223,18 @@ class DataExporter
     anonymize_clients(clients) if anon
 
     filename = @directory + 'clients.json'
-    File.open(filename, 'w') { |file| file.write(clients.to_json) }
+    File.open(filename, 'w') do |file|
+      file.write(JSON.generate(clients, array_nl: '|'))
+    end
 
     all_projects = Project.where(id: project_ids).naked.all
     anonymize_projects(all_projects) if anon
 
     # write the projects to a file in json fromat
     filename = @directory + 'projects.json'
-    File.open(filename, 'w') { |file| file.write(all_projects.to_json) }
+    File.open(filename, 'w') do |file|
+      file.write(JSON.generate(all_projects, array_nl: '|'))
+    end
 
     # get all the resources of each type for each project
     Report.plugin_matrix.each do |resource_name, measurements|
@@ -263,7 +248,9 @@ class DataExporter
       anonymize_resources(resources, resource_name) if anon
 
       # write the resources to a file in json format
-      File.open(filename, 'w') { |file| file.write(resources.to_json) }
+      File.open(filename, 'w') do |file|
+        file.write(JSON.generate(resources, array_nl: '|'))
+      end
 
       # for each measurment (plugin) available for this resource type,
       # fetch all the measurment data for the specific resource ids collected
@@ -286,8 +273,9 @@ class DataExporter
           end
         end
 
-        json = data.to_json
-        File.open(filename, 'w') { |file| file.write(json) }
+        File.open(filename, 'w') do |file|
+          file.write(JSON.generate(data, array_nl: '|'))
+        end
       end
     end
   end
