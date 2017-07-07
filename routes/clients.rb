@@ -33,9 +33,12 @@ module Sinatra
 
         unless @projects.nil?
           @client_data = {}
+          @resource_data = {}
           @projects.each do |project|
             data = Report.project_data(project, start_date, end_date)
-            (@client_data[project.name] ||= []) << data
+            data.each do |res_type, res_data|
+              (@resource_data[res_type] ||= []) << res_data
+            end
           end
         end
         @sum_data = Report.sum_data_in_range(@client_data, false, true)

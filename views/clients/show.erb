@@ -12,72 +12,53 @@
 </p>
 <br>
 
-<% if @projects.empty? %>
-  <p>
-    <%= @client.name %> has no projects
-  </p>
-<% else %>
-  <% if @client.name != 'default' %>
-    <% @client_data.each do |project_name, array_hash| %>
-      <% array_hash[0].each do |resource_type, resource_hash| %>
-        <table class='table'>
-          <h4><%= resource_type == 'db' ? 'Database' : resource_type.capitalize %></h4>
-          <thead>
-            <% unless resource_hash[0].values[0].nil?%>
-              <% @keys = resource_hash[0].values[0].keys - ['id'] %>
-
-              <tr>
-                <th>Name</th>
-                <% @keys.each do |k| %>
-                  <% if k == 'DBSize' %>
-                    <th>
-                      Database Size
-                    </th>
-                  <% elsif k == 'VCPUCount' %>
-                    <th>
-                      CPU Count
-                    </th>
-                  <% else %>
-                    <th>
-                      <%= k.scan(/[A-Z][a-z]+/).reject(&:empty?).join(' ') %>
-                    </th>
-                  <% end %>
-                <% end %>
-              </tr>
+<% unless @client.name == 'default' %>
+  <% @resource_data.each do |resource_type, data_arrays| %>
+    <h4> <%= resource_type == 'db' ? 'Database' : resource_type.capitalize %></h4>
+    <table class="table">
+      <thead>
+        <%# Traverse two arrays deep to get all the keys from the secondary
+            hash then flatten the array of keys and get one copy of each key %>
+        <% keys = data_arrays.map { |other_a| other_a[0].map { |k, v| v.keys } } %>
+        <% keys.flatten!.uniq! %>
+        <tr>
+          <% if keys.empty? %>
+            <h6> There are no
+              <%= resource_type == 'db' ? 'database' : resource_type %>
+              resources </h6>
+          <% end %>
+          <%# Humanize key headers %>
+          <% keys.each do |key| %>
+            <% next if key == 'id' %>
+            <% if key == 'DBSize' %>
+              <th>
+                Database Size
+              </th>
+            <% elsif key == 'VCPUCount' %>
+              <th>
+                CPU Count
+              </th>
+            <% else %>
+              <th>
+                <%= key.scan(/[A-Z][a-z]+/).reject(&:empty?).join(' ') %>
+              </th>
             <% end %>
-          </thead>
-          <tbody>
-            <% resource_hash[0].each do |resource_name, resource_values| %>
-              <tr>
-                <td><%= resource_name %></td>
-                <% resource_values.each do |key, value| %>
-                  <% next if key == 'id' %>
-                  <td><%= value %></td>
-                <% end %>
-              </tr>
-            <% end %>
-          </tbody>
-          <tfoot>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% data_arrays.each do |items| %>
+          <% items[0].each do |project_name, hash_values| %>
             <tr>
-              <% if @keys.nil? %>
-                There are no resources
-                <% else %>
-                <td><b>Total:</b></td>
-                <% @keys.each do |k| %>
-                  <td>
-                    <b>
-                      <%= @sum_data[k] unless !@sum_data.has_key?(k) %>
-                      <%= "GB" unless %w(DiskTemplate VCPUCount).include?(k) %>
-                    </b>
-                  </td>
-                <% end %>
+              <% hash_values.each do |key, value| %>
+              <% next if key == 'id' %>
+                <td> <%= value %> </td>
               <% end %>
             </tr>
-          </tfoot>
-        </table>
-        <br>
-      <% end %>
-    <% end %>
-  <% end %>
-<% end %>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  <% end #resource_data %>
+<% end #unless%>
 </div>
