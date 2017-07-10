@@ -5,11 +5,19 @@ require_relative '../models.rb'
 require_relative './util.rb'
 
 def iterate_lines(file_path)
+  return unless File.file?(file_path)
   File.foreach(file_path, '}') do |line|
     line = line[/{.+}/] # Remove obj delimeters
     next if line.nil?
     yield(line)
   end
+end
+
+def update_date(date, offset)
+  return nil unless date.is_a? String
+  return (DateTime.parse(date) + offset).to_s
+rescue ArgumentError
+  return nil
 end
 
 ###
@@ -20,7 +28,6 @@ class DataImporter
     @directory = 'test_data/'
     @date_offset = nil
   end
-
   # Deletes all the extant data. This does not drop tables, only removes rows
   # rubocop:disable AbcSize
   def delete_data
@@ -34,22 +41,21 @@ class DataImporter
         Iam.settings.DB[table.to_sym].delete
       end
     end
-
     Iam.settings.DB[:projects].delete
     Iam.settings.DB[:clients].delete
   end
 
   # Find the latest date in the information to import
+  # rubocop:disable MethodLength
   def date_offset
     latest_date = nil
     Dir.foreach(@directory) do |file|
-      next if file == '.' || file == '..'
       iterate_lines(@directory + file) do |line|
         JSON.parse(line).each do |_key, value|
-          next unless value.is_a?(String)
+          next unless value.is_a? String
           begin
-            date = DateTime.parse( value )
-            latest_date = date if latest_date.nil? or date > latest_date
+            date = DateTime.parse value
+            latest_date = date if latest_date.nil? || date > latest_date
           rescue ArgumentError
             next
           end
@@ -61,83 +67,61 @@ class DataImporter
 
   # Imports the clients from clients.json
   def import_clients
-    # get clients from file, import to Client model
     clients_filename = @directory + 'clients.json'
-    # clients_json = File.open(clients_filename, &:readline)
-
-    # clients = Client.array_from_json(clients_json,
-                                    #  fields: Client.columns.map(&:to_s))
-
-    Client.unrestrict_primary_key()
+    Client.unrestrict_primary_key
     iterate_lines(clients_filename) do |line|
-
       Client.create(JSON.parse(line))
     end
-    Client.restrict_primary_key()
+    Client.restrict_primary_key
   end
 
   # Imports the projects from projects.json
   def import_projects
-    # get projects
     projects_filename = @directory + 'projects.json'
-    # projects_json = File.open(projects_filename, &:readline)
-    #
-    # projects = Project.array_from_json(projects_json,
-    #                                    fields: Project.columns.map(&:to_s))
-
-    Project.unrestrict_primary_key()
+    Project.unrestrict_primary_key
     iterate_lines(projects_filename) do |line|
       Project.create(JSON.parse(line))
     end
-    Project.restrict_primary_key()
+    Project.restrict_primary_key
+  end
+
+  # Loop through measurements and import their datat
+  def import_measurements(measurements)
+    measurements.each do |measurement_name|
+      table = Plugin.where(name: measurement_name).first.storage_table
+      filename = @directory + table + '.json'
+      puts "  Importing measurement #{measurement_name}"
+      iterate_lines(filename) do |line|
+        JSON.parse(line).each do |key, value|
+          date = update_date(value, @date_offset)
+          measurement[key] = date unless date.nil?
+        end
+        Iam.settings.DB[table.to_sym].insert(measurement)
+      end
+    end
   end
 
   # Loop through our defined resources and import the data for each one
-  # rubocop:disable MethodLength
   def import_resources
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
+
+      next unless File.exist? filename
       puts "Importing resource #{resource_name} from #{filename}"
 
-      next if !File.exist? filename
-
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
-      model.unrestrict_primary_key()
+      model.unrestrict_primary_key
       iterate_lines(filename) do |line|
         resource = JSON.parse(line)
         resource.each do |key, value|
-          next if !value.is_a? String
-          begin
-            resource[key] = ( DateTime.parse(value) + @date_offset ).to_s
-          rescue ArgumentError
-            next
-          end
+          value = update_date(value, @date_offset)
+          resource[key] = value unless value.nil?
         end
         model.create(resource)
       end
-      model.restrict_primary_key()
-      # resources = model.array_from_json(resource_json,
-      #                                   fields: model.columns.map(&:to_s))
-      #
-      # resources.each(&:save)
-      measurements.each do |measurement_name|
-        table = Plugin.where(name: measurement_name).first.storage_table
-        filename = @directory + table + '.json'
-        next if !File.exist? filename
-        puts "  Importing measurement #{measurement_name}"
-        iterate_lines(filename) do |line|
-          JSON.parse(line).each do |key, value|
-            next if !value.is_a? String
-            begin
-              measurement[key] = ( DateTime.parse(value) + @date_offset ).to_s
-            rescue ArgumentError
-              next
-            end
-          end
-          Iam.settings.DB[table.to_sym].insert(measurement)
-        end
-      end
+      model.restrict_primary_key
+      import_measurements(measurements)
     end
   end
 
@@ -145,19 +129,19 @@ class DataImporter
   # default client and project
   def import_data
     # delete all the things, for simplicity
-    puts "Deleting existing data..."
+    puts 'Deleting existing data...'
     delete_data
 
-    puts "Calculating date offset..."
+    puts 'Calculating date offset...'
     date_offset
 
-    puts "Importing clients..."
+    puts 'Importing clients...'
     import_clients
     #
-    puts "Importing projects..."
+    puts 'Importing projects...'
     import_projects
     #
-    puts "Creating defaults..."
+    puts 'Creating defaults...'
     # # re-create the default client and project
     default_client = Client.find_or_create(name: 'default',
                                            description: 'The default client')
@@ -166,7 +150,7 @@ class DataImporter
                            client_id: default_client.id,
                            description: 'The default project')
     # # import the resources
-    puts "Importing resources..."
+    puts 'Importing resources...'
     import_resources
   end
 end
