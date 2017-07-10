@@ -19,16 +19,21 @@
       <thead>
         <%# Traverse two arrays deep to get all the keys from the secondary
             hash then flatten the array of keys and get one copy of each key %>
-        <% keys = data_arrays.map { |other_a| other_a[0].map { |k, v| v.keys } } %>
-        <% keys.flatten!.uniq! %>
+        <% @keys = data_arrays.map { |other_a| other_a[0].map { |k, v| v.keys } } %>
+        <% @keys.flatten!.uniq! %>
         <tr>
-          <% if keys.empty? %>
+          <% if @keys.empty? %>
             <h6> There are no
               <%= resource_type == 'db' ? 'database' : resource_type %>
               resources </h6>
-          <% end %>
+          </thead>
+        </table>
+         <% else %>
           <%# Humanize key headers %>
-          <% keys.each do |key| %>
+          <th>
+            Name
+          </th>
+          <% @keys.each do |key| %>
             <% next if key == 'id' %>
             <% if key == 'DBSize' %>
               <th>
@@ -50,6 +55,9 @@
         <% data_arrays.each do |items| %>
           <% items[0].each do |project_name, hash_values| %>
             <tr>
+              <td>
+                <%= project_name %>
+              </td>
               <% hash_values.each do |key, value| %>
               <% next if key == 'id' %>
                 <td> <%= value %> </td>
@@ -58,7 +66,27 @@
           <% end %>
         <% end %>
       </tbody>
+      <tfoot>
+        <tr>
+          <% if @keys.nil? %>
+            There are no resources
+          <% else %>
+            <td><b>Total:</b></td>
+            <% @keys.each do |k| %>
+              <% next if k == 'id'%>
+              <td>
+                <b>
+                  <%= @sum_data[k] unless !@sum_data.has_key?(k) %>
+                  <%= "GB" unless %w(DiskTemplate VCPUCount ).include?(k) %>
+                </b>
+              </td>
+            <% end %>
+          <% end %>
+        </tr>
+      </tfoot>
     </table>
+    <% end %>
+    <br>
   <% end #resource_data %>
 <% end #unless%>
 </div>
