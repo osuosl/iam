@@ -28,6 +28,7 @@ class DataImporter
     @directory = 'test_data/'
     @date_offset = nil
   end
+
   # Deletes all the extant data. This does not drop tables, only removes rows
   # rubocop:disable AbcSize
   def delete_data
