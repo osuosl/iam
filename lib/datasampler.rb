@@ -5,9 +5,9 @@ require_relative '../models.rb'
 require_relative './util.rb'
 
 def iterate_lines(file_path)
-  File.foreach(file_path, '|') do |line|
-    line = line.gsub(/[\[\],\|](?!\")/, '') # Remove obj delimeters
-    next if line == ''
+  File.foreach(file_path, '}') do |line|
+    line = line[/{.+}/] # Remove obj delimeters
+    next if line.nil?
     yield(line)
   end
 end
@@ -48,8 +48,8 @@ class DataImporter
         JSON.parse(line).each do |_key, value|
           next unless value.is_a?(String)
           begin
-            date = DateTime.parse value
-            latest_date = date if latest_date.nil? || latest_date < date
+            date = DateTime.parse( value )
+            latest_date = date if latest_date.nil? or date > latest_date
           rescue ArgumentError
             next
           end
@@ -63,24 +63,33 @@ class DataImporter
   def import_clients
     # get clients from file, import to Client model
     clients_filename = @directory + 'clients.json'
-    clients_json = File.open(clients_filename, &:readline)
+    # clients_json = File.open(clients_filename, &:readline)
 
-    clients = Client.array_from_json(clients_json,
-                                     fields: Client.columns.map(&:to_s))
+    # clients = Client.array_from_json(clients_json,
+                                    #  fields: Client.columns.map(&:to_s))
 
-    clients.each(&:save)
+    Client.unrestrict_primary_key()
+    iterate_lines(clients_filename) do |line|
+
+      Client.create(JSON.parse(line))
+    end
+    Client.restrict_primary_key()
   end
 
   # Imports the projects from projects.json
   def import_projects
     # get projects
     projects_filename = @directory + 'projects.json'
-    projects_json = File.open(projects_filename, &:readline)
+    # projects_json = File.open(projects_filename, &:readline)
+    #
+    # projects = Project.array_from_json(projects_json,
+    #                                    fields: Project.columns.map(&:to_s))
 
-    projects = Project.array_from_json(projects_json,
-                                       fields: Project.columns.map(&:to_s))
-
-    projects.each(&:save)
+    Project.unrestrict_primary_key()
+    iterate_lines(projects_filename) do |line|
+      Project.create(JSON.parse(line))
+    end
+    Project.restrict_primary_key()
   end
 
   # Loop through our defined resources and import the data for each one
@@ -89,17 +98,29 @@ class DataImporter
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
       filename = @directory + resource_name + '.json'
-      next if !File.exist? filename
-      resource_json = File.open(filename, &:readline)
-      iterate_lines(filename) do |line|
-        line.each do |key|
-      end
       puts "Importing resource #{resource_name} from #{filename}"
-      model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
-      resources = model.array_from_json(resource_json,
-                                        fields: model.columns.map(&:to_s))
 
-      resources.each(&:save)
+      next if !File.exist? filename
+
+      model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
+      model.unrestrict_primary_key()
+      iterate_lines(filename) do |line|
+        resource = JSON.parse(line)
+        resource.each do |key, value|
+          next if !value.is_a? String
+          begin
+            resource[key] = ( DateTime.parse(value) + @date_offset ).to_s
+          rescue ArgumentError
+            next
+          end
+        end
+        model.create(resource)
+      end
+      model.restrict_primary_key()
+      # resources = model.array_from_json(resource_json,
+      #                                   fields: model.columns.map(&:to_s))
+      #
+      # resources.each(&:save)
       measurements.each do |measurement_name|
         table = Plugin.where(name: measurement_name).first.storage_table
         filename = @directory + table + '.json'
@@ -130,23 +151,23 @@ class DataImporter
     puts "Calculating date offset..."
     date_offset
 
-    # puts "Importing clients..."
-    # import_clients
+    puts "Importing clients..."
+    import_clients
     #
-    # puts "Importing projects..."
-    # import_projects
+    puts "Importing projects..."
+    import_projects
     #
-    # puts "Creating defaults..."
+    puts "Creating defaults..."
     # # re-create the default client and project
-    # default_client = Client.find_or_create(name: 'default',
-    #                                        description: 'The default client')
+    default_client = Client.find_or_create(name: 'default',
+                                           description: 'The default client')
     #
-    # Project.find_or_create(name: 'default',
-    #                        client_id: default_client.id,
-    #                        description: 'The default project')
+    Project.find_or_create(name: 'default',
+                           client_id: default_client.id,
+                           description: 'The default project')
     # # import the resources
-    # puts "Importing resources..."
-    # import_resources
+    puts "Importing resources..."
+    import_resources
   end
 end
 
@@ -224,7 +245,7 @@ class DataExporter
 
     filename = @directory + 'clients.json'
     File.open(filename, 'w') do |file|
-      file.write(JSON.generate(clients, array_nl: '|'))
+      file.write(JSON.generate(clients))
     end
 
     all_projects = Project.where(id: project_ids).naked.all
@@ -233,7 +254,7 @@ class DataExporter
     # write the projects to a file in json fromat
     filename = @directory + 'projects.json'
     File.open(filename, 'w') do |file|
-      file.write(JSON.generate(all_projects, array_nl: '|'))
+      file.write(JSON.generate(all_projects))
     end
 
     # get all the resources of each type for each project
@@ -249,7 +270,7 @@ class DataExporter
 
       # write the resources to a file in json format
       File.open(filename, 'w') do |file|
-        file.write(JSON.generate(resources, array_nl: '|'))
+        file.write(JSON.generate(resources))
       end
 
       # for each measurment (plugin) available for this resource type,
@@ -274,7 +295,7 @@ class DataExporter
         end
 
         File.open(filename, 'w') do |file|
-          file.write(JSON.generate(data, array_nl: '|'))
+          file.write(JSON.generate(data))
         end
       end
     end
