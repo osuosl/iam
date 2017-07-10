@@ -31,7 +31,6 @@ class DataImporter
   # Deletes all the extant data. This does not drop tables, only removes rows
   # rubocop:disable AbcSize
   def delete_data
-    # deletes everything
     Report.plugin_matrix.each do |resource_name, measurements|
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       model.dataset.all.each(&:delete)
