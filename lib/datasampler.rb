@@ -6,10 +6,12 @@ require_relative './util.rb'
 
 def iterate_lines(file_path)
   return unless File.file?(file_path)
-  File.foreach(file_path, '}') do |line|
+  lines = 0
+  File.foreach(file_path, '}').with_index do |line|
     line = line[/{.+}/] # Remove obj delimeters
     next if line.nil?
-    yield(line)
+    lines += 1
+    yield(lines, line)
   end
 end
 
@@ -49,8 +51,13 @@ class DataImporter
   # rubocop:disable MethodLength
   def date_offset
     latest_date = nil
+    @count = {}
     Dir.foreach(@directory) do |file|
-      iterate_lines(@directory + file) do |line|
+      next if file=='.' || file=='..'
+      print "\n  #{file}..."
+      @count[file] = 0
+      iterate_lines(@directory + file) do |idx, line|
+        @count[file] += 1
         JSON.parse(line).each do |_key, value|
           next unless value.is_a? String
           begin
@@ -62,6 +69,7 @@ class DataImporter
         end
       end
     end
+    print "\n"
     @date_offset = DateTime.now - latest_date
   end
 
@@ -69,9 +77,11 @@ class DataImporter
   def import_clients
     clients_filename = @directory + 'clients.json'
     Client.unrestrict_primary_key
-    iterate_lines(clients_filename) do |line|
+    iterate_lines(clients_filename) do |idx, line|
+      print "Importing Clients #{idx}/#{@count['clients.json']}\r"
       Client.create(JSON.parse(line))
     end
+    print "\n"
     Client.restrict_primary_key
   end
 
@@ -79,9 +89,11 @@ class DataImporter
   def import_projects
     projects_filename = @directory + 'projects.json'
     Project.unrestrict_primary_key
-    iterate_lines(projects_filename) do |line|
+    iterate_lines(projects_filename) do |idx, line|
+      print "Importing Projects #{idx}/#{@count['projects.json']}\r"
       Project.create(JSON.parse(line))
     end
+    print "\n"
     Project.restrict_primary_key
   end
 
@@ -89,15 +101,21 @@ class DataImporter
   def import_measurements(measurements)
     measurements.each do |measurement_name|
       table = Plugin.where(name: measurement_name).first.storage_table
-      filename = @directory + table + '.json'
-      puts "  Importing measurement #{measurement_name}"
-      iterate_lines(filename) do |line|
-        JSON.parse(line).each do |key, value|
+      filename = table + '.json'
+      next unless File.exist? @directory + filename
+      keys, lines = nil, []
+      iterate_lines(@directory + filename) do |idx, line|
+        print "\r  Importing #{measurement_name}:#{idx}/#{@count[filename]}..."
+        measurement = JSON.parse(line)
+        keys = measurement.keys if keys.nil?
+        measurement.each do |key, value|
           date = update_date(value, @date_offset)
           measurement[key] = date unless date.nil?
         end
-        Iam.settings.DB[table.to_sym].insert(measurement)
+        lines.push(measurement.values)
       end
+      Iam.settings.DB[table.to_sym].import(keys, lines)
+      print "Done\n"
     end
   end
 
@@ -105,14 +123,15 @@ class DataImporter
   def import_resources
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
-      filename = @directory + resource_name + '.json'
+      filename = resource_name + '.json'
 
-      next unless File.exist? filename
-      puts "Importing resource #{resource_name} from #{filename}"
+      next unless File.exist? @directory + filename
 
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       model.unrestrict_primary_key
-      iterate_lines(filename) do |line|
+      iterate_lines(@directory + filename) do |idx, line|
+        print "\rImporting #{resource_name}: #{idx}/#{@count[filename]}..."
+
         resource = JSON.parse(line)
         resource.each do |key, value|
           value = update_date(value, @date_offset)
@@ -121,6 +140,7 @@ class DataImporter
         model.create(resource)
       end
       model.restrict_primary_key
+      print "Done\n"
       import_measurements(measurements)
     end
   end
@@ -128,30 +148,30 @@ class DataImporter
   # Main data importer method, calls other import methods and re-creates the
   # default client and project
   def import_data
+    startTime = Time.now
+
     # delete all the things, for simplicity
     puts 'Deleting existing data...'
     delete_data
 
-    puts 'Calculating date offset...'
+    print 'Calculating date offset...'
     date_offset
 
-    puts 'Importing clients...'
     import_clients
-    #
-    puts 'Importing projects...'
+
     import_projects
-    #
+
     puts 'Creating defaults...'
-    # # re-create the default client and project
+    # re-create the default client and project
     default_client = Client.find_or_create(name: 'default',
                                            description: 'The default client')
-    #
     Project.find_or_create(name: 'default',
                            client_id: default_client.id,
                            description: 'The default project')
-    # # import the resources
-    puts 'Importing resources...'
+    # import the resources
     import_resources
+
+    puts "Done: #{(Time.now - startTime)}"
   end
 end
 
