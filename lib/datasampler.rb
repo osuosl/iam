@@ -25,10 +25,10 @@ end
 ###
 # DataImporter - methods for sampling production data for use in testing
 ###
+# rubocop:disable ClassLength
 class DataImporter
   def initialize
     @directory = 'test_data/'
-    @date_offset = nil
   end
 
   # Deletes all the extant data. This does not drop tables, only removes rows
@@ -51,13 +51,8 @@ class DataImporter
   # rubocop:disable MethodLength
   def date_offset
     latest_date = nil
-    @count = {}
     Dir.foreach(@directory) do |file|
-      next if file=='.' || file=='..'
-      print "\n  #{file}..."
-      @count[file] = 0
-      iterate_lines(@directory + file) do |idx, line|
-        @count[file] += 1
+      iterate_lines(@directory + file) do |_, line|
         JSON.parse(line).each do |_key, value|
           next unless value.is_a? String
           begin
@@ -69,43 +64,41 @@ class DataImporter
         end
       end
     end
-    print "\n"
+    print "Done\n"
     @date_offset = DateTime.now - latest_date
   end
 
   # Imports the clients from clients.json
   def import_clients
-    clients_filename = @directory + 'clients.json'
     Client.unrestrict_primary_key
-    iterate_lines(clients_filename) do |idx, line|
-      print "Importing Clients #{idx}/#{@count['clients.json']}\r"
+    iterate_lines(@directory + 'clients.json') do |idx, line|
+      print "\rImporting Clients #{idx}..."
       Client.create(JSON.parse(line))
     end
-    print "\n"
+    print "Done\n"
     Client.restrict_primary_key
   end
 
   # Imports the projects from projects.json
   def import_projects
-    projects_filename = @directory + 'projects.json'
     Project.unrestrict_primary_key
-    iterate_lines(projects_filename) do |idx, line|
-      print "Importing Projects #{idx}/#{@count['projects.json']}\r"
+    iterate_lines(@directory + 'projects.json') do |idx, line|
+      print "\rImporting Projects #{idx}..."
       Project.create(JSON.parse(line))
     end
-    print "\n"
+    print "Done\n"
     Project.restrict_primary_key
   end
 
-  # Loop through measurements and import their datat
+  # Loop through measurements and import their data
+  # rubocop:disable HashSyntax
   def import_measurements(measurements)
     measurements.each do |measurement_name|
       table = Plugin.where(name: measurement_name).first.storage_table
-      filename = table + '.json'
-      next unless File.exist? @directory + filename
-      keys, lines = nil, []
-      iterate_lines(@directory + filename) do |idx, line|
-        print "\r  Importing #{measurement_name}:#{idx}/#{@count[filename]}..."
+      keys = nil
+      lines = []
+      iterate_lines(@directory + table + '.json') do |idx, line|
+        print "\r  Importing #{measurement_name}:#{idx}..."
         measurement = JSON.parse(line)
         keys = measurement.keys if keys.nil?
         measurement.each do |key, value|
@@ -114,7 +107,7 @@ class DataImporter
         end
         lines.push(measurement.values)
       end
-      Iam.settings.DB[table.to_sym].import(keys, lines)
+      Iam.settings.DB[table.to_sym].import(keys, lines, :slice => 500)
       print "Done\n"
     end
   end
@@ -123,14 +116,10 @@ class DataImporter
   def import_resources
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
-      filename = resource_name + '.json'
-
-      next unless File.exist? @directory + filename
-
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       model.unrestrict_primary_key
-      iterate_lines(@directory + filename) do |idx, line|
-        print "\rImporting #{resource_name}: #{idx}/#{@count[filename]}..."
+      iterate_lines(@directory + resource_name + '.json') do |idx, line|
+        print "\rImporting #{resource_name}: #{idx}..."
 
         resource = JSON.parse(line)
         resource.each do |key, value|
@@ -148,17 +137,14 @@ class DataImporter
   # Main data importer method, calls other import methods and re-creates the
   # default client and project
   def import_data
-    startTime = Time.now
-
     # delete all the things, for simplicity
-    puts 'Deleting existing data...'
+    print 'Deleting existing data...'
     delete_data
 
-    print 'Calculating date offset...'
+    print "Done\nCalculating date offset..."
     date_offset
 
     import_clients
-
     import_projects
 
     puts 'Creating defaults...'
@@ -170,8 +156,6 @@ class DataImporter
                            description: 'The default project')
     # import the resources
     import_resources
-
-    puts "Done: #{(Time.now - startTime)}"
   end
 end
 
