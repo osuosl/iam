@@ -132,7 +132,8 @@ module Sinatra
         # delete a database
         db = DbResource[id: params[:id]]
         # disassociate this db sku's and deactivate the db
-        db.reassign_resources
+        DbResourcesProject.where(db_resource_id: db.id).delete
+        db.update(active: false)
         redirect '/dbs/?' unless db.nil?
         404
       end

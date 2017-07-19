@@ -46,11 +46,9 @@ class Project < Sequel::Model
   def reassign_resources
     dp = Project.find(name: 'default').id
     Report.plugin_matrix.each do |res_type, _measurements|
-      data = send("#{res_type}_resources")
-      next if data.empty?
       res_proj = Object.const_get("#{res_type.capitalize}ResourcesProject")
       # reassign the projects' resources to the default project
-      data.each do |res|
+      send("#{res_type}_resources").each do |res|
         # change the project to the default project
         res.update(project_id: dp)
         # change the Node/DbResourceProject to be the default project
@@ -90,11 +88,6 @@ class NodeResource < Sequel::Model
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
   end
-
-  def reassign_resources
-    NodeResourcesProject.where(node_resource_id: id).delete
-    update(active: false)
-  end
 end
 
 # Project-Node Resource data model
@@ -123,11 +116,6 @@ class DbResource < Sequel::Model
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
-  end
-
-  def reassign_resources
-    DbResourcesProject.where(db_resource_id: id).delete
-    update(active: false)
   end
 end
 

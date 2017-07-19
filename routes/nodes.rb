@@ -148,7 +148,8 @@ module Sinatra
         # delete a node
         node = NodeResource[id: params[:id]]
         # disassociate this nodes sku's and deactivate the node
-        node.reassign_resources
+        NodeResourcesProject.where(node_resource_id: node.id).delete
+        node.update(active: false)
         redirect '/nodes/?' unless node.nil?
         404
       end
