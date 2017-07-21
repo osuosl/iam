@@ -22,9 +22,9 @@ class Iam < Sinatra::Base
   # to make sure every record is collected into the hierarchy
   default_client = Client.find_or_create(name: 'default',
                                          description: 'The default client')
-  default_project = Project.find_or_create(name: 'default',
-                                           client_id: default_client.id,
-                                           description: 'The default project')
+  Project.find_or_create(name: 'default',
+                         client_id: default_client.id,
+                         description: 'The default project')
 
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
