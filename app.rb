@@ -25,12 +25,6 @@ class Iam < Sinatra::Base
   default_project = Project.find_or_create(name: 'default',
                                            client_id: default_client.id,
                                            description: 'The default project')
-  default_sku = Sku.find_or_create(name: 'default',
-                                   description: 'The default SKU')
-  NodeResourcesProject.find_or_create(project_id: default_project.id,
-                                      sku_id: default_sku.id)
-  DbResourcesProject.find_or_create(project_id: default_project.id,
-                                    sku_id: default_sku.id)
 
   register Sinatra::MainRoutes
   register Sinatra::ClientRoutes
