@@ -47,6 +47,7 @@
              <i class="glyphicon glyphicon-barcode"></i>
            </span>
            <select name="sku_id" class="form-control selectpicker">
+             <option value="" selected disabled>None</option>
              <% for @sku in @skus %>
                 <% if @sku.active %>
                    <option value="<%= @sku.id %>"><%= @sku.name %></option>

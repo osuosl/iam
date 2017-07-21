@@ -32,7 +32,7 @@ module Sinatra
         # get data from plugins
         @project = Project.filter(id: @node.project_id).first
         node_sku = NodeResourcesProject.find(node_resource_id: params[:id])
-        @sku = Sku.find(id: node_sku.sku_id)
+        @sku = Sku.find(id: node_sku.sku_id) unless node_sku.nil?
 
         # get data from plugins
         @vcpu_data = VCPUCount.new.report({ node: @node.name })
@@ -89,7 +89,8 @@ module Sinatra
         end
         @project = Project.filter(id: @node.project_id).first
         node_sku = NodeResourcesProject.find(node_resource_id: @node.id)
-        @sku = Sku.find(id: node_sku.sku_id)
+        sku = Sku.find(id: node_sku.sku_id) unless node_sku.nil?
+        @sku = sku.nil? ? 'None' : sku.name
 
         erb :'nodes/edit'
       end

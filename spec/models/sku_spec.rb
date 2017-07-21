@@ -9,7 +9,7 @@ describe 'The SKU Model and table' do
   include Rack::Test::Methods
 
   it 'has only a default sku initially' do
-    expect(Sku.count).to be(1)
+    expect(Sku.count).to be(0)
   end
 
   it 'has a model name' do

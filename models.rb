@@ -159,9 +159,8 @@ class Sku < Sequel::Model
   end
 
   def reassign_resources
-    def_sku = Sku.find(name: 'default').id
-    DbResourcesProject.where(sku_id: id).update(sku_id: def_sku)
-    NodeResourcesProject.where(sku_id: id).update(sku_id: def_sku)
+    DbResourcesProject.where(sku_id: id).update(sku_id: nil)
+    NodeResourcesProject.where(sku_id: id).update(sku_id: nil)
     delete
   end
 end
