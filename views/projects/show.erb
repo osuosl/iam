@@ -28,7 +28,7 @@
           </a>
         </h3>
         <table class="table">
-          <% if @project_data.values[0].empty? %>
+          <% if @project_data[res_type].empty? %>
             <%= @project.name %> has no <%= res_type %> resources
           <% else %>
           <thead>
