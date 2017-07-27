@@ -65,7 +65,7 @@ class DataImporter
       end
     end
     print "Done\n"
-    @date_offset = DateTime.now - latest_date
+    @date_offset = DateTime.now - latest_date unless latest_date.nil?
   end
 
   # Imports the clients from clients.json
