@@ -23,7 +23,14 @@
           <span class="input-group-addon">
             <i class="glyphicon glyphicon-list"></i>
           </span>
-          <input name="contact_name" placeholder="<%= @project.name %>" class="form-control"  type="text">
+          <select name="project_id" class="form-control selectpicker">
+            <option value="<%= @project.id %>" selected><%= @project.name %></option>
+            <% for @p in @projects %>
+               <% if @p.active %>
+                  <option value="<%= @p.id %>"><%= @p.name %></option>
+              <% end %>
+            <% end %>
+          </select>
         </div>
       </div>
     </div>
@@ -35,7 +42,7 @@
           <span class="input-group-addon">
             <i class="glyphicon glyphicon-tree-conifer"></i>
           </span>
-          <input name="server" placeholder="<%= @db.type %>" class="form-control"  type="text">
+          <input name="type" placeholder="<%= @db.type %>" class="form-control"  type="text">
         </div>
       </div>
     </div>

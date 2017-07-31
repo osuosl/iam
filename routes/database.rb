@@ -67,8 +67,10 @@ module Sinatra
         end
 
         # get data from plugins
-        @projects = Project.all
-        @project = @projects.find(@db.project_id).first
+        @project = Project.where(id: @db.project_id).first
+        @project = Project.where(name: 'default').first if @project.nil?
+        @projects = Project.exclude(id: @db.project_id)
+
         erb :'database/edit'
       end
 

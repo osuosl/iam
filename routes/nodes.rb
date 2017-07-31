@@ -83,8 +83,11 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
-        @projects = Project.all
-        @project = @projects.find(@node.project_id).first
+
+        # get data from plugins
+        @project = Project.where(id: @node.project_id).first
+        @project = Project.where(name: 'default').first if @project.nil?
+        @projects = Project.exclude(id: @node.project_id)
         erb :'nodes/edit'
       end
 
