@@ -14,3 +14,4 @@ Draft Documentation
     plugins.rst
     scheduler.rst
     collectors.rst
+    config.rst
