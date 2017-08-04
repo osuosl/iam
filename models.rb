@@ -44,12 +44,15 @@ class Project < Sequel::Model
   end
 
   def reassign_resources
-    Report.plugin_matrix.each do |resource_type, _measurements|
-      data = send("#{resource_type}_resources")
-      next if data.empty?
+    dp = Project.find(name: 'default').id
+    Report.plugin_matrix.each do |res_type, _measurements|
+      res_proj = Object.const_get("#{res_type.capitalize}ResourcesProject")
       # reassign the projects' resources to the default project
-      data.each do |resource|
-        resource.update(project_id: Project.find(name: 'default').id)
+      send("#{res_type}_resources").each do |res|
+        # change the project to the default project
+        res.update(project_id: dp)
+        # change the Node/DbResourceProject to be the default project
+        res_proj.find("#{res_type}_resource_id": res.id).update(project_id: dp)
       end
     end
     delete
@@ -153,5 +156,11 @@ class Sku < Sequel::Model
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
+  end
+
+  def reassign_resources
+    DbResourcesProject.where(sku_id: id).update(sku_id: nil)
+    NodeResourcesProject.where(sku_id: id).update(sku_id: nil)
+    delete
   end
 end

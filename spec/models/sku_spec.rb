@@ -8,7 +8,7 @@ describe 'The SKU Model and table' do
 
   include Rack::Test::Methods
 
-  it 'initially has zero skus' do
+  it 'has no skus initially' do
     expect(Sku.count).to be(0)
   end
 

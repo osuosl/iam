@@ -48,7 +48,12 @@ describe 'The DbResource endpoint' do
   end
 
   it 'responds ok when asked for the form to edit an existing db' do
-    db = DbResource.create(name: 'Editable')
+    project = Project.create(name: 'edit')
+    db = DbResource.create(name: 'Editable', project_id: project.id)
+    sku = Sku.create(name: 'edit')
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
     get "/db/#{db.id}/edit"
     expect(last_response.status).to eq(200)
   end
@@ -75,9 +80,16 @@ describe 'The DbResource endpoint' do
 
   it 'allows us to edit a db, then redirects to the list' do
     db = DbResource.create(name: 'Edit Me')
+    project = Project.create(name: 'First Project')
+    sku = Sku.create(name: 'Edit S')
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
 
     edited_db = { id:       db.id,
-                  name:     'Edited Node' }
+                  name:     'Edited Db',
+                  project_id: project.id,
+                  sku_id:     sku.id }
 
     patch '/dbs', edited_db
 
@@ -85,12 +97,16 @@ describe 'The DbResource endpoint' do
     follow_redirect!
     expect(last_response.status).to eq(200)
     expect(last_request.path).to eq("/db/#{db.id}")
-    expect(last_response.body).to include('Edited Node')
+    expect(last_response.body).to include('Edited Db')
   end
 
   it 'allows us to edit a single db field then redirects to the list' do
     db = DbResource.create(name: 'Edit Type', type: 'Boring')
-
+    project = Project.create(name: 'Edit P')
+    sku = Sku.create(name: 'Edit S')
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
     edited_db = { id: db.id, type: 'Not Boring!' }
 
     patch '/dbs', edited_db

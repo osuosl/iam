@@ -80,7 +80,7 @@ module Sinatra
         # set blanks to nil
         params[:name] = nil if params[:name] == ''
         params[:description] = nil if params[:description] == ''
-        params[:active] = nil if params[:description] == ''
+        params[:active] = nil if params[:active] == ''
 
         # recieve an updated project
         project = Project[id: params[:id]]

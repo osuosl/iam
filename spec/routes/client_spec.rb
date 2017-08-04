@@ -153,8 +153,15 @@ describe 'The Clients endpoint' do
   it 'allow us to delete a client with project/node/db; redirect to list' do
     client = Client.create(name: 'Delete client')
     project = Project.create(name: 'Delete project', client_id: client.id)
-    node = NodeResource.create(name: 'Delete Node')
-    db = DbResource.create(name: 'Delete Db')
+    sku = Sku.create(name: 'Delete sku')
+    node = NodeResource.create(name: 'Delete Node', project_id: project.id)
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
+    db = DbResource.create(name: 'Delete Db', project_id: project.id)
+    DbResourcesProject.create(project_id: project.id,
+                              db_resource_id: db.id,
+                              sku_id: sku.id)
 
     deleted_client = { id: client.id,
                        name: client.name,

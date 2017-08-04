@@ -48,7 +48,13 @@ describe 'The NodeResource endpoint' do
   end
 
   it 'responds ok when asked for the form to edit an existing node' do
-    node = NodeResource.create(name: 'Editable')
+    project = Project.create(name: 'edit')
+    node = NodeResource.create(name: 'Editable', project_id: project.id)
+    sku = Sku.create(name: 'edit')
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
+
     get "/node/#{node.id}/edit"
     expect(last_response.status).to eq(200)
   end
@@ -75,11 +81,18 @@ describe 'The NodeResource endpoint' do
 
   it 'allows us to edit a node, then redirects to the list' do
     node = NodeResource.create(name: 'Edit Me')
+    project = Project.create(name: 'First Project')
+    sku = Sku.create(name: 'Edit S')
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
 
-    edited_node = { id:       node.id,
-                    name:     'Edited Node',
-                    type:     node.type,
-                    cluster:  node.cluster }
+    edited_node = { id:         node.id,
+                    project_id: project.id,
+                    name:       'Edited Node',
+                    type:       node.type,
+                    cluster:    node.cluster,
+                    sku_id:     sku.id }
 
     patch '/nodes', edited_node
 
@@ -92,6 +105,11 @@ describe 'The NodeResource endpoint' do
 
   it 'allows us to edit a single node field then redirects to the list' do
     node = NodeResource.create(name: 'Edit Type', type: 'Boring')
+    project = Project.create(name: 'Edit P')
+    sku = Sku.create(name: 'Edit S')
+    NodeResourcesProject.create(project_id: project.id,
+                                node_resource_id: node.id,
+                                sku_id: sku.id)
 
     edited_node = { id: node.id, type: 'Not Boring!' }
 

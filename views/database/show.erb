@@ -6,21 +6,27 @@
   </legend>
 
   <p>
-    <% if @projects %>
-      <b>Project:</b> <a href="/projects/<%= @projects.id %>" ><%= @projects.name %></a>
+    <% if @project %>
+      <b>Project:</b> <a href="/projects/<%= @project.id %>" ><%= @project.name %></a>
     <% else %>
       <b>Project:</b> Unknown
+    <% end %><br>
+    <b>SKU:</b>
+    <% if @sku %>
+     <%= @sku.name %>
+    <% else %>
+      None
     <% end %><br>
     <b>Last updated:</b>
     <% if @update_time %>
       <%= @update_time.asctime %>
     <% else %>
       Unknown
-    <% end %> <br>
+    <% end %><br>
     <%= @db.active ? "Active" : "Inactive" %> <br>
   </p>
 
-  <h3>Database Data</h3>
+<h3>Database Data</h3>
   <table class="table">
     <thead>
       <tr>

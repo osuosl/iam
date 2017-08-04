@@ -5,6 +5,7 @@ require_relative '../logging/logs'
 # Our app
 module Sinatra
   # Our Node Routing
+  # rubocop:disable ModuleLength
   module NodeRoutes
     # rubocop:disable LineLength, MethodLength, AbcSize, CyclomaticComplexity, PerceivedComplexity
     def self.registered(app)
@@ -16,6 +17,7 @@ module Sinatra
         # get new node form
         @error = true if params[:error]
         @projects = Project.all
+        @skus = Sku.all
         erb :'nodes/create'
       end
 
@@ -28,7 +30,9 @@ module Sinatra
           halt 404, 'node not found'
         end
         # get data from plugins
-        @projects = Project.filter(id: @node.project_id).first
+        @project = Project.filter(id: @node.project_id).first
+        node_sku = NodeResourcesProject.find(node_resource_id: params[:id])
+        @sku = Sku.find(id: node_sku.sku_id) unless node_sku.nil?
 
         # get data from plugins
         @vcpu_data = VCPUCount.new.report({ node: @node.name })
@@ -83,11 +87,13 @@ module Sinatra
           MyLog.log.fatal 'routes/nodes: Node not found [edit]'
           halt 404, 'node not found'
         end
-
-        # get data from plugins
-        @project = Project.where(id: @node.project_id).first
+        @project = Project.filter(id: @node.project_id).first
+        node_sku = NodeResourcesProject.find(node_resource_id: @node.id)
+        sku = Sku.find(id: node_sku.sku_id) unless node_sku.nil?
+        @sku = sku.nil? ? 'None' : sku.name
         @project = Project.where(name: 'default').first if @project.nil?
         @projects = Project.exclude(id: @node.project_id)
+
         erb :'nodes/edit'
       end
 
@@ -108,6 +114,9 @@ module Sinatra
                                        cluster:    params[:cluster] || '',
                                        created:    DateTime.now || '',
                                        modified:   DateTime.now || '')
+            NodeResourcesProject.create(project_id: node.project_id || '',
+                                        node_resource_id: node.id || '',
+                                        sku_id: params[:sku_id] || '')
           rescue StandardError
             redirect 'node/new/1'
           end
@@ -120,10 +129,11 @@ module Sinatra
         params[:name] = nil if params[:name] == ''
         params[:type] = nil if params[:type] == ''
         params[:cluster] = nil if params[:cluster] == ''
-        params[:active] = nil if params[:description] == ''
+        params[:active] = nil if params[:active] == ''
 
         # recieve an updated node
         node = NodeResource[id: params[:id]]
+        project_node = NodeResourcesProject.filter(node_resource_id: node.id).first
 
         node.update(project_id:  params[:project_id] || node.project_id,
                     name:       params[:name] || node.name,
@@ -131,13 +141,19 @@ module Sinatra
                     cluster:    params[:cluster] || node.cluster,
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
-
+        unless project_node.nil?
+          project_node.update(project_id: params[:project_id] || project_node.project_id,
+                              node_resource_id: node.id || project_node.node_resource_id,
+                              sku_id: params[:sku_id] || project_node.sku_id)
+        end
         redirect "/node/#{params[:id]}"
       end
 
       app.delete '/nodes/:id/?' do
         # delete a node
         node = NodeResource[id: params[:id]]
+        # disassociate this nodes sku's and deactivate the node
+        NodeResourcesProject.where(node_resource_id: node.id).delete
         node.update(active: false)
         redirect '/nodes/?' unless node.nil?
         404

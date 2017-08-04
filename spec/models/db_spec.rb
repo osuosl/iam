@@ -46,13 +46,6 @@ describe 'The DbResource Model and table' do
     end.to raise_error(Sequel::ValidationFailed, /name cannot be empty/)
   end
 
-  it 'can delete a db' do
-    db = DbResource.create(name: 'Delete Me')
-    expect(db).to exist
-    expect { db.delete }.to_not raise_error
-    expect(db).to_not exist
-  end
-
   it 'can update a db' do
     db = DbResource.create(name: 'Testo', type: 'mysql')
     expect(db).to exist
