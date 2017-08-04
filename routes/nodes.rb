@@ -91,6 +91,8 @@ module Sinatra
         node_sku = NodeResourcesProject.find(node_resource_id: @node.id)
         sku = Sku.find(id: node_sku.sku_id) unless node_sku.nil?
         @sku = sku.nil? ? 'None' : sku.name
+        @project = Project.where(name: 'default').first if @project.nil?
+        @projects = Project.exclude(id: @node.project_id)
 
         erb :'nodes/edit'
       end
@@ -139,9 +141,11 @@ module Sinatra
                     cluster:    params[:cluster] || node.cluster,
                     modified:   DateTime.now || node.modified,
                     active: params[:active] || node.active)
-        project_node.update(project_id: params[:project_id] || project_node.project_id,
-                            node_resource_id: node.id || project_node.node_resource_id,
-                            sku_id: params[:sku_id] || project_node.sku_id)
+        unless project_node.nil?
+          project_node.update(project_id: params[:project_id] || project_node.project_id,
+                              node_resource_id: node.id || project_node.node_resource_id,
+                              sku_id: params[:sku_id] || project_node.sku_id)
+        end
         redirect "/node/#{params[:id]}"
       end
 

@@ -75,6 +75,8 @@ module Sinatra
         db_sku = DbResourcesProject.find(db_resource_id: @db.id)
         sku = Sku.find(id: db_sku.sku_id) unless db_sku.nil?
         @sku = sku.nil? ? 'None' : sku.name
+        @project = Project.where(name: 'default').first if @project.nil?
+        @projects = Project.exclude(id: @db.project_id)
 
         erb :'database/edit'
       end
@@ -123,9 +125,11 @@ module Sinatra
                   server:    params[:server] || db.server,
                   modified:   DateTime.now || db.modified,
                   active: params[:active] || db.active)
-        project_db.update(project_id: params[:project_id] || project_db.project_id,
-                          db_resource_id: db.id || project_db.db_resource_id,
-                          sku_id: params[:sku_id] || project_db.sku_id)
+        unless project_db.nil?
+          project_db.update(project_id: params[:project_id] || project_db.project_id,
+                            db_resource_id: db.id || project_db.db_resource_id,
+                            sku_id: params[:sku_id] || project_db.sku_id)
+        end
 
         redirect "/db/#{params[:id]}"
       end
