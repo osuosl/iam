@@ -121,4 +121,15 @@ class Scheduler
       collector.collect_ganeti(v)
     end
   end
+
+  def chef_collector_job
+    # Collect chef node information every 30 minutes
+    collector = Collectors.new
+
+    collector.collect_chef(
+      Iam.settings.chef_host,
+      Iam.settings.chef_client,
+      Iam.settings.chef_key
+    )
+  end
 end

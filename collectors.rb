@@ -10,21 +10,21 @@ require_relative 'logging/logs'
 
 # Collectors class to hold collection methods for specific node management
 # systems, such as ganeti, chef, etc.
+# rubocop:disable Metrics/ClassLength
 class Collectors
   def initialize
     @node_cache = Cache.new("#{Iam.settings.cache_path}/node_cache")
+    @chef_cache = Cache.new("#{Iam.settings.cache_path}/chef_cache")
     @db_cache = Cache.new("#{Iam.settings.cache_path}/db_cache")
-
-    @db_template = ERB.new File.new('cache_templates/db_template.erb').read,
-                           nil, '%'
-    @node_template = ERB.new File.new('cache_templates/node_template.erb').read,
-                             nil, '%'
   end
 
   # Public: Queries Ganeti by cluster to receive node information via the Ganeti
   #         RAPI. Stores the information in the file cache.
   # rubocop:disable LineLength, AbcSize, CyclomaticComplexity, PerceivedComplexity, MethodLength
   def collect_ganeti(cluster)
+    node_template = ERB.new File.new('cache_templates/node_template.erb').read,
+                            nil, '%'
+
     # for each cluster, append port number, endpoint, and query.
     uri = URI("https://#{cluster}.osuosl.bak:5080/2/instances?bulk=1")
     begin
@@ -47,7 +47,7 @@ class Collectors
           active_meas = node['oper_state']
           type = 'ganeti'
 
-          @node_cache.set(node_name, JSON.parse(@node_template.result(binding)))
+          @node_cache.set(node_name, JSON.parse(node_template.result(binding)))
           @node_cache.set(node_name + ':datetime', Time.new.inspect)
         end
       end
@@ -55,6 +55,34 @@ class Collectors
       MyLog.log.fatal "Error getting ganeti data from #{cluster}: #{e}"
     end
     @node_cache.write
+  end
+
+  def collect_chef(url, client, key)
+    chef_template = ERB.new File.new('cache_templates/chef_template.erb').read,
+                            nil, '%'
+
+    ChefAPI::Connection.new(endpoint: url, client: client, key: key) do |connection|
+      connection.nodes.each do |n|
+        node_name = n.name || 'unknown'
+        ram_total = n.automatic['memory']['total'] || 'unknown'
+        ram_free = n.automatic['memory']['free'] || 'unknown'
+        cpus_total = n.automatic['cpu']['total'] || 'unknown'
+        cpus_real = n.automatic['cpu']['real'] || 'unknown'
+
+        # Collect disk size
+        disk_size = disk_usage = disk_count = 0
+        n.automatic['filesystem2']['by_device'].each do |_key, device|
+          next unless device['fs_type'] == 'ext4'
+          disk_size += device['kb_size'].to_i
+          disk_usage += device['kb_used'].to_i
+          disk_count += 1
+        end
+
+        @chef_cache.set(node_name, JSON.parse(chef_template.result(binding)))
+        @chef_cache.set(node_name + ':datetime', Time.new.inspect)
+      end
+    end
+    @chef_cache.write
   end
 
   # meta-function used to check the databases
@@ -72,6 +100,8 @@ class Collectors
   end
 
   def collect_mysql(host, user, password)
+    db_template = ERB.new File.new('cache_templates/db_template.erb').read,
+                          nil, '%'
     # Establish a connection to the database
     begin
       db = Sequel.connect("mysql://#{user}:#{password}@#{host}")
@@ -101,7 +131,7 @@ class Collectors
       type = 'mysql'
       server = host
 
-      @db_cache.set(var[:"DB Name"], JSON.parse(@db_template.result(binding)))
+      @db_cache.set(var[:"DB Name"], JSON.parse(db_template.result(binding)))
       @db_cache.set(var[:"DB Name"] + ':datetime', Time.new.inspect)
     end
     @db_cache.write

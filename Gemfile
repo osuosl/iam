@@ -12,6 +12,9 @@ group :default do
   gem 'sequel', '~>4.33.0'
   gem 'sinatra-sequel', '0.9.0'
 
+  # Chef
+  gem 'chef-api'
+
   # Tools
   gem 'dotenv', '2.1.1'
   gem 'thin', '1.7.0'
@@ -43,4 +46,5 @@ group :test, :development do
   gem 'factory_girl', '4.7.0'
   gem 'pg', '0.18.4'
   gem 'mysql', '2.9.1'
+  gem 'chef-zero', '4.9.0'
 end

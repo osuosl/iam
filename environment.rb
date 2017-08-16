@@ -64,8 +64,14 @@ class Iam < Sinatra::Base
     ENV['CACHE_FILE'] = cachefile
     ENV['LOG_FILE_PATH'] = logfile
     ENV['GANETI_CLUSTERS'] = 'ganeti'
-
   end
+
+  ENV['CHEF_CLIENT'] = 'test_client'
+  ENV['CHEF_KEY'] = File.expand_path(
+    './test_chef_client.pem',
+    File.dirname(__FILE__)
+  )
+  ENV['CHEF_HOST'] = ''
 
   # Bundler.require(...) requires all gems necessary regardless of
   # environment (:default) in addition to all environment-specific gems.
@@ -83,7 +89,7 @@ class Iam < Sinatra::Base
     no_conf_file = true
   end
 
-  # Application Dataase settings
+  # Application Database settings
   if ENV['DB_URL']
     set :database, ENV['DB_URL']
   else
@@ -111,8 +117,16 @@ class Iam < Sinatra::Base
 
   set :ganeti_collector_clusters, ganeti_clusters
 
+  # Chef Collector settings
+  set :chef_client, ENV['CHEF_CLIENT'] ||= config['chef']['client']
+  set :chef_key, ENV['CHEF_KEY'] ||= File.expand_path(
+    config['chef']['key_path'],
+    File.dirname(__FILE__)
+  )
+  set :chef_host, ENV['CHEF_HOST'] ||= config['chef']['host']
+
   # Database collector settings
-  # if this is set in the environemt, split out the tring into an
+  # if this is set in the environemt, split out the string into an
   # array of hashes (hackarific)
   # DB_COLLECTOR_MYSQL_DBS=user:pass:host,user2:pass2:host2...
   if ENV['DB_COLLECTOR_DBS']
