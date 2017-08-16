@@ -4,9 +4,28 @@ require_relative '../environment.rb'
 require_relative '../models.rb'
 require_relative './util.rb'
 
+def iterate_lines(file_path)
+  return unless File.file?(file_path)
+  lines = 0
+  File.foreach(file_path, '}').with_index do |line|
+    line = line[/{.+}/] # Remove obj delimeters
+    next if line.nil?
+    lines += 1
+    yield(lines, line)
+  end
+end
+
+def update_date(date, offset)
+  return nil unless date.is_a? String
+  return (DateTime.parse(date) + offset).to_s
+rescue ArgumentError
+  return nil
+end
+
 ###
 # DataImporter - methods for sampling production data for use in testing
 ###
+# rubocop:disable ClassLength
 class DataImporter
   def initialize
     @directory = 'test_data/'
@@ -15,7 +34,6 @@ class DataImporter
   # Deletes all the extant data. This does not drop tables, only removes rows
   # rubocop:disable AbcSize
   def delete_data
-    # deletes everything
     Report.plugin_matrix.each do |resource_name, measurements|
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
       model.dataset.all.each(&:delete)
@@ -25,51 +43,94 @@ class DataImporter
         Iam.settings.DB[table.to_sym].delete
       end
     end
-
     Iam.settings.DB[:projects].delete
     Iam.settings.DB[:clients].delete
   end
 
+  # Find the latest date in the information to import
+  # rubocop:disable MethodLength
+  def date_offset
+    latest_date = nil
+    Dir.foreach(@directory) do |file|
+      iterate_lines(@directory + file) do |_, line|
+        JSON.parse(line).each do |_key, value|
+          next unless value.is_a? String
+          begin
+            date = DateTime.parse value
+            latest_date = date if latest_date.nil? || date > latest_date
+          rescue ArgumentError
+            next
+          end
+        end
+      end
+    end
+    print "Done\n"
+    @date_offset = DateTime.now - latest_date unless latest_date.nil?
+  end
+
   # Imports the clients from clients.json
   def import_clients
-    # get clients from file, import to Client model
-    clients_filename = @directory + 'clients.json'
-    clients_json = File.open(clients_filename, &:readline)
-    clients = Client.array_from_json(clients_json,
-                                     fields: Client.columns.map(&:to_s))
-
-    clients.each(&:save)
+    Client.unrestrict_primary_key
+    iterate_lines(@directory + 'clients.json') do |idx, line|
+      print "\rImporting Clients #{idx}..."
+      Client.create(JSON.parse(line))
+    end
+    print "Done\n"
+    Client.restrict_primary_key
   end
 
   # Imports the projects from projects.json
   def import_projects
-    # get projects
-    projects_filename = @directory + 'projects.json'
-    projects_json = File.open(projects_filename, &:readline)
-    projects = Project.array_from_json(projects_json,
-                                       fields: Project.columns.map(&:to_s))
+    Project.unrestrict_primary_key
+    iterate_lines(@directory + 'projects.json') do |idx, line|
+      print "\rImporting Projects #{idx}..."
+      Project.create(JSON.parse(line))
+    end
+    print "Done\n"
+    Project.restrict_primary_key
+  end
 
-    projects.each(&:save)
+  # Loop through measurements and import their data
+  # rubocop:disable HashSyntax
+  def import_measurements(measurements)
+    measurements.each do |measurement_name|
+      table = Plugin.where(name: measurement_name).first.storage_table
+      keys = nil
+      lines = []
+      iterate_lines(@directory + table + '.json') do |idx, line|
+        print "\r  Importing #{measurement_name}:#{idx}..."
+        measurement = JSON.parse(line)
+        keys = measurement.keys if keys.nil?
+        measurement.each do |key, value|
+          date = update_date(value, @date_offset)
+          measurement[key] = date unless date.nil?
+        end
+        lines.push(measurement.values)
+      end
+      Iam.settings.DB[table.to_sym].import(keys, lines, :slice => 500)
+      print "Done\n"
+    end
   end
 
   # Loop through our defined resources and import the data for each one
-  # rubocop:disable MethodLength
   def import_resources
     # for each resource type, look for a file  of measurement data
     Report.plugin_matrix.each do |resource_name, measurements|
-      filename = @directory + resource_name + '.json'
-      resource_json = File.open(filename, &:readline)
       model = Object.const_get((resource_name + 'Resource').camelcase(:upper))
-      resources = model.array_from_json(resource_json,
-                                        fields: model.columns.map(&:to_s))
+      model.unrestrict_primary_key
+      iterate_lines(@directory + resource_name + '.json') do |idx, line|
+        print "\rImporting #{resource_name}: #{idx}..."
 
-      resources.each(&:save)
-      measurements.each do |measurement_name|
-        table = Plugin.where(name: measurement_name).first.storage_table
-        filename = @directory + table + '.json'
-        measurement_data = JSON.parse(File.open(filename, &:readline))
-        Iam.settings.DB[table.to_sym].multi_insert(measurement_data)
+        resource = JSON.parse(line)
+        resource.each do |key, value|
+          value = update_date(value, @date_offset)
+          resource[key] = value unless value.nil?
+        end
+        model.create(resource)
       end
+      model.restrict_primary_key
+      print "Done\n"
+      import_measurements(measurements)
     end
   end
 
@@ -77,14 +138,19 @@ class DataImporter
   # default client and project
   def import_data
     # delete all the things, for simplicity
+    print 'Deleting existing data...'
     delete_data
+
+    print "Done\nCalculating date offset..."
+    date_offset
+
     import_clients
     import_projects
 
+    puts 'Creating defaults...'
     # re-create the default client and project
     default_client = Client.find_or_create(name: 'default',
                                            description: 'The default client')
-
     Project.find_or_create(name: 'default',
                            client_id: default_client.id,
                            description: 'The default project')
@@ -166,14 +232,18 @@ class DataExporter
     anonymize_clients(clients) if anon
 
     filename = @directory + 'clients.json'
-    File.open(filename, 'w') { |file| file.write(clients.to_json) }
+    File.open(filename, 'w') do |file|
+      file.write(JSON.generate(clients))
+    end
 
     all_projects = Project.where(id: project_ids).naked.all
     anonymize_projects(all_projects) if anon
 
     # write the projects to a file in json fromat
     filename = @directory + 'projects.json'
-    File.open(filename, 'w') { |file| file.write(all_projects.to_json) }
+    File.open(filename, 'w') do |file|
+      file.write(JSON.generate(all_projects))
+    end
 
     # get all the resources of each type for each project
     Report.plugin_matrix.each do |resource_name, measurements|
@@ -187,7 +257,9 @@ class DataExporter
       anonymize_resources(resources, resource_name) if anon
 
       # write the resources to a file in json format
-      File.open(filename, 'w') { |file| file.write(resources.to_json) }
+      File.open(filename, 'w') do |file|
+        file.write(JSON.generate(resources))
+      end
 
       # for each measurment (plugin) available for this resource type,
       # fetch all the measurment data for the specific resource ids collected
@@ -210,8 +282,9 @@ class DataExporter
           end
         end
 
-        json = data.to_json
-        File.open(filename, 'w') { |file| file.write(json) }
+        File.open(filename, 'w') do |file|
+          file.write(JSON.generate(data))
+        end
       end
     end
   end
